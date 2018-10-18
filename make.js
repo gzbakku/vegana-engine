@@ -43,6 +43,8 @@ module.exports = {
 
     comp : function(id,parent,cls){
 
+      //console.log(parent);
+
       common.tell(',,,,,,,,,,,,,,,,,',seprator);
 
       common.tell('initiating comp',log);
@@ -74,6 +76,8 @@ module.exports = {
 
     cont : function(id,parent,cls){
 
+      //console.log(id);
+
       common.tell(',,,,,,,,,,,,,,,,,',seprator);
 
       common.tell('initiating cont',log);
@@ -92,7 +96,7 @@ module.exports = {
       let router = parent + '-router-cont';
 
       //check parent
-      let get = document.getElementById('router');
+      let get = document.getElementById(router);
       if(get == null){
         return common.error('invalid_parent id : ' + id);
       }
@@ -107,6 +111,7 @@ module.exports = {
       routerApp.route.cont.push(id);
       routerApp.built.cont.push(id);
       routerApp.active.cont = id;
+      routerApp.track.cont[parent] = id;
 
       return id;
 
@@ -146,6 +151,7 @@ module.exports = {
       routerApp.route.panel.push(id);
       routerApp.built.panel.push(id);
       routerApp.active.panel = id;
+      routerApp.track.panel[parent] = id;
 
       return id;
 
@@ -153,7 +159,9 @@ module.exports = {
 
   },
 
-  div : function(id,parent,cls){
+  //conts and objects
+
+  div : function(id,parent,cls,text){
 
     common.tell(',,,,,,,,,,,,,,,,,',seprator);
 
@@ -167,9 +175,6 @@ module.exports = {
     if(parent == null){
       return common.error('no_parent_found : ' + id + ' || parent : ' + parent);
     }
-    if(cls == null){
-      return common.error('no_class_found : ' + id);
-    }
 
     //check parent
     let get = document.getElementById(parent);
@@ -180,7 +185,12 @@ module.exports = {
     //make element
     let div = document.createElement("div");
     div.id = id;
-    div.className = cls;
+    if(cls){
+      div.className = cls;
+    }
+    if(text){
+      div.innerHTML = text;
+    }
     get.appendChild(div);
     return id;
 
@@ -210,86 +220,6 @@ module.exports = {
     //set text
     get.innerHTML = text;
     return parent;
-
-  },
-
-  button : function(id,parent,cls,value){
-
-    common.tell(',,,,,,,,,,,,,,,,,',seprator);
-
-    //tell
-    common.tell('+++ button',log);
-
-    //checks
-    if(id == null){
-      return common.error('no_id_found : ' + id);
-    }
-    if(parent == null){
-      return common.error('no_parent_found : ' + id + ' || parent : ' + parent);
-    }
-    if(cls == null){
-      return common.error('no_class_found : ' + id);
-    }
-    if(value == null){
-      return common.error('no_value_found : ' + id);
-    }
-
-    //get parent
-    let get = document.getElementById(parent);
-    if(get == null){
-      return common.error('invalid_parent');
-    }
-
-    //make button
-    let div = document.createElement("button");
-    div.type = 'button';
-    div.id = id;
-    div.className = cls;
-    div.innerHTML = value;
-    get.appendChild(div);
-    return id;
-
-  },
-
-  input : function(id,parent,cls,type,placeholder){
-
-    common.tell(',,,,,,,,,,,,,,,,,',seprator);
-
-    //tell
-    common.tell('+++ input',log);
-
-    //checks
-    if(id == null){
-      return common.error('no_id_found : ' + id);
-    }
-    if(parent == null){
-      return common.error('no_parent_found : ' + id + ' || parent : ' + parent);
-    }
-    if(cls == null){
-      return common.error('no_class_found : ' + id);
-    }
-    if(type == null){
-      return common.error('no_type_found : ' + id);
-    }
-
-    //get parent
-    let get = document.getElementById(parent);
-    if(get == null){
-      return common.error('invalid_parent');
-    }
-
-    //make button
-    let div = document.createElement("input");
-    div.id = id;
-    div.className = cls;
-    div.type = type;
-
-    if(placeholder){
-      div.placeholder = placeholder;
-    }
-
-    get.appendChild(div);
-    return id;
 
   },
 
@@ -326,6 +256,8 @@ module.exports = {
     return id;
 
   },
+
+  //inputs
 
   select : function(id,parent,cls,options){
 
@@ -375,6 +307,258 @@ module.exports = {
     return id;
 
   },
+
+  input : function(id,parent,cls,type,placeholder){
+
+    common.tell(',,,,,,,,,,,,,,,,,',seprator);
+
+    //tell
+    common.tell('+++ input',log);
+
+    //checks
+    if(id == null){
+      return common.error('no_id_found : ' + id);
+    }
+    if(parent == null){
+      return common.error('no_parent_found : ' + id + ' || parent : ' + parent);
+    }
+    if(cls == null){
+      return common.error('no_class_found : ' + id);
+    }
+    if(type == null){
+      return common.error('no_type_found : ' + id);
+    }
+
+    //get parent
+    let get = document.getElementById(parent);
+    if(get == null){
+      return common.error('invalid_parent');
+    }
+
+    //make button
+    let div = document.createElement("input");
+    div.id = id;
+    div.className = cls;
+    div.type = type;
+
+    if(placeholder){
+      div.placeholder = placeholder;
+    }
+
+    get.appendChild(div);
+    return id;
+
+  },
+
+  button : function(id,parent,cls,value){
+
+    common.tell(',,,,,,,,,,,,,,,,,',seprator);
+
+    //tell
+    common.tell('+++ button',log);
+
+    //checks
+    if(id == null){
+      return common.error('no_id_found : ' + id);
+    }
+    if(parent == null){
+      return common.error('no_parent_found : ' + id + ' || parent : ' + parent);
+    }
+    if(cls == null){
+      return common.error('no_class_found : ' + id);
+    }
+    if(value == null){
+      return common.error('no_value_found : ' + id);
+    }
+
+    //get parent
+    let get = document.getElementById(parent);
+    if(get == null){
+      return common.error('invalid_parent');
+    }
+
+    //make button
+    let div = document.createElement("button");
+    div.type = 'button';
+    div.id = id;
+    div.className = cls;
+    div.innerHTML = value;
+    get.appendChild(div);
+    return id;
+
+  },
+
+  //table
+
+  table : function(id,parent,headers,cls,rowCls,thCls){
+
+    common.tell('+++ table',log);
+
+    //security checks
+
+    if(id == null){
+      return common.error('no_id_found : ' + id);
+    }
+    if(parent == null){
+      return common.error('no_parent_found : ' + id + ' || parent : ' + parent);
+    }
+    if(headers == null || typeof(headers) !== 'object'){
+      return common.error('no_headers_found : ' + id);
+    }
+
+    //check parent
+    let get = document.getElementById(parent);
+    if(get == null){
+      return common.error('invalid_parent');
+    }
+
+    let tabelObject = document.createElement("table");
+    if(cls){
+      tabelObject.className = cls;
+    }
+    tabelObject.id = id;
+
+    if(headers.length == 0 || !headers.length){
+      return common.error('headers not_found/invalid : ' + id);
+    }
+
+    //make table row
+    let row = document.createElement('tr');
+    row.id = id + '-row-heading';
+    //console.log(row.id);
+    if(rowCls){
+      //console.log(rowCls);
+      row.className = rowCls;
+    }
+
+    //make table header items
+    for(var i=0;i<headers.length;i++){
+      let key = headers[i];
+      if(typeof(key) == 'string'){
+        //create td
+        let th = document.createElement('th');
+        if(thCls){
+          //console.log(thCls);
+          th.className = thCls;
+          th.id = row.id + '-th-' + key.toLowerCase();
+        }
+        th.innerHTML = key;
+        row.appendChild(th);
+      }
+    }
+
+    //insert row to the table
+    tabelObject.appendChild(row);
+    get.appendChild(tabelObject);
+    return id;
+
+  },
+
+  tableRow : function(id,parent,rowData,rowCls,tdCls){
+
+    common.tell('+++ table row',log);
+
+    //security checks
+
+    if(id == null){
+      return common.error('no_id_found : ' + id);
+    }
+    if(parent == null){
+      return common.error('no_parent_found : ' + id + ' || parent : ' + parent);
+    }
+    if(!rowData.length || rowData.length == 0 || !rowData){
+      return common.error('data not_found/invalid : ' + id);
+    }
+
+    //check parent
+    let get = document.getElementById(parent);
+    if(get == null){
+      return common.error('invalid_parent');
+    }
+
+    //make row here
+    let row = document.createElement('tr');
+    if(rowCls){
+      row.className = rowCls;
+    }
+    row.id = id;
+
+    //make table header items
+    for(var i=0;i<rowData.length;i++){
+      let key = rowData[i];
+      if(typeof(key) == 'string'){
+        //create td
+        let td = document.createElement('td');
+        if(tdCls){
+          //console.log(thCls);
+          td.className = tdCls;
+          td.id = row.id + '-td-' + key.toLowerCase().replace(/\s/g, "-");
+        }
+        td.innerHTML = key;
+        row.appendChild(td);
+      }
+    }
+
+    //insert row to the table
+    get.appendChild(row);
+    return id;
+
+  },
+
+  //lists
+
+  list : function(id,parent,listClass,itemClass,type,data){
+
+    common.tell('+++ list',log);
+
+    //security checks
+    if(id == null){
+      return common.error('no_id_found : ' + id);
+    }
+    if(parent == null){
+      return common.error('no_parent_found : ' + id + ' || parent : ' + parent);
+    }
+    if(type !== 'ol' && type !== 'ul'){
+      return common.error('invalid_list_type : ' + id);
+    }
+    if(data == null || !data.length || data.length == 0){
+      return common.error('invalid_list_item_dataSet : ' + id);
+    }
+
+    //check parent
+    let get = document.getElementById(parent);
+    if(get == null){
+      return common.error('invalid_parent');
+    }
+
+    let listObject = document.createElement(type);
+    if(listClass){
+      listObject.className = listClass;
+    }
+    listObject.id = id;
+
+    for(var i=0;i<data.length;i++){
+      let thisItemData = data[i];
+      //check this item type
+      if(typeof(thisItemData) == 'string'){
+        //make list item dom
+        let thisItem = document.createElement('li');
+        if(itemClass){
+          thisItem.className = itemClass;
+        }
+        thisItem.id = parent + '-' + thisItemData.toLowerCase().replace(/\s/g, "-");
+        thisItem.innerHTML = thisItemData;
+        listObject.appendChild(thisItem);
+      }
+    }
+
+    get.appendChild(listObject);
+
+    return id;
+
+  },
+
+  //custom
 
   element : function(id,parent,cls,type,ats){
 

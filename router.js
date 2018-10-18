@@ -1,10 +1,10 @@
-const common = require("./common");
+const common = require('./common');
 const log = false;
 
 let active = {
-  page  : null,
-  cont  : null,
-  panel : null
+  page:null,
+  cont:null,
+  panel:null
 };
 
 let built = {
@@ -19,6 +19,11 @@ let route = {
   panel:[]
 };
 
+let track = {
+  cont:{},
+  panel:{}
+};
+
 module.exports= {
 
   //nav data
@@ -26,6 +31,7 @@ module.exports= {
   active:active,
   built:built,
   route:route,
+  track:track,
 
   //functions
 
@@ -60,7 +66,9 @@ module.exports= {
           common.tell('app already initiated',log);
           view.loader.page.start();       //start cont loader
           route.cont.push(toId);          //push to cont route
-          view.hide(active.page);         //hide the active cont
+          //view control here
+          view.hide(active.page);
+          //router controller here
           active.page = toId;             //make toId cont active
           view.show(toId);                //show toId cont
           view.loader.page.stop();        //stop cont loader
@@ -72,50 +80,13 @@ module.exports= {
           common.tell('initiating app',log);
           view.loader.page.start();
           view.hide(active.page);
-          view.hide(active.cont);
-          view.hide(active.panel);
-          view.hide(active.page + '-router-cont');
-          view.hide(active.cont + '-router-panel');
-          view.hide(active.page + '-loader-cont');
-          view.hide(active.cont + '-loader-panel');
           app.init();
-          //view.show(app.ref);
+          view.show(app.ref);
           view.loader.page.stop();
           return true;
         }
 
         return false;
-
-      },
-
-      back: function(){
-
-        common.tell("navigating to previous page",log);
-
-        if(
-          route.page.length == 0 ||
-          route.page.length == undefined ||
-          route.page.length == null
-        ){
-          return common.error('corrupted_built_page_record');
-        }
-
-        if(route.page.length == 1){
-          return true;
-        }
-
-        if(route.page.length > 1){
-          view.loader.start();
-          let size = route.page.length;
-          let last = route.page[size - 1];
-          let secondLast = route.page[size - 2];
-          view.hide(last);
-          view.show(secondLast);
-          route.page.pop();
-          view.loader.stop();
-        }
-
-        return true;
 
       }
 
@@ -127,7 +98,7 @@ module.exports= {
 
         common.tell('*****************************************',log);
 
-        common.tell("navigating cont => toId : " + app.ref,log);
+        common.tell("navigating cont",log);
 
         if(app == null || app == undefined){
           return common.error('no_cont_module_found');
@@ -148,12 +119,12 @@ module.exports= {
         //cont already activated
         if(built.cont.indexOf(toId) >= 0){
           common.tell('app already initiated',log);
-          view.loader.cont.start();       //start cont loader
-          route.cont.push(toId);          //push to cont route
-          view.hide(active.cont);         //hide the active cont
-          active.cont = toId;             //make toId cont active
-          view.show(toId);                //show toId cont
-          view.loader.cont.stop();        //stop cont loader
+          view.loader.cont.start();           //start cont loader
+          view.hide(track.cont[active.page]); //hide the active cont on the active page
+          track.cont[active.page] = toId;     //update active in track cont
+          route.cont.push(toId);              //push to cont route
+          view.show(toId);                    //show toId cont
+          view.loader.cont.stop();            //stop cont loader
           return true;
         }
 
@@ -161,44 +132,14 @@ module.exports= {
         if(built.cont.indexOf(toId) < 0){
           common.tell('initiating app',log);
           view.loader.cont.start();
-          view.hide(active.cont);
+          view.hide(track.cont[active.page]);
+          track.cont[active.page] = toId;
           app.init(active.page);
           view.loader.cont.stop();
           return true;
         }
 
         return false;
-
-      },
-
-      back: function(){
-
-        common.tell("navigating to previous cont",log);
-
-        if(
-          route.cont.length == 0 ||
-          route.cont.length == undefined ||
-          route.cont.length == null
-        ){
-          return common.error('corrupted_built_page_record');
-        }
-
-        if(route.cont.length == 1){
-          return true;
-        }
-
-        if(route.cont.length > 1){
-          view.loader.start();
-          let size = route.cont.length;
-          let last = route.cont[size - 1];
-          let secondLast = route.cont[size - 2];
-          view.hide(last);
-          view.show(secondLast);
-          route.cont.pop();
-          view.loader.stop();
-        }
-
-        return true;
 
       }
 
@@ -210,7 +151,7 @@ module.exports= {
 
         common.tell('*****************************************',log);
 
-        common.tell("navigating panel => toId : " + app.ref,log);
+        common.tell("navigating panel",log);
 
         //console.log(app);
 
@@ -226,19 +167,23 @@ module.exports= {
           return common.error('no_panel_router_found');
         }
 
-        let toId = active.cont + app.ref;
+        let toId = track.cont[active.page] + app.ref;
+
+        common.tell("toId : " + toId,log);
 
         let view = require('./view');
 
         //cont already activated
         if(built.panel.indexOf(toId) >= 0){
           common.tell('app already initiated',log);
-          view.loader.panel.start();       //start cont loader
-          route.panel.push(toId);          //push to cont route
-          view.hide(active.panel);         //hide the active cont
-          active.panel = toId;             //make toId cont active
-          view.show(toId);                //show toId cont
-          view.loader.panel.stop();        //stop cont loader
+          view.loader.panel.start();                   //start cont loader
+          route.panel.push(toId);                      //push to cont route
+          let active_cont = track.cont[active.page];   //get the active cont
+          view.hide(track.panel[active_cont]);         //hide the active cont
+          track.panel[active_cont] = toId;             //set active panel on the cont in track object
+          active.panel = toId;                         //make toId cont active
+          view.show(toId);                             //show toId cont
+          view.loader.panel.stop();                    //stop cont loader
           return true;
         }
 
@@ -246,44 +191,15 @@ module.exports= {
         if(built.panel.indexOf(toId) < 0){
           common.tell('initiating panel',log);
           view.loader.panel.start();
-          view.hide(active.panel);
-          app.init(active.cont);
+          let active_cont = track.cont[active.page];
+          view.hide(track.panel[active_cont]);
+          track.panel[active_cont] = toId;
+          app.init(active_cont);
           view.loader.panel.stop();
           return true;
         }
 
         return false;
-
-      },
-
-      back: function(){
-
-        common.tell("navigating to previous panel",log);
-
-        if(
-          route.panel.length == 0 ||
-          route.panel.length == undefined ||
-          route.panel.length == null
-        ){
-          return common.error('corrupted_built_page_record');
-        }
-
-        if(route.panel.length == 1){
-          return true;
-        }
-
-        if(route.panel.length > 1){
-          view.loader.start();
-          let size = route.panel.length;
-          let last = route.panel[size - 1];
-          let secondLast = route.panel[size - 2];
-          view.hide(last);
-          view.show(secondLast);
-          route.panel.pop();
-          view.loader.stop();
-        }
-
-        return true;
 
       }
 
@@ -307,20 +223,21 @@ module.exports= {
         return common.error('invalid_parent : ' + parent);
       }
 
-      //make element
+      //make router
       let router = document.createElement("div");
       router.id = parent + '-router-cont';
+      router.className = 'cont-router';
 
-      //make element
+      //make loader
       let loader = document.createElement("div");
       loader.id = parent + '-loader-cont';
       loader.innerHtml = 'loading cont ...';
       loader.style.display = 'none';
-      loader.className = 'panel-loader';
+      loader.className = 'cont-loader';
 
       get.appendChild(router);
       get.appendChild(loader);
-      return true;
+      return parent + '-router-cont';
 
     },
 
@@ -341,6 +258,7 @@ module.exports= {
       //make element
       let router = document.createElement("div");
       router.id = parent + '-router-panel';
+      router.className = 'panel-router';
 
       let loader = document.createElement("div");
       loader.id = parent + '-loader-panel';
@@ -351,7 +269,7 @@ module.exports= {
       get.appendChild(router);
       get.appendChild(loader);
 
-      return true;
+      return parent + '-router-panel';
 
     }
 

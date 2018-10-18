@@ -4,7 +4,7 @@ const router = require('./router');
 const loaders = require('./view/loader_index');
 
 function hide(id){
-  common.tell('hiding_div',log);
+  common.tell('hiding_div : ' + id,log);
   let get = document.getElementById(id);
   if(get == null){
     return common.error('div_not_found');
@@ -14,7 +14,7 @@ function hide(id){
 }
 
 function show(id){
-  common.tell('showing div',log);
+  common.tell('showing div : ' + id,log);
   let get = document.getElementById(id);
   if(get == null){
     return common.error('div_not_found');
