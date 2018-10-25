@@ -350,7 +350,7 @@ module.exports = {
 
   },
 
-  button : function(id,parent,cls,value){
+  button : function(id,parent,cls,value,func){
 
     common.tell(',,,,,,,,,,,,,,,,,',seprator);
 
@@ -384,6 +384,11 @@ module.exports = {
     div.className = cls;
     div.innerHTML = value;
     get.appendChild(div);
+
+    if(func){
+      div.addEventListener('click',func);
+    }
+
     return id;
 
   },

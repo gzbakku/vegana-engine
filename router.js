@@ -35,6 +35,131 @@ module.exports= {
 
   //functions
 
+  get : {
+
+    pageModule : function(pageName){
+
+      common.tell('fetching pageModule',log);
+
+      if(!pageName){
+        return common.error('not_found-inputs');
+      }
+      if(!window.pageModules[pageName]){
+        return common.error('not_found-pageModule');
+      } else {
+        return window.pageModules[pageName];
+      }
+
+    },
+
+    contModule : function(pageName,contName){
+
+      common.tell('fetching contModule',log);
+
+      if(!pageName || !contName){
+        return common.error('not_found-inputs');
+      }
+      if(!window.pageModules[pageName].contModules[contName]){
+        return common.error('not_found-pageModule');
+      } else {
+        return window.pageModules[pageName].contModules[contName];
+      }
+
+    },
+
+    panelModule : function(pageName,contName,panelName){
+
+      common.tell('fetching panelModule',log);
+
+      if(!pageName || !contName || !panelName){
+        return common.error('not_found-inputs');
+      }
+      if(!window.pageModules[pageName].contModules[contName].panelModules[panelName]){
+        return common.error('not_found-pageModule');
+      } else {
+        return window.pageModules[pageName].contModules[contName].panelModules[panelName];
+      }
+
+    },
+
+    baseHref : function(){
+      return window.baseHref;
+    }
+
+  },
+
+  set : {
+
+    pageModule : function(pageName,controller){
+
+      common.tell('activating pageModule : ' + controller.pageName,log);
+
+      if(!pageName || !controller){
+        return common.error('not_found-inputs');
+      }
+      if(typeof(controller) !== 'object'){
+        return common.error('invalid-controller');
+      }
+
+      window.pageModules[pageName] = controller;
+      window.pageList[pageName] = 'onboard';
+
+      return true;
+
+    },
+
+    contModule : function(pageName,contName,controller){
+
+      common.tell('activating contModule : ' + controller.contName,log);
+
+      if(!pageName || !contName || !controller){
+        return common.error('not_found-inputs');
+      }
+      if(typeof(controller) !== 'object'){
+        return common.error('invalid-controller');
+      }
+
+      window.pageModules[pageName].contModules[contName] = controller;
+      window.pageModules[pageName].contList[contName] = 'onboard';
+
+      return true;
+
+    },
+
+    panelModule : function(pageName,contName,panelName,controller){
+
+      common.tell('activating panelModule : ' + panelName,log);
+
+      if(!pageName || !contName || !panelName || !controller){
+        return common.error('not_found-inputs');
+      }
+      if(typeof(controller) !== 'object'){
+        return common.error('invalid-controller');
+      }
+
+      window.pageModules[pageName].contModules[contName].panelModules[panelName] = controller;
+      window.pageModules[pageName].contModules[contName].panelList[panelName] = 'onboard';
+
+      return true;
+
+    },
+
+    baseHref : function(url){
+
+      common.tell('activating baseHref',log);
+
+      if(typeof(url) == 'string'){
+        window.baseHref = baseHref;
+        return true;
+      } else {
+        window.baseHref = null;
+        return false;
+      }
+
+    }
+
+  },
+
   navigate : {
 
     page : {
@@ -64,11 +189,9 @@ module.exports= {
         //cont already activated
         if(built.page.indexOf(toId) >= 0){
           common.tell('app already initiated',log);
-          view.loader.page.start();       //start cont loader
-          route.cont.push(toId);          //push to cont route
-          //view control here
+          view.loader.page.start();       //start page loader
+          route.page.push(toId);          //push to page route
           view.hide(active.page);
-          //router controller here
           active.page = toId;             //make toId cont active
           view.show(toId);                //show toId cont
           view.loader.page.stop();        //stop cont loader
