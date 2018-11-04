@@ -26,15 +26,12 @@ module.exports= {
 
   },
 
-  text : function(id,func){
+  text : function(id){
 
     common.tell('### binding click',log);
 
     if(id == null){
       return common.error('no_id_found');
-    }
-    if(func == null){
-      //return common.error('no_function_found');
     }
 
     let get = document.getElementById(id);
@@ -43,6 +40,27 @@ module.exports= {
     }
 
     return get.value;
+
+  },
+
+  number : function(id){
+
+    common.tell('### binding click',log);
+
+    if(id == null){
+      return common.error('no_id_found');
+    }
+
+    let get = document.getElementById(id);
+    if(get == null){
+      return common.error('invalid_id');
+    }
+
+    if(Number(get.value)){
+      return Number(get.value);
+    } else {
+      return false;
+    }
 
   }
 

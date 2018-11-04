@@ -23,25 +23,7 @@ module.exports = {
           reject(error);
         }
 
-        let host = window.location.hostname;
-        let port = window.location.port;
-
-        let base;
-        if(port){
-          base = httpMarker + host + ':' + port;
-        } else {
-          base = httpMarker + host;
-        }
-
-        let path;
-
-        if(baseHref == null){
-          path = '/js/pages/' + pageName + '/page.js';
-        } else {
-          path = '/' + baseHref + '/js/pages/' + pageName + '/page.js';
-        }
-
-        let location = base + path;
+        let location = baseHref + '/js/pages/' + pageName + '/page.js';
 
         let parent = document.getElementsByTagName("head")[0];
 
@@ -88,25 +70,9 @@ module.exports = {
           reject(error);
         }
 
-        let host = window.location.hostname;
-        let port = window.location.port;
+        let location = baseHref + 'js/pages/' + pageName + '/conts/' + contName + '/cont.js';
 
-        let base;
-        if(port){
-          base = httpMarker + host + ':' + port;
-        } else {
-          base = httpMarker + host;
-        }
-
-        let path;
-
-        if(baseHref == null){
-          path = '/js/pages/' + pageName + '/conts/' + contName + '/cont.js';
-        } else {
-          path = '/' + baseHref + '/js/pages/' + pageName + '/conts/' + contName + '/cont.js';
-        }
-
-        let location = base + path;
+        //console.log(location);
 
         let parent = document.getElementsByTagName("head")[0];
 
@@ -151,25 +117,7 @@ module.exports = {
           reject(error);
         }
 
-        let host = window.location.hostname;
-        let port = window.location.port;
-
-        let base;
-        if(port){
-          base = httpMarker + host + ':' + port;
-        } else {
-          base = httpMarker + host;
-        }
-
-        let path;
-
-        if(baseHref == null){
-          path = '/js/pages/' + pageName + '/conts/' + contName + '/panels/' + panelName + '/panel.js';
-        } else {
-          path = '/' + baseHref + '/js/pages/' + pageName + '/conts/' + contName + '/panels/' + panelName + '/panel.js';
-        }
-
-        let location = base + path;
+        let location = baseHref + '/js/pages/' + pageName + '/conts/' + contName + '/panels/' + panelName + '/panel.js';
 
         let parent = document.getElementsByTagName("head")[0];
 
@@ -208,16 +156,7 @@ module.exports = {
         reject(error);
       }
 
-      let host = window.location.hostname;
-      let port = window.location.port;
-
-      let location;
-
-      if(baseHref !== null){
-        location = httpMarker + host + ':' + port + '/css/' + fileName + '.css';
-      } else {
-        location = httpMarker + host + ':' + port + '/' + baseHref + '/css/' + fileName + '.css';
-      }
+      let location = baseHref + '/css/' + fileName + '.css';
 
       let parent = document.getElementsByTagName("head")[0];
 
