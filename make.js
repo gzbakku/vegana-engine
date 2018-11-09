@@ -4,18 +4,23 @@ const inputsImport = require('./make/inputs');
 const tableImport = require('./make/table');
 const listImport = require('./make/list');
 const customImport = require('./make/custom');
+const tabsImport = require('./make/tabs').init;
 
 module.exports = {
 
   //init
   init : initImport,
-
   //viewers
   div:viewersImport.div,
   card:viewersImport.card,
   text:viewersImport.text,
   image:viewersImport.image,
+  tabs:viewersImport.tabs,
   dropdown:viewersImport.dropdown,
+  message:viewersImport.message,
+  addClass:viewersImport.addClass,
+  removeClass:viewersImport.removeClass,
+  tabs:tabsImport,
 
   //inputs
   select:inputsImport.select,

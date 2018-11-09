@@ -36,10 +36,16 @@ module.exports = {
           resolve(true);
         };
 
-        scp.onreadystatechange   = function(){
+        scp.onreadystatechange = function(){
           common.tell('page_loaded',log);
           resolve(true);
         };
+
+        scp.onerror = function(){
+          common.error('failed-pageLoad');
+          error = 'failed-pageLoad';
+          reject(error);
+        }
 
         parent.appendChild(scp);
         window.pageList[pageName] = 'onboard';

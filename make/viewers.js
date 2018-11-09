@@ -7,6 +7,54 @@ const httpMarker = 'http://';
 
 module.exports = {
 
+  addClass : function(options){
+
+    if(typeof(options) !== 'object'){
+      return common.error('invalid-options');
+    }
+    if(!options.id){
+      return common.error('not_found-id||options');
+    }
+    if(!options.class){
+      return common.error('not_found-class||options');
+    }
+
+    let object = document.getElementById(options.id);
+    let style = object.className;
+    if(style.indexOf(options.class) >= 0){
+      return true;
+    }
+    style = style + ' ' + options.class;
+    object.className = style;
+    return true;
+
+  },
+
+  removeClass : function(options){
+
+    if(typeof(options) !== 'object'){
+      return common.error('invalid-options');
+    }
+    if(!options.id){
+      return common.error('not_found-id||options');
+    }
+    if(!options.class){
+      return common.error('not_found-class||options');
+    }
+
+    let object = document.getElementById(options.id);
+    let style = object.className;
+
+    if(style.indexOf(options.class) < 0){
+      return true;
+    }
+
+    let updated = style.replace(options.class,"");
+    object.className = updated;
+    return true;
+
+  },
+
   div : function(options){
 
     common.tell(',,,,,,,,,,,,,,,,,',seprator);
@@ -221,6 +269,108 @@ module.exports = {
         ddHeaderActionContObject.appendChild(ddCloseButtonObject);
 
     return ddObjectId;
+
+  },
+
+  message : function(options){
+
+    common.tell(',,,,,,,,,,,,,,,,,',seprator);
+    common.tell('+++ message',log);
+
+    //check options array
+    let check = checkBaseOptions(options);
+    if(check == false){
+      return common.error('invalid_options : ' + options);
+    }
+    if(!options.message){
+      return common.error('not_found-message||options');
+    }
+
+    //check parent
+    let get = document.getElementById(options.parent);
+    if(get == null){
+      return common.error('invalid_parent : ' + options);
+    }
+
+    //check if the message already exists
+    let messageObjectId = options.parent + '-message-' + options.id;
+    let checkMessage = document.getElementById(messageObjectId);
+    if(checkMessage !== null){
+      engine.view.show(messageObjectId);
+      return true;
+    }
+
+    //make element
+    let messageObject = document.createElement("div");
+    messageObject.id = messageObjectId;
+    messageObject.innerHTML = options.message;
+
+    let activeTypes = [
+      'info','warning','danger','success'
+    ];
+
+    if(
+      !options.type ||
+      options.type == null ||
+      options.type == false ||
+      options.type == undefined ||
+      activeTypes.indexOf(options.type) < 0
+    ){
+      messageObject.className = 'message message-info';
+    } else if (options.type == 'info'){
+      messageObject.className = 'message message-info';
+    } else if (options.type == 'warning'){
+      messageObject.className = 'message message-warning';
+    } else if (options.type == 'danger'){
+      messageObject.className = 'message message-danger';
+    } else if (options.type == 'success'){
+      messageObject.className = 'message message-success';
+    }
+
+    if(options.text){
+      messageObject.innerHTML = options.text;
+    }
+    if(options.style){
+      messageObject.style = options.style;
+    }
+    //append message object
+    get.appendChild(messageObject);
+
+    //make message close button
+    let closeButtonObjectId = messageObjectId + '-button-close';
+    let closeButtonObject = document.createElement('button');
+    closeButtonObject.id = closeButtonObjectId;
+    //close button css
+    if(options.closeButtonClass){
+      closeButtonObject.className = options.closeButtonClass;
+    } else {
+      closeButtonObject.className = 'message-close-button';
+    }
+    //close button value
+    if(options.closeButtonValue){
+      closeButtonObject.innerHTML = options.closeButtonValue;
+    } else {
+      closeButtonObject.innerHTML = 'close';
+    }
+    //close button function
+    function hide(){
+      engine.view.hide(messageObjectId);
+    }
+    closeButtonObject.addEventListener('click',hide);
+    //closeButtonObject.onclick = hide;
+    //append close button to mesasage div object
+    messageObject.appendChild(closeButtonObject);
+
+    let timeOut = 5000;
+    if(options.time){
+      timeout = options.time * 1000;
+    }
+
+    setTimeout(function () {
+      engine.view.hide(messageObjectId);
+    }, timeOut);
+
+    return messageObjectId;
 
   }
 

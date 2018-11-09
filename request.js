@@ -1,5 +1,5 @@
 const common = require('./common');
-const log = true;
+const log = false;
 
 module.exports = {
 
@@ -15,34 +15,40 @@ module.exports = {
     }
 
     let build = {
-      method:'get'
+      method:'get',
+      body:JSON.stringify(options.body)
     };
 
     if(options.method){
       build['method'] = options.method;
     }
+    //add header content type tag if doent exists for wet platform
     if(options.headers){
-      build['headers'] = new Header(options.headers);
+      build['headers'] = (options.headers);
+      if(!options.headers['Content-Type']){
+        if(typeof(options.body) == 'object'){
+          build['headers']['Content-Type'] = 'application/json';
+        }
+      }
+    }
+    if(!options.headers){
+      if(typeof(options.body) == 'object'){
+        build['headers'] = {
+          'Content-Type': 'application/json'
+        }
+      }
     }
 
-    let worker = await request(options.url)
+    let worker = await fetch(options.url,build)
     .then((response)=>{
-      return response;
+      let data = response.json();
+      return data;
     })
     .catch((error)=>{
       return common.error(error);
     });
 
-    if(worker !== false){
-      if(!JSON.parse(worker)){
-        return JSON.parse(worker);
-      } else {
-        common.error('invalid-request_body=>invalid_json');
-        return false;
-      }
-    } else {
-      return worker;
-    }
+    return worker;
 
   }
 

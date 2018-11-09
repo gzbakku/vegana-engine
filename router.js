@@ -15,7 +15,8 @@ let active = {
 let built = {
   page:[],
   cont:[],
-  panel:[]
+  panel:[],
+  tab:[]
 };
 
 let route = {
@@ -26,7 +27,8 @@ let route = {
 
 let track = {
   cont:{},
-  panel:{}
+  panel:{},
+  tabs:{}
 };
 
 module.exports= {

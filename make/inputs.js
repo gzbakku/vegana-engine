@@ -101,8 +101,12 @@ module.exports = {
       inputObject.value = options.value;
     }
     if(options.function){
-      inputObject.oninput = options.function;
+      //inputObject.oninput = options.function;
+      inputObject.addEventListener('input',()=>{
+        options.function(inputId);
+      });
     }
+
 
     get.appendChild(inputObject);
     return inputId;

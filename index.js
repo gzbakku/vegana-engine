@@ -10,10 +10,12 @@ const get = require('./get');
 const wet = require('./wet');
 const validate = require('./validate');
 const set = require('./set');
+const add = require('./add');
 
 //common.tell('one');
 
 module.exports = {
+  add:add.init,
   binder:binder,
   make:make,
   view:view,
