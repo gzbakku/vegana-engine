@@ -4,7 +4,7 @@ const inputsImport = require('./make/inputs');
 const tableImport = require('./make/table');
 const listImport = require('./make/list');
 const customImport = require('./make/custom');
-const tabsImport = require('./make/tabs').init;
+const tabsImport = require('./make/tabs');
 
 module.exports = {
 
@@ -26,6 +26,7 @@ module.exports = {
   select:inputsImport.select,
   input:inputsImport.input,
   button:inputsImport.button,
+  enableButton:inputsImport.enableButton,
 
   //table
   table:tableImport.table,

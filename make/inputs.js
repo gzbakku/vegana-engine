@@ -143,14 +143,31 @@ module.exports = {
     if(options.class){
       buttonObject.className = options.class;
     }
+    if(options.disabled){
+      if(options.disabled == true){
+        buttonObject.disabled = true;
+      }
+    }
     buttonObject.innerHTML = options.value;
     get.appendChild(buttonObject);
 
     if(options.function){
-      buttonObject.addEventListener('click',options.function);
+      buttonObject.onclick = options.function;
     }
 
     return buttonId;
+
+  },
+
+  enableButton : function(buttonId){
+
+    let get = document.getElementById(buttonId);
+    if(get == null){
+      return common.error('not-found/invalid-buttonId');
+    } else {
+      get.disabled = false;
+      return true;
+    }
 
   }
 

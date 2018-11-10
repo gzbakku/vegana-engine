@@ -89,7 +89,7 @@ function toWorker(app,type){
   if(built[type].indexOf(toId) < 0){
 
     common.tell('initiating app',log);
-    view.loader[type].start();
+    //view.loader[type].start();
 
     //hide the current app
     if(type == 'page'){

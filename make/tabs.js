@@ -2,20 +2,22 @@ const common = require('../common');
 const checkBaseOptions = require('./check').check;
 const view = require('../view');
 const router = require('../router');
-const log = true;
+const log = false;
 const viewers = require('./viewers');
 let gets = require('../get');
 
+const make = require('./tabs/make');
+const reduce = require('./tabs/reduce');
+
 module.exports = {
 
-  init : function(options){
+  comp : function(options){
 
-    common.tell('+++ tabs',log);
+    common.tell('+++ making comp tabs',log);
 
     /*
       {
-        id:id,
-        parent:parent,
+        ..
         tabsContClass:tabsCont,
         linksContClass:linksCont,
           tabClass:idleTab,
@@ -36,6 +38,15 @@ module.exports = {
     if(!options.tabs || !options.tabs.length || options.tabs.length == 0){
       return common.error('not_found-tabs');
     }
+    if(!options.tabClass){
+      options.tabClass = null;
+    }
+    if(!options.activeTabClass){
+      options.activeTabClass = null;
+    }
+    if(!options.navButtonClass){
+      options.navButtonClass = null;
+    }
 
     //check parent
     let get = document.getElementById(options.parent);
@@ -44,202 +55,155 @@ module.exports = {
     }
 
     //make tabsCont
-    let tabsContId = options.parent + '-tabs-cont-' + options.id;
-    let tabsCont = document.createElement('div');
-    tabsCont.id = tabsContId;
-    if(options.tabsContClass){
-      tabsCont.className = options.tabsContClass;
-    }
-    get.appendChild(tabsCont);
+    let tabsCont = make.cont(
+      options.parent,
+      'tabs',
+      options.tabsContClass
+    );
 
     //make linksCont
-    let linksContId = tabsContId + '-links-cont';
-    let linksCont = document.createElement('div');
-    linksCont.id = linksContId;
-    if(options.linksContClass){
-      linksCont.className = options.linksContClass;
-    }
-    tabsCont.appendChild(linksCont);
+    let linksCont = make.cont(
+      tabsCont,
+      'links',
+      options.linksContClass
+    );
 
-    //make viewerCont
-    let moduleContId = tabsContId + '-viewer-cont';
-    let moduleCont = document.createElement('div');
-    moduleCont.id = moduleContId;
-    if(options.moduleContClass){
-      moduleCont.className = options.moduleContClass;
-    }
-    tabsCont.appendChild(moduleCont);
-
-    let tabs = options.tabs;
-    let activated = false;
-
-    for(var i=0;i<tabs.length;i++){
-
-      let tab = tabs[i];
-
-      if(
-        tab.hasOwnProperty('value') == true &&
-        tab.hasOwnProperty('module') == true
-      ){
-        //make tab object here
-        let tabId = linksContId + '-tab-' + tab.value.toLowerCase();
-        let tabRef = moduleContId + tab.module.ref;
-        let tabObject = document.createElement('div');
-        tabObject.id = tabId;
-        tabObject.innerHTML = tab.value;
-        if(options.tabClass){
-          tabObject.className = options.tabClass;
-        }
-        tabObject.style.float = 'left';
-        if(gets.body.width > 640 && options.tabs.length <= 6){
-          tabObject.style.width = 'auto';
-        }
-        linksCont.appendChild(tabObject);
-
-        //set tab class here
-        if(tab.active){
-          if(tab.active == true){
-            //set tab router track tab here
-            activated = true;
-            //set active tab class here
-            if(options.activeTabClass){
-              viewers.addClass({id:tabId,parent:'any',class:options.activeTabClass});
-            }
-            //init the tab module
-            router.track.tabs[tabsContId] = {module:tabRef,tab:tabId};
-            router.built.tab.push(tabRef);
-            tab.module.init(moduleContId);
-          }
-        }
-
-        if(gets.body.width() <= 640){
-          tabObject.style.width = '26.66%';
-        }
-        if(gets.body.width() <= 480){
-          tabObject.style.width = '40%';
-        }
-
-        //set tab function here
-        tabObject.addEventListener('click',()=>{
-
-          //check for active tab
-          if(router.track.tabs[tabsContId]['tab'] == tabId){
-            return true;
-          }
-
-          //remove active class from active tab
-          let activeTab = router.track.tabs[tabsContId]['tab'];
-          if(options.activeTabClass){
-            viewers.removeClass({id:activeTab,parent:'any',class:options.activeTabClass});
-            viewers.addClass({id:tabId,parent:'any',class:options.activeTabClass});
-          }
-
-          //hide the active tab
-          view.hide(router.track.tabs[tabsContId].module);
-
-          //check if tab was buolt previously
-          if(router.built.tab.indexOf(tabRef) >= 0){
-            router.track.tabs[tabsContId]['module'] = tabRef;
-            router.track.tabs[tabsContId]['tab'] = tabId;
-            view.show(tabRef);
-            return true;
-          } else {
-            tab.module.init(moduleContId);
-          }
-
-          //set comp router tags
-          router.track.tabs[tabsContId] = {module:tabRef,tab:tabId};
-          router.built.tab.push(tabRef);
-
-        });
-
-        //add tab to linsk cont here
+    //make moduleCont
+    let moduleCont = make.cont(
+      tabsCont,
+      'module',
+      options.moduleContClass
+    );
 
 
-      }
-    }
-    //for loop ends here
+    function clickFunction(id,mod){
 
-    let nodes = linksCont.childNodes;
-    let lastNode = nodes[nodes.length - 1];
-
-    //left button
-    let leftButton = document.createElement('div');
-    leftButton.id = linksContId + '-button-left';
-    leftButton.style.float = 'left';
-    leftButton.style.width = '10%';
-    if(options.navButtonClass){
-      leftButton.className = options.navButtonClass;
-    }
-    if(gets.body.width() > 640){
-      leftButton.style.display = 'none';
-    }
-    leftButton.innerHTML = '<i class="material-icons">keyboard_arrow_left</i>';
-    linksCont.insertBefore(leftButton,nodes[0]);
-
-    //right button
-    let rightButton = document.createElement('div');
-    rightButton.id = linksContId + '-button-right';
-    rightButton.style.float = 'left';
-    rightButton.style.width = '10%';
-    if(options.navButtonClass){
-      rightButton.className = options.navButtonClass;
-    }
-    if(gets.body.width() > 640){
-      rightButton.style.display = 'none';
-    }
-    rightButton.innerHTML = '<i class="material-icons">keyboard_arrow_right</i>';
-    linksCont.appendChild(rightButton);
-
-    console.log(linksCont.offsetHeight);
-
-    //display
-    if(linksCont.scrollHeight > 50){
-
-      console.log('reducing tabs');
-
-      rightButton.style.display = 'block';
-      leftButton.style.display = 'block';
-
-      //while loop counter
-      let count = 2;
-
-      //remove the excess tabs
-      while(linksCont.scrollHeight > 50 && count <= 10){
-        let hideThisTab = nodes[nodes.length - count];
-        view.hide(hideThisTab.id);
-        count++;
+      //check for active tab
+      if(router.track.tabs[tabsCont]['tab'] == id){
+        return true;
       }
 
-      let firstTabIndex = 1;
-      let nextTabIndex = nodes.length - count + 1;
+      let tabRef = moduleCont + mod.ref;
 
-      rightButton.addEventListener('click',()=>{
-        if(nextTabIndex < nodes.length - 1){
-          tabSlide(nodes[firstTabIndex].id,nodes[nextTabIndex].id);
-          firstTabIndex++,nextTabIndex++;
-        }
-      });
+      //remove active class from active tab
+      let activeTab = router.track.tabs[tabsCont]['tab'];
+      if(options.activeTabClass){
+        viewers.removeClass({id:activeTab,parent:'any',class:options.activeTabClass});
+        viewers.addClass({id:id,parent:'any',class:options.activeTabClass});
+      }
 
-      leftButton.addEventListener('click',()=>{
-        if(firstTabIndex >= 2){
-          firstTabIndex--,nextTabIndex--;
-          tabSlide(nodes[nextTabIndex].id,nodes[firstTabIndex].id);
-        }
-      });
+      //hide the active tab
+      view.hide(router.track.tabs[tabsCont].module);
+
+      //check if tab was buolt previously
+      if(router.built.tab.indexOf(tabRef) >= 0){
+        router.track.tabs[tabsCont] = {module:tabRef,tab:id};
+        view.show(tabRef);
+        return true;
+      } else {
+        mod.init(moduleCont);
+      }
+
+      //set comp router tags
+      router.track.tabs[tabsCont] = {module:tabRef,tab:id};
+      router.built.tab.push(tabRef);
 
     }
 
-    function tabSlide(hide,show){
-      view.hide(hide);
-      view.show(show);
+    function activeFunction(id,mod){
+      router.track.tabs[tabsCont] = {module:moduleCont + mod.ref,tab:id};
+      router.built.tab.push(moduleCont + mod.ref);
+      mod.init(moduleCont);
     }
 
-    if(activated == false){
-      return common.error('no_found-active_tab');
-    } else {
-      return tabsContId;
+    let makeTabs = make.tabs(
+      linksCont,
+      options.tabs,
+      clickFunction,
+      activeFunction,
+      options.tabClass,
+      options.activeTabClass
+    );
+
+    let doReduce = reduce(
+      linksCont,
+      options.navButtonClass
+    );
+
+    console.log(doReduce);
+
+    return true;
+
+
+  },
+
+  panel : function(options){
+
+    common.tell('+++ making panel tabs',log);
+
+    //sec checks
+    let check = checkBaseOptions(options);
+    if(check == false){
+      return common.error('invalid_options');
     }
+    if(!options.tabs || !options.tabs.length || options.tabs.length == 0){
+      return common.error('not_found-tabs');
+    }
+    if(!options.tabClass){
+      options.tabClass = null;
+    }
+    if(!options.activeTabClass){
+      options.activeTabClass = null;
+    }
+    if(!options.navButtonClass){
+      options.navButtonClass = null;
+    }
+
+    //check parent
+    let get = document.getElementById(options.parent);
+    if(get == null){
+      return common.error('invalid_parent : ' + options);
+    }
+
+    //make tabsCont
+    let tabsCont = make.cont(
+      options.parent,
+      'tabs',
+      options.linksContClass
+    );
+
+    function clickFunction(id,mod){
+      //remove active class from active tab
+      let activeTab = router.track.tabs[tabsCont]['tab'];
+      if(options.activeTabClass){
+        let remove = viewers.removeClass({id:activeTab,parent:'any',class:options.activeTabClass});
+        viewers.addClass({id:id,parent:'any',class:options.activeTabClass});
+      }
+      router.track.tabs[tabsCont] = {module:tabsCont + mod.ref,tab:id};
+      engine.router.navigate.to.panel(mod);
+    }
+
+    function activeFunction(id,mod){
+      router.track.tabs[tabsCont] = {module:tabsCont + mod.ref,tab:id};
+      router.built.tab.push(tabsCont + mod.ref);
+    }
+
+    //make tabs
+    let makeTabs = make.tabs(
+      tabsCont,
+      options.tabs,
+      clickFunction,
+      activeFunction,
+      options.tabClass,
+      options.activeTabClass
+    );
+
+    let doReduce = reduce(
+      tabsCont,
+      options.navButtonClass
+    );
+
+    return true;
 
   }
 
