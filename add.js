@@ -3,17 +3,39 @@ const log = false;
 
 module.exports = {
 
-  init : function(key,func){
-    common.tell('adding a function to the global engine set',log);
-    if(typeof(key) !== 'string'){
+  object : function(key,object){
+    common.tell('adding global function',log);
+    if(!key){
       return common.error('not_found-key');
     }
-    if(typeof(func) !== 'function'){
+    if(!object){
+      return common.error('not_found-object');
+    }
+    engine['global']['object'][key] = object;
+    return true;
+  },
+
+  function : function(key,func){
+    common.tell('adding global function',log);
+    if(!key){
+      return common.error('not_found-key');
+    }
+    if(!func){
       return common.error('not_found-func');
     }
-    if(!window[key]){
-      window.engine[key] = func;
+    engine['global']['function'][key] = func;
+    return true;
+  },
+
+  comp : function(key,mod){
+    common.tell('adding global comp',log);
+    if(!key){
+      return common.error('not_found-key');
     }
+    if(!mod){
+      return common.error('not_found-module');
+    }
+    engine['global']['comp'][key] = mod;
     return true;
   }
 

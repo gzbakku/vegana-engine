@@ -1,3 +1,5 @@
+"use strict"
+
 const common = require('../../common');
 const checkBaseOptions = require('../check').check;
 const view = require('../../view');
@@ -8,7 +10,7 @@ const viewers = require('../viewers');
 
 module.exports = {
 
-  tabs : function(parent,tabs,clickFunction,activeFunction,idleClass,activeClass){
+  tabs : function(parent,moduleCont,tabs,clickFunction,activeFunction,idleClass,activeClass){
 
     common.tell('+++ making tabs',log);
 
@@ -17,9 +19,9 @@ module.exports = {
       return common.error('invalid_parent');
     }
 
-    for(var i=0;i<tabs.length;i++){
+    for(var j=0;j<tabs.length;j++){
 
-      let tab = tabs[i];
+      let tab = tabs[j];
 
       if(
         tab.hasOwnProperty('value') == true &&
@@ -42,15 +44,23 @@ module.exports = {
 
         get.appendChild(tabObject);
 
+        let tabRef = parent + tab.module.ref;
+
         //set active tab class here
         if(tab.active){
           if(tab.active == true){
+
+            //set router tabs track catalog here
+            router.track.tabs[parent] = {module:tabRef,tab:tabId};
+            router.built.tab.push(tabRef);
+
             if(activeClass){
               viewers.addClass({id:tabId,parent:'any',class:activeClass});
             }
             if(activeFunction){
               activeFunction(tabId,tab.module);
             }
+
           }
         }
 
@@ -65,7 +75,41 @@ module.exports = {
         //set tab function here
         if(clickFunction){
           tabObject.addEventListener('click',()=>{
+
+            //check for active tab
+            if(router.track.tabs[parent]['tab'] == tabId){
+              return true;
+            }
+
+            //remove active class from active tab
+            let activeTab = router.track.tabs[parent]['tab'];
+            if(activeClass){
+              viewers.removeClass({id:activeTab,parent:'any',class:activeClass});
+              viewers.addClass({id:tabId,parent:'any',class:activeClass});
+            }
+
+            //hide the active tab
+            if(moduleCont){
+
+              view.hide(router.track.tabs[parent].module);
+
+              //check if tab was buolt previously
+              if(router.built.tab.indexOf(tabRef) >= 0){
+                router.track.tabs[parent] = {module:tabRef,tab:tabId};
+                view.show(tabRef);
+                return true;
+              } else {
+                tab.module.init(moduleCont);
+              }
+
+            }
+
             clickFunction(tabId,tab.module);
+
+            //set comp router tags
+            router.track.tabs[parent] = {module:tabRef,tab:tabId};
+            router.built.tab.push(tabRef);
+
           });
         }
 

@@ -1,70 +1,59 @@
 const common = require('../common');
 const log = false;
 
+function build(parent,type,mod){
+
+  common.tell('building router',log);
+
+  //check parent
+  let get = document.getElementById(parent);
+  if(get == null){
+    return common.error('invalid_parent : ' + parent);
+  }
+
+  //make router
+  let router = document.createElement("div");
+
+  if(type == 'comp'){
+    router.id = parent + '-router-' + engine.uniqid() + '-' + type;
+  } else {
+    router.id = parent + '-router-' + type;
+  }
+
+  let routerApp = require('../router');
+
+  //append router
+  get.appendChild(router);
+  if(mod && type == 'comp'){
+    routerApp.track.comp[router.id] = router.id + mod.ref;
+    routerApp.built.comp.push(router.id + mod.ref);
+    mod.init(router.id);
+  }
+  return router.id;
+
+}
+
 module.exports = {
 
   conts : function(parent){
-
-    common.tell('initiating conts router',log);
-
     if(parent == null){
       return common.error('no_parent_found : ' + parent);
     }
-
-    //check parent
-    let get = document.getElementById(parent);
-    if(get == null){
-      return common.error('invalid_parent : ' + parent);
-    }
-
-    //make router
-    let router = document.createElement("div");
-    router.id = parent + '-router-cont';
-    router.className = 'cont-router';
-
-    //make loader
-    let loader = document.createElement("div");
-    loader.id = parent + '-loader-cont';
-    loader.innerHtml = 'loading cont ...';
-    loader.style.display = 'none';
-    loader.className = 'cont-loader';
-
-    get.appendChild(router);
-    get.appendChild(loader);
-    return parent + '-router-cont';
-
+    return build(parent,'cont');
   },
 
   panels : function(parent){
-
-    common.tell('initiating panels router',log);
-
     if(parent == null){
       return common.error('no_parent_found : ' + parent);
     }
+    return build(parent,'panel');
+  },
 
-    //check parent
-    let get = document.getElementById(parent);
-    if(get == null){
-      return common.error('invalid_parent : ' + parent);
+  comps : function(parent,mod){
+    if(parent == null){
+      return common.error('no_parent_found : ' + parent);
     }
-
-    //make element
-    let router = document.createElement("div");
-    router.id = parent + '-router-panel';
-    router.className = 'panel-router';
-
-    let loader = document.createElement("div");
-    loader.id = parent + '-loader-panel';
-    loader.innerHtml = 'loading panel ...';
-    loader.style.display = 'none';
-    loader.className = 'panel-loader';
-
-    get.appendChild(router);
-    get.appendChild(loader);
-
-    return parent + '-router-panel';
-
+    return build(parent,'comp',mod);
   }
 
 };

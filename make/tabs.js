@@ -1,3 +1,5 @@
+"use strict";
+
 const common = require('../common');
 const checkBaseOptions = require('./check').check;
 const view = require('../view');
@@ -9,201 +11,157 @@ let gets = require('../get');
 const make = require('./tabs/make');
 const reduce = require('./tabs/reduce');
 
-module.exports = {
+//input object sample
+/*
+  {
+    id:id,
+    parent:'parent',
+    tabsContClass:tabsCont,
+    linksContClass:linksCont,
+      tabClass:idleTab,
+      activeTabClass:activeTab,
+      navButtonClass:navButton,
+    moduleContClass:viewerCont,
+    tabs:[
+      {value:value0,module,module0,active:true},
+      {value:value1,module,module1}
+    ]
+  }
+*/
 
-  comp : function(options){
+function build(type,options,clickFunction,activeFunction){
 
-    common.tell('+++ making comp tabs',log);
+  common.tell('+++ initiating tabs build',log);
 
-    /*
-      {
-        ..
-        tabsContClass:tabsCont,
-        linksContClass:linksCont,
-          tabClass:idleTab,
-          activeTabClass:activeTab,
-          navButtonClass:navButton,
-        moduleContClass:viewerCont,
-        tabs:[
-          {value:value0,module,module0,active:true},
-          {value:value1,module,module1}
-        ]
-      }
-    */
+  let check = checkBaseOptions(options);
+  if(check == false){
+    return common.error('invalid_options');
+  }
+  if(!options.tabs || !options.tabs.length || options.tabs.length == 0){
+    return common.error('not_found-tabs');
+  }
+  if(!options.tabClass){
+    options.tabClass = null;
+  }
+  if(!options.activeTabClass){
+    options.activeTabClass = null;
+  }
+  if(!options.navButtonClass){
+    options.navButtonClass = null;
+  }
 
-    let check = checkBaseOptions(options);
-    if(check == false){
-      return common.error('invalid_options');
-    }
-    if(!options.tabs || !options.tabs.length || options.tabs.length == 0){
-      return common.error('not_found-tabs');
-    }
-    if(!options.tabClass){
-      options.tabClass = null;
-    }
-    if(!options.activeTabClass){
-      options.activeTabClass = null;
-    }
-    if(!options.navButtonClass){
-      options.navButtonClass = null;
-    }
+  //check parent
+  let get = document.getElementById(options.parent);
+  if(get == null){
+    return common.error('invalid_parent : ' + options);
+  }
 
-    //check parent
-    let get = document.getElementById(options.parent);
-    if(get == null){
-      return common.error('invalid_parent : ' + options);
-    }
+  //make tabsCont
+  let tabsCont = make.cont(
+    options.parent,
+    'tabs',
+    options.tabsContClass
+  );
 
-    //make tabsCont
-    let tabsCont = make.cont(
-      options.parent,
-      'tabs',
-      options.tabsContClass
-    );
+  let parentButtonCont = tabsCont;
+  let parentModuleCont = null;
 
+  //only make these conts for comp tabs routing
+  if(type == 'comp'){
     //make linksCont
     let linksCont = make.cont(
       tabsCont,
       'links',
       options.linksContClass
     );
-
+    parentButtonCont = linksCont;
     //make moduleCont
     let moduleCont = make.cont(
       tabsCont,
       'module',
       options.moduleContClass
     );
+    parentModuleCont = moduleCont;
+  }
 
+  let makeTabs = make.tabs(
+    parentButtonCont,
+    parentModuleCont,
+    options.tabs,
+    clickFunction,
+    activeFunction,
+    options.tabClass,
+    options.activeTabClass
+  );
+
+  let doReduce = reduce(
+    parentButtonCont,
+    options.navButtonClass
+  );
+
+  return true;
+
+}
+
+module.exports = {
+
+  comp : function(options){
+
+    common.tell('+++ initiating make comp tabs',log);
 
     function clickFunction(id,mod){
-
-      //check for active tab
-      if(router.track.tabs[tabsCont]['tab'] == id){
-        return true;
-      }
-
-      let tabRef = moduleCont + mod.ref;
-
-      //remove active class from active tab
-      let activeTab = router.track.tabs[tabsCont]['tab'];
-      if(options.activeTabClass){
-        viewers.removeClass({id:activeTab,parent:'any',class:options.activeTabClass});
-        viewers.addClass({id:id,parent:'any',class:options.activeTabClass});
-      }
-
-      //hide the active tab
-      view.hide(router.track.tabs[tabsCont].module);
-
-      //check if tab was buolt previously
-      if(router.built.tab.indexOf(tabRef) >= 0){
-        router.track.tabs[tabsCont] = {module:tabRef,tab:id};
-        view.show(tabRef);
-        return true;
-      } else {
-        mod.init(moduleCont);
-      }
-
-      //set comp router tags
-      router.track.tabs[tabsCont] = {module:tabRef,tab:id};
-      router.built.tab.push(tabRef);
-
+      return true;
     }
 
     function activeFunction(id,mod){
-      router.track.tabs[tabsCont] = {module:moduleCont + mod.ref,tab:id};
-      router.built.tab.push(moduleCont + mod.ref);
       mod.init(moduleCont);
     }
 
-    let makeTabs = make.tabs(
-      linksCont,
-      options.tabs,
-      clickFunction,
-      activeFunction,
-      options.tabClass,
-      options.activeTabClass
-    );
-
-    let doReduce = reduce(
-      linksCont,
-      options.navButtonClass
-    );
-
-    console.log(doReduce);
-
-    return true;
-
+    return build('comp',options,clickFunction,activeFunction);
 
   },
 
   panel : function(options){
 
-    common.tell('+++ making panel tabs',log);
-
-    //sec checks
-    let check = checkBaseOptions(options);
-    if(check == false){
-      return common.error('invalid_options');
-    }
-    if(!options.tabs || !options.tabs.length || options.tabs.length == 0){
-      return common.error('not_found-tabs');
-    }
-    if(!options.tabClass){
-      options.tabClass = null;
-    }
-    if(!options.activeTabClass){
-      options.activeTabClass = null;
-    }
-    if(!options.navButtonClass){
-      options.navButtonClass = null;
-    }
-
-    //check parent
-    let get = document.getElementById(options.parent);
-    if(get == null){
-      return common.error('invalid_parent : ' + options);
-    }
-
-    //make tabsCont
-    let tabsCont = make.cont(
-      options.parent,
-      'tabs',
-      options.linksContClass
-    );
+    common.tell('+++ initiating make panel tabs',log);
 
     function clickFunction(id,mod){
-      //remove active class from active tab
-      let activeTab = router.track.tabs[tabsCont]['tab'];
-      if(options.activeTabClass){
-        let remove = viewers.removeClass({id:activeTab,parent:'any',class:options.activeTabClass});
-        viewers.addClass({id:id,parent:'any',class:options.activeTabClass});
-      }
-      router.track.tabs[tabsCont] = {module:tabsCont + mod.ref,tab:id};
       engine.router.navigate.to.panel(mod);
     }
 
     function activeFunction(id,mod){
-      router.track.tabs[tabsCont] = {module:tabsCont + mod.ref,tab:id};
-      router.built.tab.push(tabsCont + mod.ref);
+      mod.init(router.track.cont[router.active.page]);
     }
 
-    //make tabs
-    let makeTabs = make.tabs(
-      tabsCont,
-      options.tabs,
-      clickFunction,
-      activeFunction,
-      options.tabClass,
-      options.activeTabClass
-    );
+    return build('panel',options,clickFunction,activeFunction);
 
-    let doReduce = reduce(
-      tabsCont,
-      options.navButtonClass
-    );
+  },
 
-    return true;
+  cont : function(options){
+
+    common.tell('+++ making cont tabs',log);
+
+    function clickFunction(id,mod){
+
+      //remove active class from active tab
+      let activeTab = router.track.tabs[parent]['tab'];
+      if(options.activeTabClass){
+        let remove = viewers.removeClass({id:activeTab,parent:'any',class:options.activeTabClass});
+        viewers.addClass({id:id,parent:'any',class:options.activeTabClass});
+      }
+
+      router.track.tabs[parent] = {module:parent + mod.ref,tab:id};
+      engine.router.navigate.to.cont(mod);
+
+    }
+
+    function activeFunction(id,mod){
+      mod.init(router.active.page);
+      router.track.tabs[parent] = {module:parent + mod.ref,tab:id};
+      router.built.tab.push(parent + mod.ref);
+    }
+
+    return build('cont',options,clickFunction,activeFunction);
 
   }
 

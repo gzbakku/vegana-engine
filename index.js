@@ -11,11 +11,13 @@ const wet = require('./wet');
 const validate = require('./validate');
 const set = require('./set');
 const add = require('./add');
+const md5 = require('md5');
+const uniqid = require('uniqid');
 
 //common.tell('one');
 
 module.exports = {
-  add:add.init,
+  add:add,
   binder:binder,
   make:make,
   view:view,
@@ -27,5 +29,12 @@ module.exports = {
   validate:validate,
   get:get,
   wet:wet,
-  set:set
+  set:set,
+  global:{
+    function:{},
+    comp:{},
+    object:{}
+  },
+  md5:md5,
+  uniqid:uniqid
 };

@@ -1,6 +1,6 @@
 {
   "name": "vegana-engine",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "vengana workers provide routing view binder and make tools for making a vegana project",
   "main": "index.js",
   "scripts": {
@@ -12,5 +12,9 @@
     "vegana-engine"
   ],
   "author": "akku",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "md5": "^2.2.1",
+    "uniqid": "^5.0.3"
+  }
 }

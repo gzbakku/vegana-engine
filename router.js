@@ -16,19 +16,17 @@ let built = {
   page:[],
   cont:[],
   panel:[],
-  tab:[]
+  tab:[],
+  comp:[]
 };
 
-let route = {
-  page:[],
-  cont:[],
-  panel:[]
-};
+let route = [];
 
 let track = {
   cont:{},
   panel:{},
-  tabs:{}
+  tabs:{},
+  comp:{}
 };
 
 module.exports= {
@@ -40,29 +38,9 @@ module.exports= {
   track:track,
 
   //functions
-
-  get : {
-    pageModule : getWorker.pageModule,
-    contModule : getWorker.contModule,
-    panelModule : getWorker.panelModule,
-    baseHref : getWorker.panelModule
-  },
-
-  set : {
-    pageModule : setWorker.pageModule,
-    contModule : setWorker.contModule,
-    panelModule : setWorker.panelModule,
-    baseHref : setWorker.baseHref
-  },
-
-  navigate : {
-    to : navWorker.to,
-    new: navWorker.new
-  },
-
-  init : {
-    conts : initWorker.conts,
-    panels : initWorker.panels
-  }
+  get : getWorker,
+  set : setWorker,
+  navigate : navWorker,
+  init : initWorker
 
 };
