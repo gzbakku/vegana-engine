@@ -19,6 +19,8 @@ module.exports = {
       body:JSON.stringify(options.body)
     };
 
+    common.tell('build configured',log);
+
     if(options.method){
       build['method'] = options.method;
     }
@@ -39,14 +41,38 @@ module.exports = {
       }
     }
 
+    function reponseProcessor(str){
+      try {
+        /*
+        let object = JSON.parse(str);
+        if(typeof(object) == 'object'){
+            return object;
+        } else {
+          return str;
+        }
+        */
+        return str.json();
+      } catch (err) {
+        return str;
+      }
+    }
+
     let worker = await fetch(options.url,build)
     .then((response)=>{
-      let data = response.json();
-      return data;
+      //console.log(response);
+      if(typeof(response) == 'string'){
+        return reponseProcessor(response);
+      } else {
+        let data = response.json();
+        return data;
+      }
     })
     .catch((error)=>{
-      return common.error(error);
+      common.error('request_error : ' + error);
+      return common.error('failed-request');
     });
+
+    common.tell('worker called',log);
 
     return worker;
 

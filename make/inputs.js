@@ -37,24 +37,36 @@ module.exports = {
     selectObject.id = selectId;
     if(options.class){
       selectObject.className = options.class;
+    } else {
+      selectObject.className = 'form-select';
     }
 
     //add options
     for(var i=0;i<options.options.length;i++){
       let data = options.options[i];
-      if(data.text && data.value){
+      if(data.text && data.value !== 'undefined'){
         let option = document.createElement("option");
         option.text = data.text;
         option.value = data.value;
         if(data.class){
           option.className = data.class;
+        } else {
+          option.className = 'form-select-item';
+        }
+        if(options.value !== undefined){
+          if(options.value == data.value){
+            option.selected = true;
+          }
         }
         selectObject.add(option);
       }
     }
 
     if(options.function){
-      selectObject.oninput = options.function;
+      //selectObject.oninput = options.function;
+      selectObject.addEventListener('click',()=>{
+        options.function(selectObject.id);
+      });
     }
 
     //append select
@@ -91,6 +103,8 @@ module.exports = {
     inputObject.id = inputId;
     if(options.class){
       inputObject.className = options.class;
+    } else {
+      inputObject.className = 'form-input';
     }
     inputObject.type = options.type;
 
@@ -110,6 +124,42 @@ module.exports = {
 
     get.appendChild(inputObject);
     return inputId;
+
+  },
+
+  textarea : function(options){
+
+    //checks
+    let check = checkBaseOptions(options);
+    if(check == false){
+      return common.error('invalid_options : ' + options);
+    }
+
+    //get parent
+    let get = document.getElementById(options.parent);
+    if(get == null){
+      return common.error('invalid_parent : ' + options);
+    }
+
+    //make oject
+    let object = document.createElement('textarea');
+
+    object.id = options.parent + '-textarea-' + options.id;
+
+    //set object properties
+    if(options.class){
+      object.className = options.class;
+    }
+    if(options.placeholder){
+      object.placeholder = options.placeholder;
+    }
+    if(options.rows){
+      object.rows = options.rows;
+    }
+
+    //apend object and return
+    get.appendChild(object);
+    return object.id;
 
   },
 
@@ -142,6 +192,8 @@ module.exports = {
     buttonObject.id = buttonId;
     if(options.class){
       buttonObject.className = options.class;
+    } else {
+      buttonObject.className = 'form-button';
     }
     if(options.disabled){
       if(options.disabled == true){
@@ -152,7 +204,13 @@ module.exports = {
     get.appendChild(buttonObject);
 
     if(options.function){
-      buttonObject.onclick = options.function;
+      buttonObject.addEventListener('click',()=>{
+        if(options.functionData){
+          options.function(buttonObject.id,options.functionData);
+        } else {
+          options.function();
+        }
+      });
     }
 
     return buttonId;

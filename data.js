@@ -8,7 +8,10 @@ module.exports = {
     if(typeof(tag) !== 'string'){
       return common.error('invalid_tag');
     }
-    
+    if(!where){
+      where = 'mem';
+    }
+
     if(where == 'mem'){
       if(db.hasOwnProperty(tag) == false){
         return null;
@@ -31,13 +34,6 @@ module.exports = {
       }
     }
 
-    //if where is not defined
-    if(db.hasOwnProperty(tag) == true){
-      return db[tag];
-    } else {
-      return null;
-    }
-
   },
 
   set : function(tag,value,where){
@@ -45,8 +41,14 @@ module.exports = {
     if(typeof(tag) !== 'string'){
       return common.error('invalid_tag');
     }
+    if(!where){
+      where = 'mem';
+    }
+    if(typeof(value) == 'object'){
+      value = JSON.stringify(value);
+    }
     if(typeof(value) !== 'string'){
-      return common.error('invalid_value');
+      value = value.toString();
     }
 
     if(where == 'mem'){
@@ -74,12 +76,34 @@ module.exports = {
       }
     }
 
-    //if where is not defined check mem db
-    if(!db[tag]){
+  },
+
+  reset : function(tag,value,where){
+
+    if(typeof(tag) !== 'string'){
+      return common.error('invalid_tag');
+    }
+    if(!where){
+      where = 'mem';
+    }
+    if(typeof(value) == 'object'){
+      value = JSON.stringify(value);
+    }
+    if(typeof(value) !== 'string'){
+      value = value.toString();
+    }
+
+    if(where == 'mem'){
       db[tag] = value;
       return true;
-    } else {
-      return false;
+    }
+    if(where == 'session'){
+      sessionStorage.setItem(tag,value);
+      return true;
+    }
+    if(where == 'local'){
+      localStorage.setItem(tag,value);
+      return true;
     }
 
   }

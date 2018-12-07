@@ -1,7 +1,7 @@
 const common = require('../common');
 const log = false;
 
-function toWorker(app,type,reset,routerId){
+function toWorker(app,type,reset,routerId,data){
 
   //other modules
   let router = require('../router');
@@ -47,23 +47,9 @@ function toWorker(app,type,reset,routerId){
 
   if(reset == true){
     if(document.getElementById(toId)){
-
-      //delete the toId div
-      if(type == 'page'){
-        document.getElementById(active[type]).remove();
-      } else if(type == 'cont'){
-        document.getElementById(track.cont[active.page]).remove();
-      } else if(type == 'panel'){
-        let active_cont = track.cont[active.page];
-        document.getElementById(track.panel[active_cont]).remove();
-      } else if(type == 'comp'){
-        document.getElementById(track.comp[routerId]).remove();
-      }
-
-      //remove toId from built catalog
-      let toIdPos = built.indexOf(toId);
-      built = built.splice(toIdPos, 1);
-
+      document.getElementById(toId).remove();
+      let toIdPos = built.comp.indexOf(toId);
+      built.comp.splice(toIdPos, 1);
     }
   }
 
@@ -101,13 +87,13 @@ function toWorker(app,type,reset,routerId){
 
     //initiate app
     if(type == 'page'){
-      app.init();
+      app.init(data);
     } else if(type == 'cont'){
-      app.init(active.page);
+      app.init(active.page,data);
     } else if(type == 'panel'){
-      app.init(track.cont[active.page]);
+      app.init(track.cont[active.page],data);
     } else if(type == 'comp'){
-      app.init(routerId);
+      app.init(routerId,data);
     }
 
     built[type].push(toId);   //add appId to built catalog
@@ -122,32 +108,32 @@ function toWorker(app,type,reset,routerId){
 module.exports = {
 
   to : {
-    page : function(app){
-      return toWorker(app,'page');
+    page : function(app,data){
+      return toWorker(app,'page',false,null,data);
     },
-    cont : function(app){
-      return toWorker(app,'cont');
+    cont : function(app,data){
+      return toWorker(app,'cont',false,null,data);
     },
-    panel : function(app){
-      return toWorker(app,'panel');
+    panel : function(app,data){
+      return toWorker(app,'panel',false,null,data);
     },
-    comp : function(app,routerId){
-      return toWorker(app,'comp',false,routerId);
+    comp : function(app,data,routerId){
+      return toWorker(app,'comp',false,routerId,data);
     }
   },
 
   new : {
-    page : function(app){
-      return toWorker(app,'page',true);
+    page : function(app,data){
+      return toWorker(app,'page',true,null,data);
     },
-    cont : function(app){
-      return toWorker(app,'cont',true);
+    cont : function(app,data){
+      return toWorker(app,'cont',true,null,data);
     },
-    panel : function(app){
-      return toWorker(app,'panel',true);
+    panel : function(app,data){
+      return toWorker(app,'panel',true,null,data);
     },
-    comp : function(app,routerId){
-      return toWorker(app,'comp',true,routerId);
+    comp : function(app,data,routerId){
+      return toWorker(app,'comp',true,routerId,data);
     }
   }
 

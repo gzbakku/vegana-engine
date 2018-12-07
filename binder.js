@@ -62,6 +62,52 @@ module.exports= {
       return false;
     }
 
+  },
+
+  value : function(id){
+
+    common.tell('### binding click',log);
+
+    if(id == null){
+      return common.error('no_id_found');
+    }
+
+    let get = document.getElementById(id);
+    if(get == null){
+      return common.error('invalid_id');
+    }
+
+    if(get.value){
+      return get.value;
+    } else if(get.innerHTML){
+      return get.innerHTML;
+    } else {
+      return false;
+    }
+
+  },
+
+  boolean : function(id){
+
+    common.tell('### binding click',log);
+
+    if(id == null){
+      return common.error('no_id_found');
+    }
+
+    let get = document.getElementById(id);
+    if(get == null){
+      return common.error('invalid_id');
+    }
+
+    let value = get.value;
+
+    try{
+      return JSON.parse(value);
+    } catch(err){
+      return null;
+    }
+
   }
 
 };

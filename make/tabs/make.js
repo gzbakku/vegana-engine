@@ -36,6 +36,8 @@ module.exports = {
 
         if(idleClass){
           tabObject.className = idleClass;
+        } else {
+          tabObject.className = 'tab-idle';
         }
 
         if(gets.body.width() > 640 && tabs.length <= 6){
@@ -45,6 +47,10 @@ module.exports = {
         get.appendChild(tabObject);
 
         let tabRef = parent + tab.module.ref;
+        let data = null;
+        if(tab.data){
+          data = tab.data;
+        }
 
         //set active tab class here
         if(tab.active){
@@ -56,9 +62,11 @@ module.exports = {
 
             if(activeClass){
               viewers.addClass({id:tabId,parent:'any',class:activeClass});
+            } else {
+              viewers.addClass({id:tabId,parent:'any',class:'tab-active'});
             }
             if(activeFunction){
-              activeFunction(tabId,tab.module);
+              activeFunction(tabId,tab.module,data,moduleCont);
             }
 
           }
@@ -86,9 +94,13 @@ module.exports = {
             if(activeClass){
               viewers.removeClass({id:activeTab,parent:'any',class:activeClass});
               viewers.addClass({id:tabId,parent:'any',class:activeClass});
+            } else {
+              viewers.removeClass({id:activeTab,parent:'any',class:'tab-active'});
+              viewers.addClass({id:tabId,parent:'any',class:'tab-active'});
             }
 
             //hide the active tab
+            /*
             if(moduleCont){
 
               view.hide(router.track.tabs[parent].module);
@@ -99,12 +111,13 @@ module.exports = {
                 view.show(tabRef);
                 return true;
               } else {
-                tab.module.init(moduleCont);
+                tab.module.init(moduleCont,data);
               }
 
             }
+            */
 
-            clickFunction(tabId,tab.module);
+            clickFunction(tabId,tab.module,data,moduleCont);
 
             //set comp router tags
             router.track.tabs[parent] = {module:tabRef,tab:tabId};

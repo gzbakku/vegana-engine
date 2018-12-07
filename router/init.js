@@ -1,7 +1,7 @@
 const common = require('../common');
 const log = false;
 
-function build(parent,type,mod){
+function build(parent,type,mod,data){
 
   common.tell('building router',log);
 
@@ -27,7 +27,7 @@ function build(parent,type,mod){
   if(mod && type == 'comp'){
     routerApp.track.comp[router.id] = router.id + mod.ref;
     routerApp.built.comp.push(router.id + mod.ref);
-    mod.init(router.id);
+    mod.init(router.id,data);
   }
   return router.id;
 
@@ -49,11 +49,11 @@ module.exports = {
     return build(parent,'panel');
   },
 
-  comps : function(parent,mod){
+  comps : function(parent,mod,data){
     if(parent == null){
       return common.error('no_parent_found : ' + parent);
     }
-    return build(parent,'comp',mod);
+    return build(parent,'comp',mod,data);
   }
 
 };

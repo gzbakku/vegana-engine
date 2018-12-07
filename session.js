@@ -12,18 +12,15 @@ module.exports = {
     }
   },
 
-  start : function(data){
+  start : function(token,user){
     common.tell('starting-session',log);
-    if(typeof(data) !== 'object'){
-      return common.error('invalid_data');
+    if(typeof(user) == 'object'){
+      user = JSON.stringify(user);
     }
-    if(!data.token || !data.uid){
-      return common.error('not_found=>data||token/uid');
-    }
-    sessionStorage.setItem('token',data.token);
-    sessionStorage.setItem('uid',data.uid);
-    this.token = data.token;
-    this.uid = data.uid;
+    sessionStorage.setItem('token',token);
+    sessionStorage.setItem('user',user);
+    this.token = token;
+    this.user = user;
     return true;
   },
 
@@ -35,7 +32,7 @@ module.exports = {
     return true;
   },
 
-  token : null,
-  uid : null
+  token : sessionStorage.getItem('token'),
+  user : sessionStorage.getItem('user')
 
 };

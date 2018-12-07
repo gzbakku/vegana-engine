@@ -17,6 +17,8 @@ module.exports = {
       }
       if(options.hasOwnProperty('class') == true){
         cardObject.className = options.class;
+      } else {
+        cardObject.className = 'card';
       }
 
       //check if the close button is required but header test is not found
@@ -35,6 +37,8 @@ module.exports = {
         cardHeaderObject.id = cardId + '-header';
         if(options.hasOwnProperty('headerClass') == true){
           cardHeaderObject.className = options.headerClass;
+        } else {
+          cardHeaderObject.className = 'card-header';
         }
         cardObject.appendChild(cardHeaderObject);
 
@@ -43,6 +47,8 @@ module.exports = {
         headerTextContObject.id = cardHeaderObject.id + '-cont-text';
         if(options.headerTextContClass){
           headerTextContObject.className = options.headerTextContClass;
+        } else {
+          headerTextContObject.className = 'card-header-text-cont';
         }
         headerTextContObject.innerHTML = options.headerText;
         cardHeaderObject.appendChild(headerTextContObject);
@@ -56,6 +62,8 @@ module.exports = {
             headerActionContObject.id = cardHeaderObject.id + '-cont-action';
             if(options.headerActionContClass){
               headerActionContObject.className = options.headerActionContClass;
+            } else {
+              headerActionContObject.className = 'card-header-action-cont';
             }
             cardHeaderObject.appendChild(headerActionContObject);
 
@@ -63,13 +71,17 @@ module.exports = {
             let closeButtonObject = document.createElement('button');
             if(options.hasOwnProperty('closeButtonClass') == true){
               closeButtonObject.className = options.closeButtonClass;
+            } else {
+              closeButtonObject.className = 'card-header-close-button';
             }
             closeButtonObject.innerHTML = 'close';
             headerActionContObject.appendChild(closeButtonObject);
 
             //check close button function
             if(options.hasOwnProperty('closeButtonFunction') == true){
-              closeButtonObject.addEventListener('click',options.closeButtonFunction);
+              closeButtonObject.addEventListener('click',()=>{
+                options.closeButtonFunction(cardId);
+              });
             }
 
           }

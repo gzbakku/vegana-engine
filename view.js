@@ -23,6 +23,16 @@ function show(id){
   return id;
 }
 
+function remove(id){
+  common.tell('showing div : ' + id,log);
+  let get = document.getElementById(id);
+  if(get == null){
+    return common.error('div_not_found');
+  }
+  get.remove();
+  return true;
+}
+
 module.exports= {
 
   hide : hide,

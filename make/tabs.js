@@ -41,13 +41,25 @@ function build(type,options,clickFunction,activeFunction){
     return common.error('not_found-tabs');
   }
   if(!options.tabClass){
-    options.tabClass = null;
+    options.tabClass = 'tab-idle';
+  }
+  if(!options.tabsContClass){
+    options.tabsContClass = 'tab-cont-main';
   }
   if(!options.activeTabClass){
-    options.activeTabClass = null;
+    options.activeTabClass = 'tab-active';
   }
   if(!options.navButtonClass){
-    options.navButtonClass = null;
+    options.navButtonClass = 'tab-nav';
+  }
+  if(!options.linksContClass){
+    options.linksContClass = 'tab-cont-links';
+  }
+  if(!options.moduleContClass){
+    options.moduleContClass = 'tab-cont-module';
+  }
+  if(!options.navButtonClass){
+    options.navButtonClass = 'tab-nav';
   }
 
   //check parent
@@ -56,31 +68,24 @@ function build(type,options,clickFunction,activeFunction){
     return common.error('invalid_parent : ' + options);
   }
 
+  let parentButtonCont,parentModuleCont = null;
+
   //make tabsCont
   let tabsCont = make.cont(
     options.parent,
     'tabs',
     options.tabsContClass
   );
-
-  let parentButtonCont = tabsCont;
-  let parentModuleCont = null;
+  let linksCont = make.cont(
+    tabsCont,
+    'links',
+    options.linksContClass
+  );
+  parentButtonCont = linksCont;
 
   //only make these conts for comp tabs routing
   if(type == 'comp'){
-    //make linksCont
-    let linksCont = make.cont(
-      tabsCont,
-      'links',
-      options.linksContClass
-    );
-    parentButtonCont = linksCont;
-    //make moduleCont
-    let moduleCont = make.cont(
-      tabsCont,
-      'module',
-      options.moduleContClass
-    );
+    let moduleCont = engine.router.init.comps(tabsCont);
     parentModuleCont = moduleCont;
   }
 
@@ -108,13 +113,15 @@ module.exports = {
   comp : function(options){
 
     common.tell('+++ initiating make comp tabs',log);
-
-    function clickFunction(id,mod){
-      return true;
+    
+    function clickFunction(id,mod,data,router){
+      engine.router.navigate.to.comp(mod,data,router);
     }
 
-    function activeFunction(id,mod){
-      mod.init(moduleCont);
+    function activeFunction(id,mod,data,router){
+      mod.init(router,data);
+      engine.router.track.comp[router] = router + mod.ref;
+      engine.router.built.comp.push(router + mod.ref);
     }
 
     return build('comp',options,clickFunction,activeFunction);
@@ -125,12 +132,12 @@ module.exports = {
 
     common.tell('+++ initiating make panel tabs',log);
 
-    function clickFunction(id,mod){
-      engine.router.navigate.to.panel(mod);
+    function clickFunction(id,mod,data){
+      engine.router.navigate.to.panel(mod,data);
     }
 
-    function activeFunction(id,mod){
-      mod.init(router.track.cont[router.active.page]);
+    function activeFunction(id,mod,data){
+      mod.init(router.track.cont[router.active.page],data);
     }
 
     return build('panel',options,clickFunction,activeFunction);
@@ -141,24 +148,12 @@ module.exports = {
 
     common.tell('+++ making cont tabs',log);
 
-    function clickFunction(id,mod){
-
-      //remove active class from active tab
-      let activeTab = router.track.tabs[parent]['tab'];
-      if(options.activeTabClass){
-        let remove = viewers.removeClass({id:activeTab,parent:'any',class:options.activeTabClass});
-        viewers.addClass({id:id,parent:'any',class:options.activeTabClass});
-      }
-
-      router.track.tabs[parent] = {module:parent + mod.ref,tab:id};
-      engine.router.navigate.to.cont(mod);
-
+    function clickFunction(id,mod,data){
+      engine.router.navigate.to.cont(mod,data);
     }
 
-    function activeFunction(id,mod){
-      mod.init(router.active.page);
-      router.track.tabs[parent] = {module:parent + mod.ref,tab:id};
-      router.built.tab.push(parent + mod.ref);
+    function activeFunction(id,mod,data){
+      mod.init(router.active.page,data);
     }
 
     return build('cont',options,clickFunction,activeFunction);

@@ -11,6 +11,8 @@ const wet = require('./wet');
 const validate = require('./validate');
 const set = require('./set');
 const add = require('./add');
+const data = require('./data');
+const time = require('./time');
 const md5 = require('md5');
 const uniqid = require('uniqid');
 
@@ -30,6 +32,8 @@ module.exports = {
   get:get,
   wet:wet,
   set:set,
+  data:data,
+  time:time,
   global:{
     function:{},
     comp:{},
