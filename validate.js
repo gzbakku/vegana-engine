@@ -70,7 +70,7 @@ function json(schema,data,type,maxSize){
     }
 
     //check if schema key exists in data
-    if(needed == true && !data[key]){
+    if(needed == true && data.hasOwnProperty(key) == false){
       return common.error('not_found-schema_key_in_data-' + key);
       break;
     }

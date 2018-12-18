@@ -87,6 +87,24 @@ module.exports= {
 
   },
 
+  active : function(id){
+
+    if(id == null){
+      return common.error('no_id_found');
+    }
+    let get = document.getElementById(id);
+    if(get == null){
+      return common.error('invalid_id');
+    }
+
+    if(get.checked){
+      return true;
+    } else {
+      return false;
+    }
+
+  },
+
   boolean : function(id){
 
     common.tell('### binding click',log);

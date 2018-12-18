@@ -48,21 +48,26 @@ function toWorker(app,type,reset,routerId,data){
   if(reset == true){
     if(document.getElementById(toId)){
       document.getElementById(toId).remove();
-      let toIdPos = built.comp.indexOf(toId);
-      built.comp.splice(toIdPos, 1);
     }
+    if(track['comp'][routerId]){
+      document.getElementById(track['comp'][routerId]).remove();
+    }
+    let toIdPos = built[type].indexOf(toId);
+    built[type].splice(toIdPos, 1);
   }
 
   //hide the current app
-  if(type == 'page'){
-    view.hide(active[type]);
-  } else if(type == 'cont'){
-    view.hide(track.cont[active.page]);
-  } else if(type == 'panel'){
-    let active_cont = track.cont[active.page];
-    view.hide(track.panel[active_cont]);
-  } else if(type == 'comp'){
-    view.hide(track['comp'][routerId]);
+  if(reset == false){
+    if(type == 'page'){
+      view.hide(active[type]);
+    } else if(type == 'cont'){
+      view.hide(track.cont[active.page]);
+    } else if(type == 'panel'){
+      let active_cont = track.cont[active.page];
+      view.hide(track.panel[active_cont]);
+    } else if(type == 'comp'){
+      view.hide(track['comp'][routerId]);
+    }
   }
 
   //update track catalog with toId
@@ -96,7 +101,9 @@ function toWorker(app,type,reset,routerId,data){
       app.init(routerId,data);
     }
 
-    built[type].push(toId);   //add appId to built catalog
+    if(type == 'comp'){
+      built[type].push(toId);
+    }
 
   }
 

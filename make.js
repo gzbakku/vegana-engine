@@ -26,6 +26,7 @@ module.exports = {
   select:inputsImport.select,
   input:inputsImport.input,
   textarea:inputsImport.textarea,
+  checkBox:inputsImport.checkBox,
   button:inputsImport.button,
   enableButton:inputsImport.enableButton,
 

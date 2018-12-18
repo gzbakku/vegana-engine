@@ -81,7 +81,7 @@ module.exports = {
     if(options.function){
       div.addEventListener('click',options.function);
     }
-    if(options.text){
+    if(options.text !== undefined && options.text !== null){
       div.innerHTML = options.text;
     }
     if(options.style){
@@ -354,7 +354,7 @@ module.exports = {
     }
     //close button function
     function hide(){
-      engine.view.hide(messageObjectId);
+      engine.view.remove(messageObjectId);
     }
     closeButtonObject.addEventListener('click',hide);
     //closeButtonObject.onclick = hide;

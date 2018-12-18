@@ -95,6 +95,8 @@ module.exports = {
       cardBodyObject.id = cardBodyId;
       if(options.hasOwnProperty('cardBodyClass') == true){
         cardBodyObject.className = options.cardBodyClass;
+      } else {
+        cardBodyObject.className = 'card-body';
       }
 
       //add card body object to card object

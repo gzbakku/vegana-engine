@@ -37,6 +37,7 @@ module.exports= {
 
   hide : hide,
   show : show,
+  remove : remove, 
 
   loader : {
     page:{

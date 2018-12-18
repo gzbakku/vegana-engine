@@ -127,6 +127,53 @@ module.exports = {
 
   },
 
+  checkBox : function(options){
+
+    let check = checkBaseOptions(options);
+    if(check == false){
+      return common.error('invalid_options : ' + options);
+    }
+
+    let get = document.getElementById(options.parent);
+    if(get == null){
+      return common.error('invalid_parent : ' + options);
+    }
+
+    //make label first
+    let label = document.createElement("label");
+    if(options.labelClass){
+      label.className = options.labelClass;
+    } else {
+      label.className = 'form-checkbox-label';
+    }
+    if(options.function){
+      label.addEventListener('click',()=>{
+        options.function(object.id);
+      });
+    }
+
+    //create object
+    let object = document.createElement("input");
+    object.id = options.parent + '-input-checkBox-' + options.id;
+    object.type = 'checkbox';
+    if(options.class){
+      object.className = options.class;
+    } else {
+      object.className = 'form-checkbox';
+    }
+    if(options.checked){
+      if(options.checked == true){
+        object.checked = true;
+      }
+    }
+    label.appendChild(object);
+    label.appendChild(document.createElement('span'));
+
+    get.appendChild(label);
+    return object.id;
+
+  },
+
   textarea : function(options){
 
     //checks

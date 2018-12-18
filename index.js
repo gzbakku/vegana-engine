@@ -13,6 +13,8 @@ const set = require('./set');
 const add = require('./add');
 const data = require('./data');
 const time = require('./time');
+const params = require('./params');
+
 const md5 = require('md5');
 const uniqid = require('uniqid');
 
@@ -34,6 +36,7 @@ module.exports = {
   set:set,
   data:data,
   time:time,
+  params:params,
   global:{
     function:{},
     comp:{},
