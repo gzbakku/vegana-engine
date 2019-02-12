@@ -139,6 +139,14 @@ function json(schema,data,type,maxSize){
 
     }
 
+    //check the boolean data type
+    if(type == 'boolean' && present == true){
+      if(data[key] !== true && data[key] !== false){
+        return common.error('invalid-invalid_data-expected_boolean' + key);
+        break;
+      }
+    }
+
     //check email and email string length for schema key in data
     if(type == 'email' && present == true){
 

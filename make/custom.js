@@ -10,45 +10,48 @@ module.exports = {
     //tell
     common.tell('+++ custom_element',log);
 
-    //security checks
-    if(id == null){
-      return common.error('no_id_found : ' + id);
+    if(typeof(options) !== 'object'){
+      return common.error('invalid-options');
     }
-    if(parent == null){
-      return common.error('no_parent_found : ' + id + ' || parent : ' + parent);
+    if(!options.id){
+      return common.error('not_found-id');
     }
-    if(cls == null){
-      return common.error('no_class_found : ' + id);
+    if(!options.parent){
+      return common.error('not_found-parent');
     }
-    if(options.length == 0 || options.length == undefined || options == null){
-      return common.error('no_options_found');
+    if(!options.tag){
+      return common.error('not_found-element_tag');
     }
 
     //get parent
-    let get = document.getElementById(parent);
+    let get = document.getElementById(options.parent);
     if(get == null){
       return common.error('invalid_parent');
     }
 
     //make select
-    let div = document.createElement(type);
-    div.id = id;
-    div.className = cls;
+    let element = document.createElement(options.tag);
+    element.id = options.parent + '-' + options.tag + '-' + options.id;
+    if(options.class){
+      element.className = options.class;
+    }
 
     let keys = Object.keys(ats);
 
-    if(keys == null || keys.length == undefined || keys.length == 0){
-      return common.error('no_valid_attributes_found');
-    }
-
-    //add ats
-    for(var i=0;i<keys.length;i++){
-      div[keys[i]] = ats[keys];
+    if(typeof(options.options) == 'object' && options.options.length > 0){
+      for(var i=0;i<options.options;i++){
+        let option = options.options[i];
+        if(typeof(option) == 'object'){
+          if(option.tag && option.data){
+            element[option.tag] = option.data;
+          }
+        }
+      }
     }
 
     //append select
-    get.appendChild(div);
-    return id;
+    get.appendChild(element);
+    return element.id;
 
   }
 

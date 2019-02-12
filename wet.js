@@ -3,7 +3,8 @@ const request = require('./request');
 
 var address = null;
 
-async function query(options){
+//this function takes a authetication token from sessions api
+async function make_query(options){
 
   if(engine.session.check() == false){
     return common.error('not_found-session');
@@ -62,6 +63,7 @@ module.exports = {
     },
 
     query : async function(options){
+      //this query is performed without authetication token
       if(address == null){
         return common.error('please set the api address first');
       }
@@ -71,7 +73,7 @@ module.exports = {
       if(options){
         if(options.at){
           options.url = address + options.at;
-          let result = await query(options);
+          let result = await make_query(options);
           if(result == false){
             return common.error('failed-wet_api_query');
           } else {
@@ -86,6 +88,6 @@ module.exports = {
 
   },
 
-  query : query
+  query : make_query
 
 };

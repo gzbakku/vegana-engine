@@ -38,7 +38,7 @@ function toWorker(app,type,reset,routerId,data){
   if(type == 'page'){
     toId = app.ref;
   } else if(type == 'cont'){
-    toId = active.page + app.ref;
+    toId = active.page + '-router-cont' + app.ref;
   } else if(type == 'panel'){
     toId = track.cont[active.page] + app.ref;
   } else if(type == 'comp'){
@@ -61,9 +61,9 @@ function toWorker(app,type,reset,routerId,data){
     if(type == 'page'){
       view.hide(active[type]);
     } else if(type == 'cont'){
-      view.hide(track.cont[active.page]);
+      view.hide(track.cont[active.page + '-router-cont']);
     } else if(type == 'panel'){
-      let active_cont = track.cont[active.page];
+      let active_cont = track.cont[active.page + '-router-cont'];
       view.hide(track.panel[active_cont]);
     } else if(type == 'comp'){
       view.hide(track['comp'][routerId]);
@@ -74,9 +74,9 @@ function toWorker(app,type,reset,routerId,data){
   if(type == 'page'){
     active[type] = toId;
   } else if(type == 'cont'){
-    track.cont[active.page] = toId;
+    track.cont[active.page + '-router-cont'] = toId;
   } else if(type == 'panel'){
-    let active_cont = track.cont[active.page];
+    let active_cont = track.cont[active.page + '-router-cont'];
     track.panel[active_cont] = toId;
   } else if(type == 'comp'){
     track.comp[routerId] = toId;
@@ -94,7 +94,7 @@ function toWorker(app,type,reset,routerId,data){
     if(type == 'page'){
       app.init(data);
     } else if(type == 'cont'){
-      app.init(active.page,data);
+      app.init(active.page + '-router-cont',data);
     } else if(type == 'panel'){
       app.init(track.cont[active.page],data);
     } else if(type == 'comp'){

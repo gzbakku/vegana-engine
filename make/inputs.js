@@ -203,6 +203,9 @@ module.exports = {
     if(options.rows){
       object.rows = options.rows;
     }
+    if(options.value){
+      object.value = options.value;
+    }
 
     //apend object and return
     get.appendChild(object);
@@ -255,7 +258,7 @@ module.exports = {
         if(options.functionData){
           options.function(buttonObject.id,options.functionData);
         } else {
-          options.function();
+          options.function(buttonObject.id);
         }
       });
     }

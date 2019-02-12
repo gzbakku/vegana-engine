@@ -74,7 +74,12 @@ module.exports = {
             } else {
               closeButtonObject.className = 'card-header-close-button';
             }
-            closeButtonObject.innerHTML = 'close';
+            if(options.closeButtonValue){
+              closeButtonObject.innerHTML = options.closeButtonValue;
+            } else {
+              closeButtonObject.innerHTML = 'close';
+            }
+
             headerActionContObject.appendChild(closeButtonObject);
 
             //check close button function
