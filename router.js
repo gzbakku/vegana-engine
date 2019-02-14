@@ -5,6 +5,11 @@ const initWorker = require('./router/init');
 const navWorker = require('./router/nav');
 const getWorker = require('./router/get');
 const setWorker = require('./router/set');
+const back = require('./router/back');
+
+window.onpopstate = function(){
+  back.nav_back();
+}
 
 let active = {
   page:null,
@@ -29,6 +34,12 @@ let track = {
   comp:{}
 };
 
+let mods = {
+  page:{},
+  cont:{},
+  panel:{}
+};
+
 module.exports= {
 
   //nav data
@@ -36,6 +47,7 @@ module.exports= {
   built:built,
   route:route,
   track:track,
+  mods:mods,
 
   //functions
   get : getWorker,

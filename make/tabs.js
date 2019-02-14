@@ -113,7 +113,7 @@ module.exports = {
   comp : function(options){
 
     common.tell('+++ initiating make comp tabs',log);
-    
+
     function clickFunction(id,mod,data,router){
       engine.router.navigate.to.comp(mod,data,router);
     }
@@ -132,12 +132,17 @@ module.exports = {
 
     common.tell('+++ initiating make panel tabs',log);
 
+    let routerId;
+
     function clickFunction(id,mod,data){
       engine.router.navigate.to.panel(mod,data);
     }
 
     function activeFunction(id,mod,data){
-      mod.init(router.track.cont[router.active.page],data);
+      let page = engine.router.active.page + '-router-cont';
+      let cont = engine.router.track.cont[page];
+      routerId = engine.router.init.panels(cont);
+      mod.init(routerId);
     }
 
     return build('panel',options,clickFunction,activeFunction);
@@ -153,7 +158,8 @@ module.exports = {
     }
 
     function activeFunction(id,mod,data){
-      mod.init(router.active.page,data);
+      let routerId = engine.router.init.conts(engine.router.active.page);
+      mod.init(routerId,data);
     }
 
     return build('cont',options,clickFunction,activeFunction);

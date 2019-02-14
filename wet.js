@@ -4,7 +4,7 @@ const request = require('./request');
 var address = null;
 
 //this function takes a authetication token from sessions api
-async function make_query(options){
+async function query(options){
 
   if(engine.session.check() == false){
     return common.error('not_found-session');
@@ -13,7 +13,7 @@ async function make_query(options){
     return common.error('invalid_options');
   }
 
-  let token = engine.session.token;
+  let token = engine.session.get.token();
 
   if(options){
     if(typeof(options) == 'object'){
@@ -73,7 +73,7 @@ module.exports = {
       if(options){
         if(options.at){
           options.url = address + options.at;
-          let result = await make_query(options);
+          let result = await query(options);
           if(result == false){
             return common.error('failed-wet_api_query');
           } else {
@@ -88,6 +88,6 @@ module.exports = {
 
   },
 
-  query : make_query
+  query : query
 
 };

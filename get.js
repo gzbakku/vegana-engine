@@ -2,6 +2,16 @@ const common = require('./common');
 
 module.exports = {
 
+  pageModule : function(pageName){
+
+    if(window.pageModules[pageName]){
+      return window.pageModules[pageName];
+    } else {
+      return null;
+    }
+
+  },
+
   contName : function(contId){
 
     if(!contId || typeof(contId) !== 'string'){

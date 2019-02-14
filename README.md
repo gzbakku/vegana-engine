@@ -33,7 +33,7 @@ this framework is a js and sass only enviorment please dont get confused in find
 
 official docs at [Docs]
 
-[Docs]: <https://vegana.github.com>
+[Docs]: <https://vegana.github.io>
 
 ------
 ------
@@ -861,10 +861,8 @@ only url and body are necessary.
 -----
 -----
 
-License
-----
+# License - MIT
 
-MIT
+##### Vegana By Akku
 
-**Free Software, Hell Yeah!**
 

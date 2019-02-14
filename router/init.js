@@ -22,6 +22,8 @@ function build(parent,type,mod,data,cls){
 
   if(cls){
     router.className = cls;
+  } else {
+    router.className = 'router-' + type;
   }
 
   let routerApp = require('../router');

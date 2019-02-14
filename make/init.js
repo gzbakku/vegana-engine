@@ -31,16 +31,18 @@ function build(type,id,parent,cls){
 
   //update router catalogs here
   if(type == 'page'){
-    router.route.push(id);
+    //router.route.push(id);
     router.built.page.push(id);
     router.active.page = id;
   } else if(type == 'cont'){
-    router.route.push(id);
+    //router.route.push(id);
     router.built.cont.push(id);
+    router.active.cont = id;
     router.track.cont[parent] = id;
   } else if(type == 'panel'){
-    router.route.push(id);
+    //router.route.push(id);
     router.built.panel.push(id);
+    router.active.panel = id;
     router.track.panel[parent] = id;
   }
 
