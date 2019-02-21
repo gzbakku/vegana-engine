@@ -1,6 +1,8 @@
 const common = require('./common');
 const log = false;
 
+let token,user,user_type,uid,session_type;
+
 function check(){
 
   let type = localStorage.getItem('session_type');
@@ -22,7 +24,7 @@ function check(){
     session_type = localStorage.getItem('session_type');
   }
 
-  if(!sessionStorage.token){
+  if(!token){
     return false;
   }
 
@@ -30,7 +32,30 @@ function check(){
 
 }
 
-let token,user,user_type,uid,session_type;
+function end(){
+
+  let type = localStorage.getItem('session_type');
+  if(!type){
+    return false;
+  }
+
+  if(type == 'temp'){
+    token = sessionStorage.removeItem('token');
+    user = sessionStorage.removeItem('user');
+    user_type = sessionStorage.removeItem('user_type');
+    uid = sessionStorage.removeItem('uid');
+    session_type = localStorage.removeItem('session_type');
+  } else {
+    token = localStorage.removeItem('token');
+    user = localStorage.removeItem('user');
+    user_type = localStorage.removeItem('user_type');
+    uid = localStorage.removeItem('uid');
+    session_type = localStorage.removeItem('session_type');
+  }
+
+  return true;
+
+}
 
 module.exports = {
 
@@ -65,14 +90,7 @@ module.exports = {
 
   },
 
-  end : function(){
-    common.tell('ending-session',log);
-    sessionStorage.clear();
-    token = null;
-    user = null;
-    uid = null;
-    return true;
-  },
+  end : end,
 
   token : token,
   uid   : uid,

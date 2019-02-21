@@ -43,5 +43,6 @@ module.exports = {
     object:{}
   },
   md5:md5,
-  uniqid:uniqid
+  uniqid:uniqid,
+  app_version:null
 };

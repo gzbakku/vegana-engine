@@ -55,35 +55,44 @@ function toWorker(app,type,reset,routerId,data){
 
   //console.log('2');
 
+  //console.log({reset:reset});
+
   if(reset == true){
     if(document.getElementById(toId)){
+      console.log({remving_pre_built:toId});
       document.getElementById(toId).remove();
+      let toIdPos = built[type].indexOf(toId);
+      built[type].splice(toIdPos, 1);
     }
-    if(track['comp'][routerId]){
-      document.getElementById(track['comp'][routerId]).remove();
+    if(type == 'comp'){
+      if(track['comp'][routerId]){
+        document.getElementById(track['comp'][routerId]).remove();
+        let toIdPos = built[type].indexOf(toId);
+        built[type].splice(toIdPos, 1);
+      }
     }
-    let toIdPos = built[type].indexOf(toId);
-    built[type].splice(toIdPos, 1);
   }
 
   //console.log('3');
 
   //hide the current app
-  if(reset == false){
-    if(type == 'page'){
-      view.hide(active.page);
-    } else if(type == 'cont'){
-      let page = active.page + '-router-cont';
-      let cont = track.cont[page];
-      view.hide(cont);
-    } else if(type == 'panel'){
-      let page = active.page + '-router-cont';
-      let cont = track.cont[page] + '-router-panel';
-      let panel = track.panel[cont];
-      view.hide(panel);
-    } else if(type == 'comp'){
-      view.hide(track['comp'][routerId]);
-    }
+  // if(reset == false){
+  //
+  // }
+
+  if(type == 'page'){
+    view.hide(active.page);
+  } else if(type == 'cont'){
+    let page = active.page + '-router-cont';
+    let cont = track.cont[page];
+    view.hide(cont);
+  } else if(type == 'panel'){
+    let page = active.page + '-router-cont';
+    let cont = track.cont[page] + '-router-panel';
+    let panel = track.panel[cont];
+    view.hide(panel);
+  } else if(type == 'comp'){
+    view.hide(track['comp'][routerId]);
   }
 
   //console.log('4');
@@ -117,7 +126,7 @@ function toWorker(app,type,reset,routerId,data){
   //app not built yet
   if(built[type].indexOf(toId) < 0){
 
-    //console.log('building');
+    //console.log('building : ' + toId);
 
     //initiate app
     if(type == 'page'){
