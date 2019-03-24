@@ -1,57 +1,28 @@
-const common = require('./common');
-const log = false;
-const router = require('./router');
-const loaders = require('./view/loader_index');
-
-function hide(id){
-  common.tell('hiding_div : ' + id,log);
+function doo(id,what){
   let get = document.getElementById(id);
   if(get == null){
-    return common.error('div_not_found');
+    return false;
   }
-  get.style.display = 'none';
+  if(what == 'show'){
+    get.style.display = 'block';
+  } else if (what == 'hide'){
+    get.style.display = 'none';
+  } else if (what == 'remove'){
+    get.remove();
+  }
   return id;
-}
-
-function show(id){
-  common.tell('showing div : ' + id,log);
-  let get = document.getElementById(id);
-  if(get == null){
-    return common.error('div_not_found');
-  }
-  get.style.display = 'block';
-  return id;
-}
-
-function remove(id){
-  common.tell('showing div : ' + id,log);
-  let get = document.getElementById(id);
-  if(get == null){
-    return common.error('div_not_found');
-  }
-  get.remove();
-  return true;
 }
 
 module.exports= {
 
-  hide : hide,
-  show : show,
-  remove : remove, 
-
-  loader : {
-    page:{
-      start:loaders.page.start,
-      stop:loaders.page.stop
-    },
-    cont:{
-      start:loaders.cont.start,
-      stop:loaders.cont.stop
-    },
-    panel:{
-      start:loaders.panel.start,
-      stop:loaders.panel.stop
-    },
-  }
+  hide : (id)=>{
+    return doo(id,'hide');
+  },
+  show : (id)=>{
+    return doo(id,'show');
+  },
+  remove : (id)=>{
+    return doo(id,'remove');
+  },
 
 };

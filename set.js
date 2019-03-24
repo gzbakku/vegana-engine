@@ -31,13 +31,32 @@ module.exports = {
 
   div : {
 
-    value : function(id,value){
+    text : function(id,value){
       let get = document.getElementById(id);
       if(get == null){
         return common.error('invalid-parent');
       }
       get.innerHTML = value;
       return true;
+    },
+
+    style: function(id,styles){
+
+      if(!id || typeof(styles) !== 'object' || !styles.length || styles.length == 0){
+        return common.error("not_found-id/styles");
+      }
+
+      let get = document.getElementById(id);
+      if(get == null){
+        return common.error('invalid-parent');
+      }
+
+      for(var i=0;i<styles.length;i++){
+        let hold = styles[i];
+        let key = Object.keys(hold)[0];
+        get.style[key] = hold[key];
+      }
+
     }
 
   }

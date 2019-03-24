@@ -5,15 +5,10 @@ const log = false;
 
 module.exports= {
 
-  click : function(id,func){
+  hover : function(id,func){
 
-    common.tell('### binding click',log);
-
-    if(id == null){
-      return common.error('no_id_found');
-    }
-    if(func == null){
-      return common.error('no_function_found');
+    if(!id || !func){
+      return common.error('not_found-id/function=>binder-hover');
     }
 
     let get = document.getElementById(id);
@@ -21,14 +16,32 @@ module.exports= {
       return common.error('invalid_id');
     }
 
-    get.addEventListener('click',func);
+    get.addEventListener('mouseenter',()=>{
+      func(id);
+    });
+    return id;
+
+  },
+
+  click : function(id,func){
+
+    if(!id || !func){
+      return common.error('not_found-id/function=>binder-click');
+    }
+
+    let get = document.getElementById(id);
+    if(get == null){
+      return common.error('invalid_id');
+    }
+
+    get.addEventListener('click',()=>{
+      func(id);
+    });
     return id;
 
   },
 
   text : function(id){
-
-    common.tell('### binding click',log);
 
     if(id == null){
       return common.error('no_id_found');
@@ -44,8 +57,6 @@ module.exports= {
   },
 
   number : function(id){
-
-    common.tell('### binding click',log);
 
     if(id == null){
       return common.error('no_id_found');
@@ -65,8 +76,6 @@ module.exports= {
   },
 
   value : function(id){
-
-    common.tell('### binding click',log);
 
     if(id == null){
       return common.error('no_id_found');
@@ -106,8 +115,6 @@ module.exports= {
   },
 
   boolean : function(id){
-
-    common.tell('### binding click',log);
 
     if(id == null){
       return common.error('no_id_found');
