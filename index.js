@@ -20,6 +20,13 @@ const uniqid = require('uniqid');
 
 //common.tell('one');
 
+let hooks = {
+  pages:{},
+  conts:{},
+  panels:{},
+  comps:{}
+};
+
 module.exports = {
   add:add,
   binder:binder,
@@ -39,9 +46,17 @@ module.exports = {
   params:params,
   global:{
     function:{},
-    comp:{},
+    comp:new Proxy({},{
+      set(obj, prop, value){
+        obj[prop] = value;
+        if(hooks.comps.hasOwnProperty(prop) == true){
+          hooks.comps[prop]();
+        }
+      }
+    }),
     object:{}
   },
+  hooks:hooks,
   md5:md5,
   uniqid:uniqid,
   app_version:null

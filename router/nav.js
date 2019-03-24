@@ -3,9 +3,14 @@ const log = false;
 
 function toWorker(app,type,reset,routerId,data){
 
+  common.tell("navigation initiated",log);
+  common.tell("reinitiate module : " + reset,log);
+
   //other modules
   let router = require('../router');
   let view = require('../view');
+
+  common.tell("router / view localised",log);
 
   //catalogs
   let active = router.active;
@@ -14,12 +19,16 @@ function toWorker(app,type,reset,routerId,data){
   let track = router.track;
   let mods = router.mods;
 
+  common.tell("router objects localised",log);
+
   //check if there is a initiated page heres
   if(type == 'page'){
     if(active[type] == null){
       return common.error('no_page_initiated_from_app_starter');
     }
   }
+
+  common.tell("base page intiation validated",log);
 
   //security checks
   if(app == null || app == undefined){
@@ -34,14 +43,13 @@ function toWorker(app,type,reset,routerId,data){
     }
   }
 
-  //console.log('1');
+  common.tell("module checks completed",log);
 
   //set ref here
   let toId;
   if(type == 'page'){
     toId = app.ref;
   } else if(type == 'cont'){
-    //window.location.replace("&cont=" + app.ref);
     toId = active.page + '-router-cont' + app.ref;
   } else if(type == 'panel'){
     let page = active.page + '-router-cont';
@@ -51,34 +59,28 @@ function toWorker(app,type,reset,routerId,data){
     toId = routerId + app.ref;
   }
 
-  //console.log({toId:toId});
-
-  //console.log('2');
-
-  //console.log({reset:reset});
+  common.tell("module ref built",log);
 
   if(reset == true){
     if(document.getElementById(toId)){
-      console.log({remving_pre_built:toId});
       document.getElementById(toId).remove();
-      let toIdPos = built[type].indexOf(toId);
-      built[type].splice(toIdPos, 1);
-    }
-    if(type == 'comp'){
-      if(track['comp'][routerId]){
-        document.getElementById(track['comp'][routerId]).remove();
+      while(built[type].indexOf(toId) >= 0){
         let toIdPos = built[type].indexOf(toId);
         built[type].splice(toIdPos, 1);
       }
     }
+    if(type == 'comp'){
+      if(track['comp'][routerId]){
+        document.getElementById(track['comp'][routerId]).remove();
+        while(built[type].indexOf(toId) >= 0){
+          let toIdPos = built[type].indexOf(toId);
+          built[type].splice(toIdPos, 1);
+        }
+      }
+    }
   }
 
-  //console.log('3');
-
-  //hide the current app
-  // if(reset == false){
-  //
-  // }
+  common.tell("pre-built module removed",log);
 
   if(type == 'page'){
     view.hide(active.page);
@@ -95,7 +97,7 @@ function toWorker(app,type,reset,routerId,data){
     view.hide(track['comp'][routerId]);
   }
 
-  //console.log('4');
+  common.tell("active module hidden",log);
 
   //update track catalog with toId
   if(type == 'page'){
@@ -103,30 +105,24 @@ function toWorker(app,type,reset,routerId,data){
   } else if(type == 'cont'){
     let page = active.page + '-router-cont';
     track.cont[page] = toId;
-    //console.log({newCont:track.cont[page]});
   } else if(type == 'panel'){
     let page = active.page + '-router-cont';
     let cont = track.cont[page] + '-router-panel';
     track.panel[cont] = toId;
-    //console.log({newPanel:track.panel[cont]});
   } else if(type == 'comp'){
     track.comp[routerId] = toId;
   }
 
-  //console.log('5');
+  common.tell("to-module cataloged",log);
 
   //already built the app
   if(built[type].indexOf(toId) >= 0){
     view.show(toId);
-    //console.log('already built : ' + toId);
+    common.tell("to-module view activated",log);
   }
-
-  //console.log('6');
 
   //app not built yet
   if(built[type].indexOf(toId) < 0){
-
-    //console.log('building : ' + toId);
 
     //initiate app
     if(type == 'page'){
@@ -146,6 +142,8 @@ function toWorker(app,type,reset,routerId,data){
       built[type].push(toId);
     }
 
+    common.tell("to-module built",log);
+
   }
 
   //navigate here
@@ -161,7 +159,7 @@ function toWorker(app,type,reset,routerId,data){
     route.push({type:type,id:toId,url:url,mod:app});
   }
 
-  //console.log('7');
+  common.tell("to-module router tags pushed",log);
 
   return true;
 

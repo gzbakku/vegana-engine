@@ -58,8 +58,6 @@ function reduce(parent,navButtonClass){
 
   if(linksCont.scrollHeight > 50){
 
-    console.log('??? reducing initiated');
-
     rightButton.style.display = 'block';
     leftButton.style.display = 'block';
 

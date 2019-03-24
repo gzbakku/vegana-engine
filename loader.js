@@ -6,6 +6,53 @@ module.exports = {
 
   load : {
 
+    comp : function(compName){
+
+      return new Promise((resolve,reject)=>{
+
+        common.tell('loading page module',log);
+
+        let error;
+
+        if(!compName || typeof(compName) !== 'string'){
+          error = 'invalid/not_found-compName';
+          reject(error);
+        }
+        if(engine.global.comp.hasOwnProperty(compName)){
+          error = 'global_comp-already-loaded';
+          reject(error);
+        }
+
+        let location = baseHref + 'js/globals/' + compName + '/globalComp.js';
+
+        let parent = document.getElementsByTagName("head")[0];
+
+        let scp = document.createElement('script');
+        scp.type = "text/javascript";
+        scp.src = location;
+
+        scp.onload  = function(){
+          common.tell('global_comp_loaded',log);
+          resolve(true);
+        };
+
+        scp.onreadystatechange = function(){
+          common.tell('global_comp_loaded',log);
+          resolve(true);
+        };
+
+        scp.onerror = function(){
+          common.error('failed-compLoad');
+          error = 'failed-compLoad';
+          reject(error);
+        }
+
+        parent.appendChild(scp);
+
+      });
+
+    },
+
     page : function(pageName){
 
       return new Promise((resolve,reject)=>{
@@ -176,6 +223,79 @@ module.exports = {
       resolve(true);
 
     });
+
+  },
+
+  hook : {
+
+    comp:(data)=>{
+
+      if(!data.comp || !data.function){
+        return common.error("not_found-comp/function");
+      }
+
+      engine.hooks.comps[data.comp] = data.function;
+
+    },
+
+    page:(data)=>{
+
+      if(!data.page || !data.function){
+        return common.error("not_found-page/function");
+      }
+
+      engine.hooks.pages[data.page] = data.function;
+      let hold = engine.pageModules;
+
+      engine.pageModules = new Proxy(hold,{
+        set(obj,key,val){
+          obj[key] = val;
+          engine.hooks.pages[data.key]();
+        }
+      });
+
+    },
+
+    cont:(data)=>{
+
+      if(!data.page || !data.cont || !data.function){
+        return common.error("not_found-page/cont/function");
+      }
+
+      engine.hooks.conts[data.page] = {};
+      engine.hooks.conts[data.page][data.cont] = data.function;
+      let hold = window.pageModules;
+
+      window.pageModules[data.page].contModules = new Proxy(hold,{
+        set(obj,key,val){
+          obj[key] = val;
+          engine.hooks.conts[data.page][key]();
+        }
+      });
+
+    },
+
+    panel:(data)=>{
+
+      if(!data.page || !data.cont || !data.panel || !data.function){
+        return common.error("not_found-page/cont/panel/function");
+      }
+
+      engine.hooks.panels[data.page] = {};
+      engine.hooks.panels[data.page][data.cont] = {};
+      engine.hooks.panels[data.page][data.cont][data.panel] = data.function;
+      let hold = window.pageModules;
+
+      //console.log(engine.hooks.panels[data.page][data.cont][data.panel]);
+
+      window.pageModules[data.page].contModules[data.cont].panelModules = new Proxy(hold,{
+        set(obj,key,val){
+          obj[key] = val;
+          engine.hooks.panels[data.page][data.cont][key]();
+        }
+      });
+
+    }
 
   }
 

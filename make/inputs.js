@@ -7,11 +7,6 @@ module.exports = {
 
   select : function(options){
 
-    common.tell(',,,,,,,,,,,,,,,,,',seprator);
-
-    //tell
-    common.tell('+++ select',log);
-
     //checks
     let check = checkBaseOptions(options);
     if(check == false){
@@ -76,11 +71,6 @@ module.exports = {
   },
 
   input : function(options){
-
-    common.tell(',,,,,,,,,,,,,,,,,',seprator);
-
-    //tell
-    common.tell('+++ input',log);
 
     //checks
     let check = checkBaseOptions(options);
@@ -214,11 +204,6 @@ module.exports = {
   },
 
   button : function(options){
-
-    common.tell(',,,,,,,,,,,,,,,,,',seprator);
-
-    //tell
-    common.tell('+++ button',log);
 
     //checks
     let check = checkBaseOptions(options);

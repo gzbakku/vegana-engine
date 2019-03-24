@@ -46,7 +46,7 @@ module.exports = {
 
   },
 
-  PanelModule : function(pageName,contName,panelName){
+  panelModule : function(pageName,contName,panelName){
 
     if(!pageName || typeof(pageName) !== 'string'){
       return common.error('invalid/not_found-pageName');
@@ -60,8 +60,8 @@ module.exports = {
 
     let pool = window.pageModules[pageName].contModules[contName].panelModules[panelName];
 
-    if(pool[contName]){
-      return pool[contName];
+    if(pool){
+      return pool;
     } else {
       return false;
     }

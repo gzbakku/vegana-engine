@@ -1,22 +1,13 @@
 const common = require('../common');
 const checkBaseOptions = require('./check').check;
-const log = false;
-const seprator = false;
-const builder = require('./builder');
 const httpMarker = 'http://';
 
 module.exports = {
 
   addClass : function(options){
 
-    if(typeof(options) !== 'object'){
-      return common.error('invalid-options');
-    }
-    if(!options.id){
-      return common.error('not_found-id||options');
-    }
-    if(!options.class){
-      return common.error('not_found-class||options');
+    if(!options.id || !options.class){
+      return common.error('not_found-id/class');
     }
 
     let object = document.getElementById(options.id);
@@ -32,14 +23,8 @@ module.exports = {
 
   removeClass : function(options){
 
-    if(typeof(options) !== 'object'){
-      return common.error('invalid-options');
-    }
-    if(!options.id){
-      return common.error('not_found-id||options');
-    }
-    if(!options.class){
-      return common.error('not_found-class||options');
+    if(!options.id || !options.class){
+      return common.error('not_found-id/class');
     }
 
     let object = document.getElementById(options.id);
@@ -55,11 +40,9 @@ module.exports = {
 
   },
 
-  div : function(options){
+  span : function(options){
 
-    common.tell(',,,,,,,,,,,,,,,,,',seprator);
-    common.tell('+++ div',log);
-
+    //check options object
     let check = checkBaseOptions(options);
     if(check == false){
       return common.error('invalid_options : ' + options);
@@ -73,7 +56,7 @@ module.exports = {
 
     //make element
     let objectId = options.parent + '-div-' + options.id;
-    let div = document.createElement("div");
+    let div = document.createElement("span");
     div.id = objectId;
     if(options.class){
       div.className = options.class;
@@ -93,37 +76,9 @@ module.exports = {
 
   },
 
-  card : function(options){
-
-    common.tell(',,,,,,,,,,,,,,,,,',seprator);
-    common.tell('+++ card',log);
-
-    //checks
-    let check = checkBaseOptions(options);
-    if(check == false){
-      return common.error('invalid_options : ' + options);
-    }
-
-    //check parent
-    let get = document.getElementById(options.parent);
-    if(get == null){
-      return common.error('invalid_parent : ' + options);
-    }
-
-    //build card
-    let cardCheck = builder.make.card(options);
-    if(cardCheck == false){
-      return common.error('failed-build_card');
-    }
-
-    return cardCheck;
-
-  },
+  div : div,
 
   text : function(options){
-
-    common.tell(',,,,,,,,,,,,,,,,,',seprator);
-    common.tell('+++ text',log);
 
     //checks
     let check = checkBaseOptions(options);
@@ -150,9 +105,6 @@ module.exports = {
   },
 
   image : function(options){
-
-    common.tell(',,,,,,,,,,,,,,,,,',seprator);
-    common.tell('+++ image',log);
 
     //checks
     let check = checkBaseOptions(options);
@@ -199,179 +151,119 @@ module.exports = {
 
   },
 
-  dropdown : function(options){
-
-    common.tell(',,,,,,,,,,,,,,,,,',seprator);
-    common.tell('+++ dropdown',log);
-
-    let check = checkBaseOptions(options);
-    if(check == false){
-      return common.error('invalid_options : ' + options);
-    }
-    if(!options.headerText){
-      return common.error('not_found-options=>headerText');
-    }
-
-    let get = document.getElementById(options.parent);
-    if(get == null){
-      return common.error('invalid_parent : ' + options);
-    }
-
-    //make dropdown
-    let ddObjectId = options.parent + '-dropdown-' + options.id;
-    let ddObject = document.createElement('div');
-    ddObject.id = ddObjectId;
-    ddObject.style = 'display:none';
-    if(options.class){
-      ddObject.className = options.class;
-    }
-    get.appendChild(ddObject);
-
-    //make dropdown header cont
-    let ddHeaderId = ddObjectId + '-header-cont';
-    let ddHeaderObject = document.createElement('div');
-    ddHeaderObject.id = ddHeaderId;
-    if(options.headerContClass){
-      ddHeaderObject.className = options.headerContClass;
-    }
-    ddObject.appendChild(ddHeaderObject);
-
-      //make dropdown header text cont
-      let ddHeaderTextContId = ddHeaderId + '-text-cont';
-      let ddHeaderTextContObject = document.createElement('div');
-      ddHeaderTextContObject.id = ddHeaderTextContId;
-      if(options.headerTextContClass){
-        ddHeaderTextContObject.className = options.headerTextContClass;
-      }
-      ddHeaderTextContObject.innerHTML = options.headerText;
-      ddHeaderObject.appendChild(ddHeaderTextContObject);
-
-      //make dropdown header action cont
-      let ddHeaderActionContId = ddHeaderId + '-action-cont';
-      let ddHeaderActionContObject = document.createElement('div');
-      ddHeaderActionContObject.id = ddHeaderTextContId;
-      if(options.headerActionContClass){
-        ddHeaderActionContObject.className = options.headerActionContClass;
-      }
-      ddHeaderObject.appendChild(ddHeaderActionContObject);
-
-        //make close button
-        let ddCloseButtonId = ddHeaderActionContId + '-button-close';
-        let ddCloseButtonObject = document.createElement('button');
-        ddCloseButtonObject.id = ddCloseButtonId;
-        ddCloseButtonObject.innerHTML = 'close';
-        if(options.closeButtonClass){
-          ddCloseButtonObject.className = options.closeButtonClass;
-        }
-        ddCloseButtonObject.addEventListener('click',()=>{
-          engine.view.hide(ddObjectId);
-        });
-        ddHeaderActionContObject.appendChild(ddCloseButtonObject);
-
-    return ddObjectId;
-
-  },
-
   message : function(options){
 
-    common.tell(',,,,,,,,,,,,,,,,,',seprator);
-    common.tell('+++ message',log);
-
-    //check options array
-    let check = checkBaseOptions(options);
-    if(check == false){
-      return common.error('invalid_options : ' + options);
+    if(!options.id){
+      options.id = engine.uniqid();
     }
-    if(!options.message){
-      return common.error('not_found-message||options');
+    if(!options.parent){
+      options.parent = 'page-router';
     }
-
-    //check parent
-    let get = document.getElementById(options.parent);
-    if(get == null){
-      return common.error('invalid_parent : ' + options);
+    if(!options.type){
+      options.type = 'info';
+    }
+    if(!options.messageContClass){
+      options.messageContClass = 'message ';
     }
 
-    //check if the message already exists
-    let messageObjectId = options.parent + '-message-' + options.id;
-    let checkMessage = document.getElementById(messageObjectId);
-    if(checkMessage !== null){
-      engine.view.show(messageObjectId);
-      return true;
+    let className = options.messageContClass + ' ';
+    if(options.type == 'success'){
+      className += 'message-success';
+    } else if(options.type == 'info'){
+      className += 'message-info';
+    } else if(options.type == 'warning'){
+      className += 'message-warning';
+    } else if(options.type == 'danger'){
+      className += 'message-danger';
     }
 
-    //make element
-    let messageObject = document.createElement("div");
-    messageObject.id = messageObjectId;
-    messageObject.innerHTML = options.message;
-
-    let activeTypes = [
-      'info','warning','danger','success'
-    ];
-
-    if(
-      !options.type ||
-      options.type == null ||
-      options.type == false ||
-      options.type == undefined ||
-      activeTypes.indexOf(options.type) < 0
-    ){
-      messageObject.className = 'message message-info';
-    } else if (options.type == 'info'){
-      messageObject.className = 'message message-info';
-    } else if (options.type == 'warning'){
-      messageObject.className = 'message message-warning';
-    } else if (options.type == 'danger'){
-      messageObject.className = 'message message-danger';
-    } else if (options.type == 'success'){
-      messageObject.className = 'message message-success';
+    if(!options.buttonContClass){
+      options.buttonContClass = 'message-close-cont';
+    }
+    if(!options.closeButtonClass){
+      options.closeButtonClass = 'message-close-button';
+    }
+    if(!options.textContClass){
+      options.textContClass = 'message-text-cont';
+    }
+    if(!options.closeButtonText){
+      options.closeButtonText = 'close';
+    }
+    if(!options.time){
+      options.time = 5000;
     }
 
-    if(options.text){
-      messageObject.innerHTML = options.text;
-    }
-    if(options.style){
-      messageObject.style = options.style;
-    }
-    //append message object
-    get.appendChild(messageObject);
 
-    //make message close button
-    let closeButtonObjectId = messageObjectId + '-button-close';
-    let closeButtonObject = document.createElement('button');
-    closeButtonObject.id = closeButtonObjectId;
-    //close button css
-    if(options.closeButtonClass){
-      closeButtonObject.className = options.closeButtonClass;
-    } else {
-      closeButtonObject.className = 'message-close-button';
-    }
-    //close button value
-    if(options.closeButtonValue){
-      closeButtonObject.innerHTML = options.closeButtonValue;
-    } else {
-      closeButtonObject.innerHTML = 'close';
-    }
-    //close button function
-    function hide(){
-      engine.view.remove(messageObjectId);
-    }
-    closeButtonObject.addEventListener('click',hide);
-    //closeButtonObject.onclick = hide;
-    //append close button to mesasage div object
-    messageObject.appendChild(closeButtonObject);
+    //div
+    let cont = engine.make.div({
+      id:'-message-' + options.id,
+      class:className,
+      parent:options.parent
+    });
 
-    let timeOut = 5000;
-    if(options.time){
-      timeout = options.time * 1000;
-    }
+      let closeCont = engine.make.div({
+        id:'close',
+        parent:cont,
+        class:options.buttonContClass
+      });
 
-    setTimeout(function () {
-      engine.view.hide(messageObjectId);
-    }, timeOut);
+        engine.make.button({
+          id:'close',
+          parent:closeCont,
+          value:options.closeButtonText,
+          class:options.closeButtonClass,
+          function:()=>{
+            engine.view.remove(cont);
+          }
+        });
 
-    return messageObjectId;
+      engine.make.div({
+        id:'text',
+        parent:cont,
+        class:options.textContClass,
+        text:options.message
+      });
+
+      setTimeout(function () {
+        engine.view.remove(cont);
+      }, options.time);
 
   }
 
 };
+
+function div(options){
+
+  //check options object
+  let check = checkBaseOptions(options);
+  if(check == false){
+    return common.error('invalid_options : ' + options);
+  }
+
+  //check parent
+  let get = document.getElementById(options.parent);
+  if(get == null){
+    return common.error('invalid_parent : ' + options);
+  }
+
+  //make element
+  let objectId = options.parent + '-div-' + options.id;
+  let div = document.createElement("div");
+  div.id = objectId;
+  if(options.class){
+    div.className = options.class;
+  }
+  if(options.function){
+    div.addEventListener('click',options.function);
+  }
+  if(options.text !== undefined && options.text !== null){
+    div.innerHTML = options.text;
+  }
+  if(options.style){
+    div.style = options.style;
+  }
+
+  get.appendChild(div);
+  return objectId;
+
+}
