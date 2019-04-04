@@ -6,6 +6,11 @@ module.exports = {
 
   load : {
 
+    image:function(url){
+      let img=new Image();
+      img.src=url;
+    },
+
     comp : function(compName){
 
       return new Promise((resolve,reject)=>{
@@ -245,14 +250,14 @@ module.exports = {
       }
 
       engine.hooks.pages[data.page] = data.function;
-      let hold = engine.pageModules;
 
-      engine.pageModules = new Proxy(hold,{
-        set(obj,key,val){
-          obj[key] = val;
-          engine.hooks.pages[data.key]();
-        }
-      });
+      // let hold = engine.pageModules;
+      // engine.pageModules = new Proxy(hold,{
+      //   set(obj,key,val){
+      //     obj[key] = val;
+      //     engine.hooks.pages[data.page]();
+      //   }
+      // });
 
     },
 

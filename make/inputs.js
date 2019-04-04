@@ -107,7 +107,7 @@ module.exports = {
     if(options.function){
       //inputObject.oninput = options.function;
       inputObject.addEventListener('input',()=>{
-        options.function(inputId);
+        options.function(inputId,inputObject.value);
       });
     }
 

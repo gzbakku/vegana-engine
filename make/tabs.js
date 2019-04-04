@@ -85,7 +85,7 @@ function build(type,options,clickFunction,activeFunction){
 
   //only make these conts for comp tabs routing
   if(type == 'comp'){
-    let moduleCont = engine.router.init.comps(tabsCont);
+    let moduleCont = engine.router.init.comps(tabsCont,null,null,options.moduleContClass);
     parentModuleCont = moduleCont;
   }
 

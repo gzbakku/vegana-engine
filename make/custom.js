@@ -3,24 +3,11 @@ const checkBaseOptions = require('./check').check;
 
 module.exports = {
 
-  element : function(id,parent,cls,type,ats){
+  element : function(options){
 
-    common.tell(',,,,,,,,,,,,,,,,,',seprator);
-
-    //tell
-    common.tell('+++ custom_element',log);
-
-    if(typeof(options) !== 'object'){
-      return common.error('invalid-options');
-    }
-    if(!options.id){
-      return common.error('not_found-id');
-    }
-    if(!options.parent){
-      return common.error('not_found-parent');
-    }
-    if(!options.tag){
-      return common.error('not_found-element_tag');
+    let check = checkBaseOptions(options);
+    if(check == false){
+      return common.error('invalid_options : ' + options);
     }
 
     //get parent
@@ -36,18 +23,22 @@ module.exports = {
       element.className = options.class;
     }
 
-    let keys = Object.keys(ats);
+    //let keys = Object.keys(options.options);
+
 
     if(typeof(options.options) == 'object' && options.options.length > 0){
-      for(var i=0;i<options.options;i++){
+      for(var i=0;i<options.options.length;i++){
         let option = options.options[i];
         if(typeof(option) == 'object'){
           if(option.tag && option.data){
-            element[option.tag] = option.data;
+            //element[option.tag] = option.data;
+            element.setAttribute(option.tag, option.data);
           }
         }
       }
     }
+
+    console.log(element);
 
     //append select
     get.appendChild(element);

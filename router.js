@@ -40,7 +40,7 @@ let mods = {
   panel:{}
 };
 
-module.exports= {
+module.exports = {
 
   //nav data
   active:active,
