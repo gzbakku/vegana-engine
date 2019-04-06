@@ -5,11 +5,11 @@ module.exports = {
   email:checkEmail
 };
 
-function json(schema,data,type,maxSize){
+function json(schema,data,schema_type,maxSize){
 
   //if no type or maxSize is given static type and max size of 21 is automatically assumed
-  if(!type){type == 'static'}
-  if(type == 'dynamic' && !maxSize){maxSize = 21;}
+  if(!schema_type){schema_type = 'static'}
+  if(schema_type == 'dynamic' && !maxSize){maxSize = 21;}
 
   //check schema
   if(!schema || typeof(schema) !== 'object' || Object.keys(schema).length == 0){
@@ -25,12 +25,14 @@ function json(schema,data,type,maxSize){
   let keys_data = Object.keys(data);
 
   //check size of both objects
-  if(type == 'static' && keys_schema.length !== keys_data.length){
-    return common.error('miss_matched-object_size');
+  if(schema_type == 'static'){
+    if(keys_schema.length !== keys_data.length){
+      return common.error('miss_matched-object_size');
+    }
   }
 
   //check data object keys size if maxSize property is set
-  if(type == 'dynamic' && maxSize){
+  if(schema_type == 'dynamic' && maxSize){
     if(keys_data.length > maxSize){
       return common.error('max_limit_reached-data_size');
     }
@@ -66,7 +68,12 @@ function json(schema,data,type,maxSize){
 
     //check if the item is elective
     if(item.elective && item.elective == true){
-      needed = false;
+      if(schema_type == 'static'){
+        return common.error('invalid-elective_item_in_static_schema-schema_key_in_data-' + key);
+        break;
+      } else {
+        needed = false;
+      }
     }
 
     //check if schema key exists in data
@@ -85,6 +92,12 @@ function json(schema,data,type,maxSize){
       present = true;
     }
 
+    //check if the data is needed and present
+    if(present == false && needed == true){
+      return common.error('not_found-data-data_type_for_key-' + key);
+      break;
+    }
+
     //check if data type is valid
     if(present == true && type !== 'email' && checkType(data[key]) !== type){
       return common.error('invalid-data_type_for_key-' + key);
@@ -92,7 +105,12 @@ function json(schema,data,type,maxSize){
     }
 
     //check the array and string length for schema key in data
-    if(type == 'array' || type == 'string' && present == true){
+    if((type == 'array' || type == 'string') && present == true){
+
+      if(!data[key]){
+        return common.error('not_found-data-schema_key_in_data-' + key);
+        break;
+      }
 
       if(item.min && data[key].length < item.min){
         return common.error('min_length_reached-schema_key_in_data-' + key);
@@ -103,14 +121,29 @@ function json(schema,data,type,maxSize){
         return common.error('max_length_reached-schema_key_in_data-' + key);
         break;
       } else if(type == 'string' && data[key].length > defaultStrLen){
-        return common.error('deafult_max_length_reached-schema_key_in_data-' + key);
+        return common.error('default_max_length_reached-schema_key_in_data-' + key);
         break;
+      }
+
+      //check if the key is a valid option
+      if(type == 'string'){
+        if(item.options && checkType(item.options)){
+          if(item.options.indexOf(data[key]) < 0){
+            return common.error('invalid_option-schema_key_in_data-' + key);
+            break;
+          }
+        }
       }
 
     }
 
     //check the number for schema key in data
     if(type == 'number' && present == true){
+
+      if(data[key] == false){
+        return common.error('not_found-data-schema_key_in_data-' + key);
+        break;
+      }
 
       if(item.min && data[key] < item.min){
         return common.error('min_length_reached-schema_key_in_data-' + key);
@@ -126,6 +159,11 @@ function json(schema,data,type,maxSize){
 
     //check the object key size for schema key in data
     if(type == 'object' && present == true){
+
+      if(data[key] == false){
+        return common.error('not_found-data-schema_key_in_data-' + key);
+        break;
+      }
 
       if(item.min && Object.keys(data[key]).length < item.min){
         return common.error('min_length_reached-schema_key_in_data-' + key);
@@ -182,7 +220,9 @@ function json(schema,data,type,maxSize){
 
 function checkType(data){
 
-  if(typeof(data) == 'object'){
+  let base = typeof(data);
+
+  if(base == 'object'){
 
     if(Object.keys(data).length == 0){
       return 'object';
@@ -194,9 +234,17 @@ function checkType(data){
       return 'array';
     }
 
-  } else {
-    return typeof(data);
   }
+
+  if(base == 'string' || base == 'number'){
+    return base;
+  }
+
+  if(data == false || data == true){
+    return 'boolean';
+  }
+
+  return null;
 
 }
 
