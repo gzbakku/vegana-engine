@@ -39,7 +39,7 @@ function reduce(parent,navButtonClass){
   if(gets.body.width() > 640){
     leftButton.style.display = 'none';
   }
-  leftButton.innerHTML = '<i class="material-icons">keyboard_arrow_left</i>';
+  leftButton.innerHTML = '&#8619;';
   linksCont.insertBefore(leftButton,nodes[0]);
 
   //right button
@@ -53,7 +53,7 @@ function reduce(parent,navButtonClass){
   if(gets.body.width() > 640){
     rightButton.style.display = 'none';
   }
-  rightButton.innerHTML = '<i class="material-icons">keyboard_arrow_right</i>';
+  rightButton.innerHTML = '&#8620;';
   linksCont.appendChild(rightButton);
 
   if(linksCont.scrollHeight > 50){

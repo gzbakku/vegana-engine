@@ -83,12 +83,7 @@ function json(schema,data,schema_type,maxSize){
     }
 
     //check if static data exists
-    if(needed == true && data[key]){
-      present = true;
-    }
-
-    //check if elective data exists
-    if(needed == false && data[key]){
+    if(data.hasOwnProperty(key) == true){
       present = true;
     }
 
@@ -120,7 +115,7 @@ function json(schema,data,schema_type,maxSize){
       if(item.max && data[key].length > item.max){
         return common.error('max_length_reached-schema_key_in_data-' + key);
         break;
-      } else if(type == 'string' && data[key].length > defaultStrLen){
+      } else if(!item.max && type == 'string' && data[key].length > defaultStrLen){
         return common.error('default_max_length_reached-schema_key_in_data-' + key);
         break;
       }

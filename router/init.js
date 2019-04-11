@@ -1,9 +1,6 @@
-const common = require('../common');
-const log = false;
+
 
 function build(parent,type,mod,data,cls){
-
-  common.tell('building router',log);
 
   //check parent
   let get = document.getElementById(parent);

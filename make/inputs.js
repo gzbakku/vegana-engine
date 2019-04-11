@@ -5,6 +5,49 @@ const seprator = false;
 
 module.exports = {
 
+  upload: function(options){
+
+    //checks
+    let check = checkBaseOptions(options);
+    if(check == false){
+      return common.error('invalid_options : ' + options);
+    }
+
+    //get parent
+    let get = document.getElementById(options.parent);
+    if(get == null){
+      return common.error('invalid_parent : ' + options);
+    }
+
+    //make button
+    let id = options.parent + '-input-' + options.type + '-' + options.id;
+    let object = document.createElement("input");
+    object.id = id;
+    if(options.class){
+      object.className = options.class;
+    } else {
+      object.className = 'form-input';
+    }
+    object.type = 'file';
+
+    if(options.placeholder){
+      object.placeholder = options.placeholder;
+    }
+    if(options.value){
+      object.value = options.value;
+    }
+    if(options.function){
+      object.addEventListener('input',()=>{
+        options.function(inputId,object.files);
+      });
+    }
+
+
+    get.appendChild(object);
+    return object.id;
+
+  },
+
   select : function(options){
 
     //checks
@@ -195,6 +238,11 @@ module.exports = {
     }
     if(options.value){
       object.value = options.value;
+    }
+    if(options.function){
+      object.addEventListener('input',()=>{
+        options.function(object.id,object.value);
+      });
     }
 
     //apend object and return

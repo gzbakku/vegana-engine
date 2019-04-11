@@ -41,6 +41,21 @@ module.exports= {
 
   },
 
+  files : function(id){
+
+    if(id == null){
+      return common.error('no_id_found');
+    }
+
+    let get = document.getElementById(id);
+    if(get == null){
+      return common.error('invalid_id');
+    }
+
+    return get.files;
+
+  },
+
   text : function(id){
 
     if(id == null){

@@ -28,7 +28,7 @@ module.exports = {
           reject(error);
         }
 
-        let location = baseHref + 'js/globals/' + compName + '/globalComp.js';
+        let location = baseHref + 'js/globals/' + compName + 'Comp/globalComp.js';
 
         let parent = document.getElementsByTagName("head")[0];
 
