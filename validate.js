@@ -215,6 +215,10 @@ function json(schema,data,schema_type,maxSize){
 
 function checkType(data){
 
+  if(data == undefined || data == null){
+    return data;
+  }
+
   let base = typeof(data);
 
   if(base == 'object'){
