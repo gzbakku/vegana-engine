@@ -2,174 +2,63 @@ const common = require('../common');
 const checkBaseOptions = require('./check').check;
 const log = false;
 const seprator = false;
+const creator = require('./creator');
 
 module.exports = {
 
   upload: function(options){
 
-    //checks
-    let check = checkBaseOptions(options);
-    if(check == false){
-      return common.error('invalid_options : ' + options);
-    }
-
-    //get parent
-    let get = document.getElementById(options.parent);
-    if(get == null){
-      return common.error('invalid_parent : ' + options);
-    }
-
-    //make button
-    let id = options.parent + '-input-' + options.type + '-' + options.id;
-    let object = document.createElement("input");
-    object.id = id;
-    if(options.class){
-      object.className = options.class;
-    } else {
-      object.className = 'form-input';
-    }
-    object.type = 'file';
-
-    if(options.placeholder){
-      object.placeholder = options.placeholder;
-    }
-    if(options.value){
-      object.value = options.value;
-    }
-    if(options.function){
-      object.addEventListener('input',()=>{
-        options.function(inputId,object.files);
-      });
-    }
-
-
-    get.appendChild(object);
-    return object.id;
+    let user_function = options.function;
+    let local_function = (object)=>{
+      user_function(object.id,object.files);
+    };
+    options.function = local_function;
+    options.type = 'file';
+    return creator('input',options);
 
   },
 
   select : function(options){
 
-    //checks
-    let check = checkBaseOptions(options);
-    if(check == false){
-      return common.error('invalid_options : ' + options);
-    }
-    if(
-      options.options.length == 0 ||
-      options.options.length == undefined ||
-      options.options == null
-    ){
-      return common.error('no_options_found');
-    }
-
-    //get parent
-    let get = document.getElementById(options.parent);
-    if(get == null){
-      return common.error('invalid_parent : ' + options);
-    }
-
-    //make select
-    let selectId = options.parent + '-select-' + options.id;
-    let selectObject = document.createElement("select");
-    selectObject.id = selectId;
-    if(options.class){
-      selectObject.className = options.class;
-    } else {
-      selectObject.className = 'form-select';
-    }
-
-    //add options
-    for(var i=0;i<options.options.length;i++){
-      let data = options.options[i];
-      if(data.text && data.value !== 'undefined'){
-        let option = document.createElement("option");
-        option.text = data.text;
-        option.value = data.value;
-        if(data.class){
-          option.className = data.class;
-        } else {
-          option.className = 'form-select-item';
-        }
-        if(options.value !== undefined){
-          if(options.value == data.value){
-            option.selected = true;
-          }
-        }
-        selectObject.add(option);
-      }
-    }
-
-    if(options.function){
-      //selectObject.oninput = options.function;
-      selectObject.addEventListener('click',()=>{
-        options.function(selectObject.id);
-      });
-    }
-
-    //append select
-    get.appendChild(selectObject);
-    return selectId;
+    let user_function = options.function;
+    let local_function = (object)=>{
+      user_function(object.id,object.value);
+    };
+    options.function = local_function;
+    return creator('select',options);
 
   },
 
   input : function(options){
 
-    //checks
-    let check = checkBaseOptions(options);
-    if(check == false){
-      return common.error('invalid_options : ' + options);
-    }
-    if(!options.type){
-      return common.error('not_found-options=>type');
-    }
-
-    //get parent
-    let get = document.getElementById(options.parent);
-    if(get == null){
-      return common.error('invalid_parent : ' + options);
-    }
-
-    //make button
-    let inputId = options.parent + '-input-' + options.type + '-' + options.id;
-    let inputObject = document.createElement("input");
-    inputObject.id = inputId;
-    if(options.class){
-      inputObject.className = options.class;
-    } else {
-      inputObject.className = 'form-input';
-    }
-    inputObject.type = options.type;
-
-    if(options.placeholder){
-      inputObject.placeholder = options.placeholder;
-    }
-    if(options.value){
-      inputObject.value = options.value;
-    }
-    if(options.function){
-      //inputObject.oninput = options.function;
-      inputObject.addEventListener('input',()=>{
-        options.function(inputId,inputObject.value);
-      });
-    }
-
-
-    get.appendChild(inputObject);
-    return inputId;
+    let user_function = options.function;
+    let fetch_this = 'value';
+    if(options.type == 'file'){fetch_this = 'files';}
+    let local_function = (object)=>{
+      if(options.type == 'number'){
+        user_function(object.id,Number(object[fetch_this]));
+      } else {
+        user_function(object.id,object[fetch_this]);
+      }
+    };
+    options.function = local_function;
+    if(!options.type){options.type = 'string';}
+    return creator('input',options);
 
   },
 
   checkBox : function(options){
 
+    //check options object
     let check = checkBaseOptions(options);
     if(check == false){
-      return common.error('invalid_options : ' + options);
+      return common.error('invalid_options',options);
     }
 
+    //check parent
     let get = document.getElementById(options.parent);
     if(get == null){
-      return common.error('invalid_parent : ' + options);
+      return common.error('invalid_parent',options);
     }
 
     //make label first
@@ -187,7 +76,7 @@ module.exports = {
 
     //create object
     let object = document.createElement("input");
-    object.id = options.parent + '-input-checkBox-' + options.id;
+    object.id = options.parent + '-checkbox-' + options.id;
     object.type = 'checkbox';
     if(options.class){
       object.className = options.class;
@@ -209,94 +98,24 @@ module.exports = {
 
   textarea : function(options){
 
-    //checks
-    let check = checkBaseOptions(options);
-    if(check == false){
-      return common.error('invalid_options : ' + options);
-    }
-
-    //get parent
-    let get = document.getElementById(options.parent);
-    if(get == null){
-      return common.error('invalid_parent : ' + options);
-    }
-
-    //make oject
-    let object = document.createElement('textarea');
-
-    object.id = options.parent + '-textarea-' + options.id;
-
-    //set object properties
-    if(options.class){
-      object.className = options.class;
-    }
-    if(options.placeholder){
-      object.placeholder = options.placeholder;
-    }
-    if(options.rows){
-      object.rows = options.rows;
-    }
-    if(options.value){
-      object.value = options.value;
-    }
-    if(options.function){
-      object.addEventListener('input',()=>{
-        options.function(object.id,object.value);
-      });
-    }
-
-    //apend object and return
-    get.appendChild(object);
-    return object.id;
+    let user_function = options.function;
+    let local_function = (object)=>{
+      user_function(object.id,object.value);
+    };
+    options.function = local_function;
+    return creator('textarea',options);
 
   },
 
   button : function(options){
 
-    //checks
-    let check = checkBaseOptions(options);
-    if(check == false){
-      return common.error('invalid_options : ' + options);
-    }
-    if(!options.value){
-      return common.error('not_found-options=>value');
-    }
-
-    //get parent
-    let get = document.getElementById(options.parent);
-    if(get == null){
-      return common.error('invalid_parent : ' + options);
-    }
-
-    //make button
-    let buttonId = options.parent + '-button-' + options.id;
-    let buttonObject = document.createElement("button");
-    buttonObject.type = 'button';
-    buttonObject.id = buttonId;
-    if(options.class){
-      buttonObject.className = options.class;
-    } else {
-      buttonObject.className = 'form-button';
-    }
-    if(options.disabled){
-      if(options.disabled == true){
-        buttonObject.disabled = true;
-      }
-    }
-    buttonObject.innerHTML = options.value;
-    get.appendChild(buttonObject);
-
-    if(options.function){
-      buttonObject.addEventListener('click',()=>{
-        if(options.functionData){
-          options.function(buttonObject.id,options.functionData);
-        } else {
-          options.function(buttonObject.id);
-        }
-      });
-    }
-
-    return buttonId;
+    let user_function = options.function;
+    let local_function = (object,data)=>{
+      user_function(object.id,data);
+    };
+    options.function = local_function;
+    options.type = 'button';
+    return creator('input',options);
 
   },
 

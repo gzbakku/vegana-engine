@@ -14,6 +14,7 @@ const add = require('./add');
 const data = require('./data');
 const time = require('./time');
 const params = require('./params');
+const meta = require('./meta');
 
 const md5 = require('md5');
 const uniqid = require('uniqid');
@@ -28,6 +29,7 @@ let hooks = {
 };
 
 module.exports = {
+  meta:meta,
   add:add,
   binder:binder,
   make:make,

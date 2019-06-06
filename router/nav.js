@@ -105,15 +105,30 @@ function toWorker(app,type,reset,routerId,data){
   } else if(type == 'cont'){
     let page = active.page + '-router-cont';
     track.cont[page] = toId;
+    active[type] = toId;
   } else if(type == 'panel'){
     let page = active.page + '-router-cont';
     let cont = track.cont[page] + '-router-panel';
     track.panel[cont] = toId;
+    active[type] = toId;
   } else if(type == 'comp'){
     track.comp[routerId] = toId;
   }
 
   common.tell("to-module cataloged",log);
+
+  //navigate here
+  let url;
+  if(type == 'page'){
+    url = exp.url.add.page(toId);
+    route.push({type:type,id:toId,url:url,mod:app});
+  } else if(type == 'cont'){
+    url = exp.url.add.cont(toId);
+    route.push({type:type,id:toId,url:url,mod:app});
+  } else if(type == 'panel'){
+    url = exp.url.add.panel(toId);
+    route.push({type:type,id:toId,url:url,mod:app});
+  }
 
   //already built the app
   if(built[type].indexOf(toId) >= 0){
@@ -142,21 +157,27 @@ function toWorker(app,type,reset,routerId,data){
       built[type].push(toId);
     }
 
+    if(app.trackers){
+      let trackers = app.trackers;
+      if(trackers.title){
+        engine.set.pageTitle(trackers.title);
+      }
+      if(trackers.meta){
+        for(var i in trackers.meta){
+          engine.meta.update(trackers.meta[i]);
+        }
+      }
+      if(trackers.function){
+        if(trackers.function_data){
+          trackers.function(trackers.function_data);
+        } else {
+          trackers.function();
+        }
+      }
+    }
+
     common.tell("to-module built",log);
 
-  }
-
-  //navigate here
-  let url;
-  if(type == 'page'){
-    url = exp.url.add.page(toId);
-    route.push({type:type,id:toId,url:url,mod:app});
-  } else if(type == 'cont'){
-    url = exp.url.add.cont(toId);
-    route.push({type:type,id:toId,url:url,mod:app});
-  } else if(type == 'panel'){
-    url = exp.url.add.panel(toId);
-    route.push({type:type,id:toId,url:url,mod:app});
   }
 
   common.tell("to-module router tags pushed",log);
@@ -178,32 +199,41 @@ let exp = {
         } else {
           page = engine.router.active.page;
         }
-        let url = "?page=" + page;
+        let url = "/" + clean_page(page);
+        // if(document.URL.split('?').length > 1){
+        //   url += '?' + document.URL.split('?')[1];
+        // }
         window.history.pushState("object or string", null, url);
         return url;
       },
       cont:function(id){
-        let page = engine.router.active.page + '-router-cont';
+        let page = engine.router.active.page;
         let cont;
         if(id){
           cont = id;
         } else {
           cont = engine.router.track.cont[page];
         }
-        let url = "?page=" + engine.router.active.page + "&cont=" + cont;
+        let url = "/" + clean_page(page) + "/" + clean_cont(cont);
+        // if(document.URL.split('?').length > 1){
+        //   url += '?' + document.URL.split('?')[1];
+        // }
         window.history.pushState("object or string", null, url);
         return url;
       },
       panel:function(id){
-        let page = engine.router.active.page + '-router-cont';
-        let cont = engine.router.track.cont[page] + '-router-panel';
+        let page = engine.router.active.page;
+        let cont = engine.router.track.cont[page + '-router-cont'];
         let panel;
         if(id){
           panel = id;
         } else {
           panel = engine.router.track.panel[cont];
         }
-        let url = "?page=" + engine.router.active.page + "&cont=" + cont + "&panel=" + panel;
+        let url = "/" + clean_page(page) + "/" + clean_cont(cont) + "/" + clean_panel(panel);
+        // if(document.URL.split('?').length > 1){
+        //   url += '?' + document.URL.split('?')[1];
+        // }
         window.history.pushState("object or string", null, url);
         return url;
       }
@@ -212,12 +242,23 @@ let exp = {
 
   to : {
     page : function(app,data){
+      if(engine.router.active.page == app.ref){
+        return true;
+      }
       return toWorker(app,'page',false,null,data);
     },
     cont : function(app,data){
+      let parse = engine.router.active.page + '-router-cont' + app.ref;
+      if(engine.router.active.cont == parse){
+        return true;
+      }
       return toWorker(app,'cont',false,null,data);
     },
     panel : function(app,data){
+      let parse = engine.router.active.cont + '-router-panel' + app.ref;
+      if(engine.router.active.panel == parse){
+        return true;
+      }
       return toWorker(app,'panel',false,null,data);
     },
     comp : function(app,data,routerId){
@@ -243,3 +284,46 @@ let exp = {
 }
 
 module.exports = exp;
+
+
+
+function clean_page(p){
+  let h = p.split('-')[1];
+  //console.log({clean_page_result:h});
+  return h;
+}
+
+function clean_cont(c){
+
+  if(!c){
+    return engine.common.error('not_found-cont-clean_cont-navigate-router');
+  }
+
+  let page = engine.router.active.page;
+
+  let final = c;
+  final = final.replace(page,'');
+  final = final.replace('-router-cont-cont-','');
+
+  //console.log({clean_cont_result:final});
+
+  return final;
+
+}
+
+function clean_panel(p){
+
+  let page = engine.router.active.page;
+  let cont = engine.router.track.cont[page + '-router-cont'];
+
+  //console.log({cont:cont});
+
+  let final = p;
+  final = final.replace(cont,'');
+  final = final.replace('-router-panel-panel-','');
+
+  //console.log({clean_panel_result:final});
+
+  return final;
+
+}

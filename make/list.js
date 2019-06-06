@@ -1,142 +1,90 @@
-const common = require('../common');
-const checkBaseOptions = require('./check').check;
-const log = false;
-const seprator = false;
+const creator = require('./creator');
 
 module.exports = {
 
   list : function(options){
 
-    //id,parent,listClass,itemClass,type,data
-
-    common.tell('+++ list',log);
-
-    //security checks
-    let check = checkBaseOptions(options);
-    if(check == false){
-      return common.error('invalid_options : ' + options);
-    }
     if(options.type !== 'ol' && options.type !== 'ul'){
-      return common.error('invalid_list_type : ' + options);
+      options.type == 'ol';
     }
-    if(options.data == null || !options.data.length || options.data.length == 0){
-      return common.error('invalid_list_item_dataSet : ' + options);
-    }
-
-    //check parent
-    let get = document.getElementById(options.parent);
-    if(get == null){
-      return common.error('invalid_parent');
+    if(!options.data){
+      options.data = 0;
     }
 
-    let listId = options.parent + '-list-' + options.id;
-    let listObject = document.createElement(options.type);
-    if(options.listClass){
-      listObject.className = options.listClass;
-    }
-    listObject.id = listId;
+    let list_id = creator(options.type,options);
 
     for(var i=0;i<options.data.length;i++){
       let thisItemData = options.data[i];
-      //check this item type
-      if(typeof(thisItemData) == 'string'){
-        //make list item dom
-        let thisItem = document.createElement('li');
-        if(options.itemClass){
-          thisItem.className = options.itemClass;
-        }
-        thisItem.id = options.parent + '-' + thisItemData.toLowerCase().replace(/\s/g, "-");
-        thisItem.innerHTML = thisItemData;
-        if(options.function){
-          thisItem.addEventListener('click',options.function);
-        }
-        listObject.appendChild(thisItem);
-      }
+      make_list_item(list_id,thisItemData,options.itemClass,options.function,options.events,options.event);
     }
 
-    get.appendChild(listObject);
-
-    return listId;
+    return list_id;
 
   },
 
-  listItem : function(options){
-
-    common.tell('+++ list item',log);
-
-    //security checks
-    let check = checkBaseOptions(options);
-    if(check == false){
-      return common.error('invalid_options : ' + options);
-    }
-    if(options.item == null){
-      return common.error('invalid_list_item_dataSet : ' + options);
-    }
-
-    //check parent
-    let get = document.getElementById(options.parent);
-    if(get == null){
-      return common.error('invalid_parent');
-    }
-
-    //make list item
-    let listItemId = options.parent + '-' + options.item.toLowerCase().replace(/\s/g, "-");
-    let listItemObject = document.createElement('li');
-    listItemObject.id = listItemId;
-    if(options.itemClass){
-      listItemObject.className = options.itemClass;
-    }
-    listItemObject.innerHTML = options.item;
-    if(options.function){
-      listItemObject.addEventListener('click',options.function);
-    }
-    get.appendChild(listItemObject);
-
-    return listItemId;
-
+  listItem : (options)=>{
+    return make_list_item(options.list_id,options,options.itemClass,options.function,options.events,options.event);
   },
 
   listItems : function(options){
 
-    //id,parent,listClass,itemClass,type,data
-
-    common.tell('+++ list items',log);
-
-    //security checks
-    let check = checkBaseOptions(options);
-    if(check == false){
-      return common.error('invalid_options : ' + options);
+    if(!options.list_id){
+      return engine.common.error('not_found-list_id-listItems_make_engine');
     }
-    if(options.data == null || !options.data.length || options.data.length == 0){
-      return common.error('invalid_list_item_dataSet : ' + options);
+    let items = options.data;
+    for(var i in items){
+      make_list_item(options.list_id,items[i],options.itemClass,options.function,options.events,options.event);
     }
-
-    //check parent
-    let get = document.getElementById(options.parent);
-    if(get == null){
-      return common.error('invalid_parent');
-    }
-
-    for(var i=0;i<options.data.length;i++){
-      let thisItemData = options.data[i];
-      //check this item type
-      if(typeof(thisItemData) == 'string'){
-        //make list item dom
-        let thisItem = document.createElement('li');
-        if(options.itemClass){
-          thisItem.className = options.itemClass;
-        }
-        thisItem.id = options.parent + '-' + thisItemData.toLowerCase().replace(/\s/g, "-");
-        thisItem.innerHTML = thisItemData;
-        if(options.function){
-          thisItem.addEventListener('click',options.function);
-        }
-        get.appendChild(thisItem);
-      }
-    }
-
-    return options.parent;
+    return options.id;
 
   }
 
 };
+
+function make_list_item(id,item,superClass,superFunction,superEvents,superEvent){
+
+  if(!item.id){
+    item.id = engine.uniqid();
+  }
+
+  let cls = 'list-item';
+  if(item.class){
+    cls = item.class;
+  } else if(superClass){
+    cls = superClass;
+  }
+
+  let func = item.function;
+  if(!func && superFunction){
+    func = superFunction;
+  }
+
+  let local_function = (object)=>{
+    if(typeof(func) == 'function'){
+      func(object.id);
+    }
+  };
+
+  let events = item.events;
+  if(!events && superEvents){
+    events = superEvents;
+  }
+
+  let eve = item.event;
+  if(!eve && superEvent){
+    eve = superEvent;
+  }
+
+  let build = {
+    id:item.id,
+    parent:id,
+    class:cls,
+    text:item.text,
+    function:local_function,
+    event:eve,
+    events:events
+  };
+
+  return creator('li',build);
+
+}

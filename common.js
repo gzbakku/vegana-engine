@@ -9,7 +9,10 @@ module.exports= {
     return true;
   },
 
-  error : function(error){
+  error : function(error,data){
+    if(data){
+      console.log(data);
+    }
     console.log('!!! ' + error);
     return false;
   }

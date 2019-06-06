@@ -1,269 +1,152 @@
 const common = require('../common');
 const checkBaseOptions = require('./check').check;
 const httpMarker = 'http://';
+const creator = require('./creator');
 
 module.exports = {
+
+  style : (options)=>{
+
+    if(!options.id || !options.style){
+      return common.error('not_found-id/style-addStyle-make-engine');
+    }
+
+    let object = document.getElementById(options.id);
+    if(object){
+      object.style = options.style;
+      return true;
+    } else {
+      return engine.common.error('not_found-doc_element_by_id-addStyle-make-engine');
+    }
+
+  },
 
   addClass : function(options){
 
     if(!options.id || !options.class){
-      return common.error('not_found-id/class');
+      return common.error('not_found-id/class-addClass-make-engine');
     }
 
     let object = document.getElementById(options.id);
-    let style = object.className;
-    if(style.indexOf(options.class) >= 0){
+    if(object){
+      let style = object.className;
+      if(style.indexOf(options.class) >= 0){
+        return true;
+      }
+      style = style + ' ' + options.class;
+      object.className = style;
       return true;
+    } else {
+      return engine.common.error('not_found-doc_element_by_id-addClass-make-engine');
     }
-    style = style + ' ' + options.class;
-    object.className = style;
-    return true;
+
 
   },
 
   removeClass : function(options){
 
     if(!options.id || !options.class){
-      return common.error('not_found-id/class');
+      return common.error('not_found-id/class-removeClass-make-engine');
     }
 
     let object = document.getElementById(options.id);
-    let style = object.className;
-
-    if(style.indexOf(options.class) < 0){
+    if(object){
+      let style = object.className;
+      if(style.indexOf(options.class) < 0){
+        return true;
+      }
+      let updated = style.replace(options.class,"");
+      object.className = updated;
       return true;
+    } else {
+      return engine.common.error('not_found-doc_element_by_id-removeClass-make-engine');
     }
-
-    let updated = style.replace(options.class,"");
-    object.className = updated;
-    return true;
 
   },
 
   span : function(options){
-
-    //check options object
-    let check = checkBaseOptions(options);
-    if(check == false){
-      return common.error('invalid_options : ' + options);
-    }
-
-    //check parent
-    let get = document.getElementById(options.parent);
-    if(get == null){
-      return common.error('invalid_parent : ' + options);
-    }
-
-    //make element
-    let objectId = options.parent + '-div-' + options.id;
-    let div = document.createElement("span");
-    div.id = objectId;
-    if(options.class){
-      div.className = options.class;
-    }
     if(options.function){
-      div.addEventListener('click',options.function);
+      let user_function = options.function;
+      let local_function = (object)=>{
+        user_function(object.id);
+      };
+      options.function = local_function;
     }
-    if(options.text !== undefined && options.text !== null){
-      div.innerHTML = options.text;
-    }
-    if(options.style){
-      div.style = options.style;
-    }
-
-    get.appendChild(div);
-    return objectId;
-
+    return creator('span',options);
   },
 
-  div : div,
+  div : function(options){
+    if(options.function){
+      let user_function = options.function;
+      let local_function = (object)=>{
+        user_function(object.id);
+      };
+      options.function = local_function;
+    }
+    return creator('div',options);
+  },
+
+  heading : function(options){
+    if(options.function){
+      let user_function = options.function;
+      let local_function = (object)=>{
+        user_function(object.id);
+      };
+      options.function = local_function;
+    }
+    if(!options.level){options.level = 1;}
+    return creator('h' + options.level,options);
+  },
+
+  p : function(options){
+    if(options.function){
+      let user_function = options.function;
+      let local_function = (object)=>{
+        user_function(object.id);
+      };
+      options.function = local_function;
+    }
+    return creator('p',options);
+  },
 
   text : function(options){
 
-    //checks
-    let check = checkBaseOptions(options);
-    if(check == false){
-      return common.error('invalid_options : ' + options);
-    }
-    if(!options.parent){
-      return common.error('no_parent_found');
-    }
-    if(!options.text){
-      return common.error('no_text_found');
+    if(!options.id || !options.text){
+      return common.error('not_found-id/text-text-make-engine');
     }
 
-    //check parent
-    let get = document.getElementById(options.parent);
-    if(get == null){
-      return common.error('invalid_parent || parent : ' + options);
+    let object = document.getElementById(options.id);
+    if(object){
+      object.innerHTML = options.text;
+      return true;
+    } else {
+      return engine.common.error('not_found-doc_element_by_id-text-make-engine');
     }
-
-    //set text
-    get.innerHTML = options.text;
-    return options.parent;
 
   },
 
   image : function(options){
 
-    //checks
-    let check = checkBaseOptions(options);
-    if(check == false){
-      return common.error('invalid_options : ' + options);
+    if(!options.location){
+      return engine.common.error('not_found-image_location-image-make-engine');
     }
-    if(!options.location || !options.type){
-      return common.error('not_found-options=>location/type');
-    }
-    if(
-      options.type !== 'local' &&
-      options.type !== 'url'
-    ){
-      return common.error('invalid-type');
-    }
-
-    //get parent
-    let get = document.getElementById(options.parent);
-    if(get == null){
-      return common.error('invalid_parent : ' + options);
-    }
-
-    //make image
-    let imageId = options.parent + '-image-' + options.id;
-    let imageObject = document.createElement("img");
-    imageObject.id = imageId;
-    if(options.class){
-      imageObject.className = options.class;
+    if(!options.type || (options.type !== 'local' && options.type !== 'url')){
+      options.type = 'local';
     }
     if(options.type == 'local'){
-      imageObject.src = window.baseHref + options.location;
+      options.src = window.baseHref + options.location;
     }
     if(options.type == 'url'){
-      imageObject.src = options.location;
+      options.src = options.location;
     }
-    if(options.function){
-      imageObject.addEventListener('click',options.function);
-    }
-    if(options.style){
-      imageObject.style = options.style;
-    }
-    get.appendChild(imageObject);
-    return imageId;
+    let user_function = options.function;
+    let local_function = (object)=>{
+      user_function(object.id);
+    };
+    options.function = local_function;
 
-  },
-
-  message : function(options){
-
-    if(!options.id){
-      options.id = engine.uniqid();
-    }
-    if(!options.parent){
-      options.parent = 'page-router';
-    }
-    if(!options.type){
-      options.type = 'info';
-    }
-    if(!options.messageContClass){
-      options.messageContClass = 'message ';
-    }
-
-    let className = options.messageContClass + ' ';
-    if(options.type == 'success'){
-      className += 'message-success';
-    } else if(options.type == 'info'){
-      className += 'message-info';
-    } else if(options.type == 'warning'){
-      className += 'message-warning';
-    } else if(options.type == 'danger'){
-      className += 'message-danger';
-    }
-
-    if(!options.buttonContClass){
-      options.buttonContClass = 'message-close-cont';
-    }
-    if(!options.closeButtonClass){
-      options.closeButtonClass = 'message-close-button';
-    }
-    if(!options.textContClass){
-      options.textContClass = 'message-text-cont';
-    }
-    if(!options.closeButtonText){
-      options.closeButtonText = 'close';
-    }
-    if(!options.time){
-      options.time = 5000;
-    }
-
-
-    //div
-    let cont = engine.make.div({
-      id:'-message-' + options.id,
-      class:className,
-      parent:options.parent
-    });
-
-      let closeCont = engine.make.div({
-        id:'close',
-        parent:cont,
-        class:options.buttonContClass
-      });
-
-        engine.make.button({
-          id:'close',
-          parent:closeCont,
-          value:options.closeButtonText,
-          class:options.closeButtonClass,
-          function:()=>{
-            engine.view.remove(cont);
-          }
-        });
-
-      engine.make.div({
-        id:'text',
-        parent:cont,
-        class:options.textContClass,
-        text:options.message
-      });
-
-      setTimeout(function () {
-        engine.view.remove(cont);
-      }, options.time);
+    return creator('img',options);
 
   }
 
 };
-
-function div(options){
-
-  //check options object
-  let check = checkBaseOptions(options);
-  if(check == false){
-    return common.error('invalid_options : ' + options);
-  }
-
-  //check parent
-  let get = document.getElementById(options.parent);
-  if(get == null){
-    return common.error('invalid_parent : ' + options);
-  }
-
-  //make element
-  let objectId = options.parent + '-div-' + options.id;
-  let div = document.createElement("div");
-  div.id = objectId;
-  if(options.class){
-    div.className = options.class;
-  }
-  if(options.function){
-    div.addEventListener('click',options.function);
-  }
-  if(options.text !== undefined && options.text !== null){
-    div.innerHTML = options.text;
-  }
-  if(options.style){
-    div.style = options.style;
-  }
-
-  get.appendChild(div);
-  return objectId;
-
-}

@@ -4,8 +4,11 @@ const inputsImport = require('./make/inputs');
 const listImport = require('./make/list');
 const customImport = require('./make/custom');
 const tabsImport = require('./make/tabs');
+const a = require('./make/a.js');
 
 module.exports = {
+
+  a:a,
 
   //init
   init : initImport,
@@ -13,9 +16,13 @@ module.exports = {
   div:viewersImport.div,
   card:viewersImport.card,
   text:viewersImport.text,
+  span:viewersImport.span,
+  p:viewersImport.p,
+  heading:viewersImport.heading,
   image:viewersImport.image,
   addClass:viewersImport.addClass,
   removeClass:viewersImport.removeClass,
+  style:viewersImport.style,
   message:viewersImport.message,
   tabs:tabsImport,
 
@@ -25,6 +32,7 @@ module.exports = {
   upload:inputsImport.upload,
   textarea:inputsImport.textarea,
   checkBox:inputsImport.checkBox,
+  checkbox:inputsImport.checkBox,
   button:inputsImport.button,
   enableButton:inputsImport.enableButton,
 
