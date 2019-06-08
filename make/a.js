@@ -46,7 +46,7 @@ module.exports = (options)=>{
     //options.href = '#';
 
     let router = 'to';
-    if(options.reBuild == 'new'){
+    if(options.new == true){
       router = 'new';
     }
 
@@ -55,21 +55,21 @@ module.exports = (options)=>{
       e.preventDefault();
       e.stopPropagation();
 
-      if(options.page){
+      if(options.page && !options.cont && !options.panel){
         const page = engine.get.pageModule(options.page);
         if(page){
           engine.router.navigate[router].page(page,options.data);
         }
       }
 
-      if(options.cont){
+      if(options.page && options.cont && !options.panel){
         const cont = engine.get.contModule(options.page,options.cont);
         if(cont){
           engine.router.navigate[router].cont(cont,options.data);
         }
       }
 
-      if(options.panel){
+      if(options.page && options.cont && options.panel){
         const panel = engine.get.panelModule(options.page,options.cont,options.panel);
         if(panel){
           engine.router.navigate[router].panel(panel,options.data);

@@ -26,35 +26,39 @@ window.addEventListener('scroll', ()=>{
     let e = document.getElementById(id);
     if(!e){
       delete scollers[id];
+    } else {
+
+      if(!showing.hasOwnProperty(id)){
+        showing[id] = false;
+      }
+
+      let positionFromBottom = e.getBoundingClientRect().bottom;
+      let positionFromTop = e.getBoundingClientRect().top;
+
+      let bottom_diff = windowHeight - positionFromBottom;
+      let top_diff = windowHeight - positionFromTop;
+
+      if(scoll_direction == 'up'){
+        if(positionFromBottom >= 0 && bottom_diff >= 0 && showing[id] == false){
+          process_enter(id);
+        }
+        if(top_diff < 0){
+          process_exit(id);
+        }
+      }
+
+      if(scoll_direction == 'down'){
+        if(top_diff >= 0 && positionFromBottom >= 0 && showing[id] == false){
+          process_enter(id);
+        }
+        if(positionFromBottom <= 0){
+          process_exit(id);
+        }
+      }
+
     }
 
-    if(!showing.hasOwnProperty(id)){
-      showing[id] = false;
-    }
 
-    let positionFromBottom = e.getBoundingClientRect().bottom;
-    let positionFromTop = e.getBoundingClientRect().top;
-
-    let bottom_diff = windowHeight - positionFromBottom;
-    let top_diff = windowHeight - positionFromTop;
-
-    if(scoll_direction == 'up'){
-      if(positionFromBottom >= 0 && bottom_diff >= 0 && showing[id] == false){
-        process_enter(id);
-      }
-      if(top_diff < 0){
-        process_exit(id);
-      }
-    }
-
-    if(scoll_direction == 'down'){
-      if(top_diff >= 0 && positionFromBottom >= 0 && showing[id] == false){
-        process_enter(id);
-      }
-      if(positionFromBottom <= 0){
-        process_exit(id);
-      }
-    }
 
   }//loop ends here
 

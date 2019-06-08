@@ -66,14 +66,7 @@ function toWorker(app,type,reset,routerId,data){
       document.getElementById(toId).remove();
       while(built[type].indexOf(toId) >= 0){
         let toIdPos = built[type].indexOf(toId);
-        built[type].splice(toIdPos, 1);
-      }
-    }
-    if(type == 'comp'){
-      if(track['comp'][routerId]){
-        document.getElementById(track['comp'][routerId]).remove();
-        while(built[type].indexOf(toId) >= 0){
-          let toIdPos = built[type].indexOf(toId);
+        if(toIdPos >= 0){
           built[type].splice(toIdPos, 1);
         }
       }
@@ -130,14 +123,33 @@ function toWorker(app,type,reset,routerId,data){
     route.push({type:type,id:toId,url:url,mod:app});
   }
 
+  if(app.trackers){
+    let trackers = app.trackers;
+    if(trackers.title){
+      engine.set.pageTitle(trackers.title);
+    }
+    if(trackers.meta){
+      for(var i in trackers.meta){
+        engine.meta.update(trackers.meta[i]);
+      }
+    }
+    if(trackers.function){
+      if(trackers.function_data){
+        trackers.function(trackers.function_data);
+      } else {
+        trackers.function();
+      }
+    }
+  }
+
   //already built the app
-  if(built[type].indexOf(toId) >= 0){
+  if(built[type].indexOf(toId) >= 0 && document.getElementById(toId)){
     view.show(toId);
     common.tell("to-module view activated",log);
   }
 
   //app not built yet
-  if(built[type].indexOf(toId) < 0){
+  if(built[type].indexOf(toId) < 0 || !document.getElementById(toId)){
 
     //initiate app
     if(type == 'page'){
@@ -157,24 +169,7 @@ function toWorker(app,type,reset,routerId,data){
       built[type].push(toId);
     }
 
-    if(app.trackers){
-      let trackers = app.trackers;
-      if(trackers.title){
-        engine.set.pageTitle(trackers.title);
-      }
-      if(trackers.meta){
-        for(var i in trackers.meta){
-          engine.meta.update(trackers.meta[i]);
-        }
-      }
-      if(trackers.function){
-        if(trackers.function_data){
-          trackers.function(trackers.function_data);
-        } else {
-          trackers.function();
-        }
-      }
-    }
+
 
     common.tell("to-module built",log);
 
@@ -262,6 +257,10 @@ let exp = {
       return toWorker(app,'panel',false,null,data);
     },
     comp : function(app,data,routerId){
+      let parse = routerId + app.ref;
+      if(track.comp[routerId] == parse){
+        return true;
+      }
       return toWorker(app,'comp',false,routerId,data);
     }
   },
