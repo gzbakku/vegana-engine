@@ -250,14 +250,13 @@ module.exports = {
       }
 
       engine.hooks.pages[data.page] = data.function;
-
-      // let hold = engine.pageModules;
-      // engine.pageModules = new Proxy(hold,{
-      //   set(obj,key,val){
-      //     obj[key] = val;
-      //     engine.hooks.pages[data.page]();
-      //   }
-      // });
+      let hold = window.pageModules;
+      window.pageModules = new Proxy(hold,{
+        set(obj,key,val){
+          obj[key] = val;
+          engine.hooks.pages[data.page]();
+        }
+      });
 
     },
 
@@ -290,8 +289,6 @@ module.exports = {
       engine.hooks.panels[data.page][data.cont] = {};
       engine.hooks.panels[data.page][data.cont][data.panel] = data.function;
       let hold = window.pageModules;
-
-      //console.log(engine.hooks.panels[data.page][data.cont][data.panel]);
 
       window.pageModules[data.page].contModules[data.cont].panelModules = new Proxy(hold,{
         set(obj,key,val){
