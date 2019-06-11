@@ -2,13 +2,15 @@ const common = require('../common');
 const checkBaseOptions = require('./check').check;
 const httpMarker = 'http://';
 let scollers = {};
-let keepScoller = [];
+let keepScroller = [];
 let scoll_direction = 'down';
 let last_scroll_position = window.pageYOffset;
 let showing = {};
 let exit = {};
 
-window.addEventListener('scroll', ()=>{
+window.addEventListener('scroll', scrollFunction);
+
+function scrollFunction(){
 
   let keys = Object.keys(scollers);
   let windowHeight = window.innerHeight;
@@ -67,7 +69,7 @@ window.addEventListener('scroll', ()=>{
     showing[id] = true;
     let func = scollers[id]
     if(typeof(func) == 'function'){func(id);}
-    if(keepScoller.indexOf(id) < 0 && exit.hasOwnProperty(id) == false){
+    if(keepScroller.indexOf(id) < 0 && exit.hasOwnProperty(id) == false){
       delete scollers[id];
       delete showing[id];
     }
@@ -79,7 +81,7 @@ window.addEventListener('scroll', ()=>{
     showing[id] = false;
     let func = exit[id]
     if(typeof(func) == 'function'){func(id);}
-    if(keepScoller.indexOf(id) < 0){
+    if(keepScroller.indexOf(id) < 0){
       delete scollers[id];
       delete showing[id];
       delete exit[id];
@@ -89,7 +91,7 @@ window.addEventListener('scroll', ()=>{
 
   last_scroll_position = current_scroll_position;
 
-});
+};
 
 module.exports = (tag,options)=>{
 
@@ -118,9 +120,9 @@ module.exports = (tag,options)=>{
     if(!scollers.hasOwnProperty(id)){
       scollers[id] = options.enter;
     }
-    if(options.keepScoller && options.keepScoller == true){
-      if(keepScoller.indexOf(id) < 0){
-        keepScoller.push(id);
+    if(options.keepScroller && options.keepScroller == true){
+      if(keepScroller.indexOf(id) < 0){
+        keepScroller.push(id);
       }
     }
   }
@@ -134,9 +136,9 @@ module.exports = (tag,options)=>{
     if(exit.hasOwnProperty(id) == false){
       exit[id] = options.exit;
     }
-    if(options.keepScoller && options.keepScoller == true){
-      if(keepScoller.indexOf(id) < 0){
-        keepScoller.push(id);
+    if(options.keepScroller && options.keepScroller == true){
+      if(keepScroller.indexOf(id) < 0){
+        keepScroller.push(id);
       }
     }
   }
@@ -248,7 +250,16 @@ module.exports = (tag,options)=>{
     }
   }
 
+  if(options.expire && typeof(options.expire) == 'number' && options.expire > 1000){
+    setTimeout(function(){
+      engine.view.remove(object.id);
+      scrollFunction();
+    }, options.expire);
+  }
+
   get.appendChild(object);
+  scrollFunction();
+
   return object.id;
 
 }
