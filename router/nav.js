@@ -257,10 +257,6 @@ let exp = {
       return toWorker(app,'panel',false,null,data);
     },
     comp : function(app,data,routerId){
-      let parse = routerId + app.ref;
-      if(track.comp[routerId] == parse){
-        return true;
-      }
       return toWorker(app,'comp',false,routerId,data);
     }
   },
