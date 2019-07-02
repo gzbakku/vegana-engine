@@ -1,5 +1,5 @@
 "use strict";
-const make = require('./tabs/make');
+const make = require('./make');
 
 //input object sample
 // {
@@ -8,7 +8,6 @@ const make = require('./tabs/make');
 //     {value:value1,module,module1}
 //   ]
 // }
-
 
 function build(type,options,clickFunction,activeFunction){
 

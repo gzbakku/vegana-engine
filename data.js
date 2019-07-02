@@ -1,4 +1,3 @@
-const common = require('./common');
 var db = {};
 
 module.exports = {
@@ -6,7 +5,7 @@ module.exports = {
   get : function(tag,where){
 
     if(typeof(tag) !== 'string'){
-      return common.error('invalid_tag');
+      return engine.common.error('invalid_tag');
     }
     if(!where){
       where = 'mem';
@@ -39,7 +38,7 @@ module.exports = {
   set : function(tag,value,where){
 
     if(typeof(tag) !== 'string'){
-      return common.error('invalid_tag');
+      return engine.common.error('invalid_tag');
     }
     if(!where){
       where = 'mem';
@@ -81,7 +80,7 @@ module.exports = {
   reset : function(tag,value,where){
 
     if(typeof(tag) !== 'string'){
-      return common.error('invalid_tag');
+      return engine.common.error('invalid_tag');
     }
     if(!where){
       where = 'mem';

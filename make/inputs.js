@@ -7,41 +7,44 @@ const creator = require('./creator');
 module.exports = {
 
   upload: function(options){
-
-    let user_function = options.function;
-    let local_function = (object)=>{
-      user_function(object.id,object.files);
-    };
-    options.function = local_function;
+    if(options.function){
+      let user_function = options.function;
+      let local_function = (object)=>{
+        user_function(object.id,object.files);
+      };
+      options.function = local_function;
+    }
     options.type = 'file';
     return creator('input',options);
-
   },
 
   select : function(options){
-
-    let user_function = options.function;
-    let local_function = (object)=>{
-      user_function(object.id,object.value);
-    };
-    options.function = local_function;
+    if(options.function){
+      let user_function = options.function;
+      let local_function = (object)=>{
+        user_function(object.id,object.value);
+      };
+      options.function = local_function;
+    }
     return creator('select',options);
-
   },
 
   input : function(options){
 
-    let user_function = options.function;
-    let fetch_this = 'value';
-    if(options.type == 'file'){fetch_this = 'files';}
-    let local_function = (object)=>{
-      if(options.type == 'number'){
-        user_function(object.id,Number(object[fetch_this]));
-      } else {
-        user_function(object.id,object[fetch_this]);
-      }
-    };
-    options.function = local_function;
+    if(options.function){
+      let user_function = options.function;
+      let fetch_this = 'value';
+      if(options.type == 'file'){fetch_this = 'files';}
+      let local_function = (object)=>{
+        if(options.type == 'number'){
+          user_function(object.id,Number(object[fetch_this]));
+        } else {
+          user_function(object.id,object[fetch_this]);
+        }
+      };
+      options.function = local_function;
+    }
+
     if(!options.type){options.type = 'string';}
     return creator('input',options);
 
@@ -98,22 +101,28 @@ module.exports = {
 
   textarea : function(options){
 
-    let user_function = options.function;
-    let local_function = (object)=>{
-      user_function(object.id,object.value);
-    };
-    options.function = local_function;
+    if(options.function){
+      let user_function = options.function;
+      let local_function = (object)=>{
+        user_function(object.id,object.value);
+      };
+      options.function = local_function;
+    }
+
     return creator('textarea',options);
 
   },
 
   button : function(options){
 
-    let user_function = options.function;
-    let local_function = (object,data)=>{
-      user_function(object.id,data);
-    };
-    options.function = local_function;
+    if(options.function){
+      let user_function = options.function;
+      let local_function = (object,data)=>{
+        user_function(object.id,data);
+      };
+      options.function = local_function;
+    }
+
     options.type = 'button';
     return creator('input',options);
 

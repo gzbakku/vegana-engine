@@ -1,14 +1,13 @@
-const common = require('./common');
 const log = false;
 
 module.exports = {
 
   pageTitle : function(title){
 
-    common.tell('setting pageTitle',log);
+    engine.common.tell('setting pageTitle',log);
 
     if(typeof(title) !== 'string'){
-      return common.error('invalid-title-data_type');
+      return engine.common.error('invalid-title-data_type');
     }
 
     document.title = title;
@@ -21,7 +20,7 @@ module.exports = {
     value : function(id,value){
       let get = document.getElementById(id);
       if(get == null){
-        return common.error('invalid-parent');
+        return engine.common.error('invalid-parent');
       }
       get.value = value;
       return true;
@@ -34,7 +33,7 @@ module.exports = {
     text : function(id,value){
       let get = document.getElementById(id);
       if(get == null){
-        return common.error('invalid-parent');
+        return engine.common.error('invalid-parent');
       }
       get.innerHTML = value;
       return true;
@@ -43,12 +42,12 @@ module.exports = {
     style: function(id,styles){
 
       if(!id || typeof(styles) !== 'object' || !styles.length || styles.length == 0){
-        return common.error("not_found-id/styles");
+        return engine.common.error("not_found-id/styles");
       }
 
       let get = document.getElementById(id);
       if(get == null){
-        return common.error('invalid-parent');
+        return engine.common.error('invalid-parent');
       }
 
       for(var i=0;i<styles.length;i++){

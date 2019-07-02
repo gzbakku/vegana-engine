@@ -1,6 +1,3 @@
-const common = require('../common');
-const checkBaseOptions = require('./check').check;
-const httpMarker = 'http://';
 const creator = require('./creator');
 
 module.exports = {
@@ -8,7 +5,7 @@ module.exports = {
   style : (options)=>{
 
     if(!options.id || !options.style){
-      return common.error('not_found-id/style-addStyle-make-engine');
+      return engine.common.error('not_found-id/style-addStyle-make-engine');
     }
 
     let object = document.getElementById(options.id);
@@ -24,7 +21,7 @@ module.exports = {
   addClass : function(options){
 
     if(!options.id || !options.class){
-      return common.error('not_found-id/class-addClass-make-engine');
+      return engine.common.error('not_found-id/class-addClass-make-engine');
     }
 
     let object = document.getElementById(options.id);
@@ -46,7 +43,7 @@ module.exports = {
   removeClass : function(options){
 
     if(!options.id || !options.class){
-      return common.error('not_found-id/class-removeClass-make-engine');
+      return engine.common.error('not_found-id/class-removeClass-make-engine');
     }
 
     let object = document.getElementById(options.id);
@@ -112,7 +109,7 @@ module.exports = {
   text : function(options){
 
     if(!options.id || !options.text){
-      return common.error('not_found-id/text-text-make-engine');
+      return engine.common.error('not_found-id/text-text-make-engine');
     }
 
     let object = document.getElementById(options.id);
@@ -139,11 +136,13 @@ module.exports = {
     if(options.type == 'url'){
       options.src = options.location;
     }
-    let user_function = options.function;
-    let local_function = (object)=>{
-      user_function(object.id);
-    };
-    options.function = local_function;
+    if(options.function){
+      let user_function = options.function;
+      let local_function = (object)=>{
+        user_function(object.id);
+      };
+      options.function = local_function;
+    }
 
     return creator('img',options);
 

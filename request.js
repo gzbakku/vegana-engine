@@ -1,17 +1,16 @@
-const common = require('./common');
 const log = false;
 
 module.exports = {
 
   send : async function(options){
 
-    common.tell('sending request',log);
+    engine.common.tell('sending request',log);
 
     if(typeof(options) !== 'object'){
-      return common.error('invalid_options');
+      return engine.common.error('invalid_options');
     }
     if(!options.body || !options.url){
-      return common.error('not_found-body/headers/url/method||options');
+      return engine.common.error('not_found-body/headers/url/method||options');
     }
 
     let build = {
@@ -19,7 +18,7 @@ module.exports = {
       body:JSON.stringify(options.body)
     };
 
-    common.tell('build configured',log);
+    engine.common.tell('build configured',log);
 
     if(options.method){
       build['method'] = options.method;
@@ -68,11 +67,11 @@ module.exports = {
       }
     })
     .catch((error)=>{
-      common.error('request_error : ' + error);
-      return common.error('failed-request');
+      engine.common.error('request_error : ' + error);
+      return engine.common.error('failed-request');
     });
 
-    common.tell('worker called',log);
+    engine.common.tell('worker called',log);
 
     return worker;
 

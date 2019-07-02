@@ -1,4 +1,3 @@
-const common = require('./common');
 const log = false;
 const httpMarker = 'http://';
 
@@ -15,7 +14,7 @@ module.exports = {
 
       return new Promise((resolve,reject)=>{
 
-        common.tell('loading page module',log);
+        engine.common.tell('loading page module',log);
 
         let error;
 
@@ -37,17 +36,17 @@ module.exports = {
         scp.src = location;
 
         scp.onload  = function(){
-          common.tell('global_comp_loaded',log);
+          engine.common.tell('global_comp_loaded',log);
           resolve(true);
         };
 
         scp.onreadystatechange = function(){
-          common.tell('global_comp_loaded',log);
+          engine.common.tell('global_comp_loaded',log);
           resolve(true);
         };
 
         scp.onerror = function(){
-          common.error('failed-compLoad');
+          engine.common.error('failed-compLoad');
           error = 'failed-compLoad';
           reject(error);
         }
@@ -62,7 +61,7 @@ module.exports = {
 
       return new Promise((resolve,reject)=>{
 
-        common.tell('loading page module',log);
+        engine.common.tell('loading page module',log);
 
         let error;
 
@@ -84,17 +83,17 @@ module.exports = {
         scp.src = location;
 
         scp.onload  = function(){
-          common.tell('page_loaded',log);
+          engine.common.tell('page_loaded',log);
           resolve(true);
         };
 
         scp.onreadystatechange = function(){
-          common.tell('page_loaded',log);
+          engine.common.tell('page_loaded',log);
           resolve(true);
         };
 
         scp.onerror = function(){
-          common.error('failed-pageLoad');
+          engine.common.error('failed-pageLoad');
           error = 'failed-pageLoad';
           reject(error);
         }
@@ -112,7 +111,7 @@ module.exports = {
 
         let error;
 
-        common.tell('loading cont module',log);
+        engine.common.tell('loading cont module',log);
 
 
         if(!pageName || typeof(pageName) !== 'string'){
@@ -139,12 +138,12 @@ module.exports = {
         scp.src = location;
 
         scp.onload  = function(){
-          common.tell('cont_loaded',log);
+          engine.common.tell('cont_loaded',log);
           resolve(true);
         };
 
         scp.onreadystatechange   = function(){
-          common.tell('cont_loaded',log);
+          engine.common.tell('cont_loaded',log);
           resolve(true);
         };
 
@@ -160,7 +159,7 @@ module.exports = {
 
         let error;
 
-        common.tell('loading panel module',log);
+        engine.common.tell('loading panel module',log);
 
         if(!pageName || typeof(pageName) !== 'string'){
           error = 'invalid/not_found-pageName';
@@ -184,12 +183,12 @@ module.exports = {
         scp.src = location;
 
         scp.onload  = function(){
-          common.tell('panel_loaded',log);
+          engine.common.tell('panel_loaded',log);
           resolve(true);
         };
 
         scp.onreadystatechange   = function(){
-          common.tell('panel_loaded',log);
+          engine.common.tell('panel_loaded',log);
           resolve(true);
         };
 
@@ -207,7 +206,7 @@ module.exports = {
 
       let error;
 
-      common.tell('loading page module',log);
+      engine.common.tell('loading page module',log);
 
       if(!fileName || typeof(fileName) !== 'string'){
         error = 'invalid/not_found-css_file_name';
@@ -236,7 +235,7 @@ module.exports = {
     comp:(data)=>{
 
       if(!data.comp || !data.function){
-        return common.error("not_found-comp/function");
+        return engine.common.error("not_found-comp/function");
       }
 
       engine.hooks.comps[data.comp] = data.function;
@@ -246,7 +245,7 @@ module.exports = {
     page:(data)=>{
 
       if(!data.page || !data.function){
-        return common.error("not_found-page/function");
+        return engine.common.error("not_found-page/function");
       }
 
       engine.hooks.pages[data.page] = data.function;
@@ -263,7 +262,7 @@ module.exports = {
     cont:(data)=>{
 
       if(!data.page || !data.cont || !data.function){
-        return common.error("not_found-page/cont/function");
+        return engine.common.error("not_found-page/cont/function");
       }
 
       engine.hooks.conts[data.page] = {};
@@ -282,7 +281,7 @@ module.exports = {
     panel:(data)=>{
 
       if(!data.page || !data.cont || !data.panel || !data.function){
-        return common.error("not_found-page/cont/panel/function");
+        return engine.common.error("not_found-page/cont/panel/function");
       }
 
       engine.hooks.panels[data.page] = {};

@@ -1,19 +1,14 @@
-const common = require('./common');
-const router = require('./router');
-const view = require('./view');
-const log = false;
-
 module.exports= {
 
   hover : function(id,func){
 
     if(!id || !func){
-      return common.error('not_found-id/function=>binder-hover');
+      return engine.common.error('not_found-id/function=>binder-hover');
     }
 
     let get = document.getElementById(id);
     if(get == null){
-      return common.error('invalid_id');
+      return engine.common.error('invalid_id');
     }
 
     get.addEventListener('mouseenter',()=>{
@@ -26,12 +21,12 @@ module.exports= {
   click : function(id,func){
 
     if(!id || !func){
-      return common.error('not_found-id/function=>binder-click');
+      return engine.common.error('not_found-id/function=>binder-click');
     }
 
     let get = document.getElementById(id);
     if(get == null){
-      return common.error('invalid_id');
+      return engine.common.error('invalid_id');
     }
 
     get.addEventListener('click',()=>{
@@ -44,12 +39,12 @@ module.exports= {
   files : function(id){
 
     if(id == null){
-      return common.error('no_id_found');
+      return engine.common.error('no_id_found');
     }
 
     let get = document.getElementById(id);
     if(get == null){
-      return common.error('invalid_id');
+      return engine.common.error('invalid_id');
     }
 
     return get.files;
@@ -59,12 +54,12 @@ module.exports= {
   text : function(id){
 
     if(id == null){
-      return common.error('no_id_found');
+      return engine.common.error('no_id_found');
     }
 
     let get = document.getElementById(id);
     if(get == null){
-      return common.error('invalid_id');
+      return engine.common.error('invalid_id');
     }
 
     return get.value;
@@ -74,12 +69,12 @@ module.exports= {
   number : function(id){
 
     if(id == null){
-      return common.error('no_id_found');
+      return engine.common.error('no_id_found');
     }
 
     let get = document.getElementById(id);
     if(get == null){
-      return common.error('invalid_id');
+      return engine.common.error('invalid_id');
     }
 
     if(Number(get.value)){
@@ -93,12 +88,12 @@ module.exports= {
   value : function(id){
 
     if(id == null){
-      return common.error('no_id_found');
+      return engine.common.error('no_id_found');
     }
 
     let get = document.getElementById(id);
     if(get == null){
-      return common.error('invalid_id');
+      return engine.common.error('invalid_id');
     }
 
     if(get.value){
@@ -114,11 +109,11 @@ module.exports= {
   active : function(id){
 
     if(id == null){
-      return common.error('no_id_found');
+      return engine.common.error('no_id_found');
     }
     let get = document.getElementById(id);
     if(get == null){
-      return common.error('invalid_id');
+      return engine.common.error('invalid_id');
     }
 
     if(get.checked){
@@ -132,12 +127,12 @@ module.exports= {
   boolean : function(id){
 
     if(id == null){
-      return common.error('no_id_found');
+      return engine.common.error('no_id_found');
     }
 
     let get = document.getElementById(id);
     if(get == null){
-      return common.error('invalid_id');
+      return engine.common.error('invalid_id');
     }
 
     let value = get.value;

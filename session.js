@@ -1,4 +1,3 @@
-const common = require('./common');
 const log = false;
 
 let token,user,user_type,uid,session_type;
@@ -63,10 +62,10 @@ module.exports = {
 
   start : function(token_arg,user_arg,uid,remember){
 
-    common.tell('starting-session',log);
+    engine.common.tell('starting-session',log);
 
     if(!token_arg){
-      return common.error("not_found-token");
+      return engine.common.error("not_found-token");
     }
 
     if(user_arg && typeof(user_arg) == 'object'){

@@ -160,7 +160,7 @@ module.exports = (tag,options)=>{
     }
   }
 
-  if(options.text && typeof(options.text) == 'string'){
+  if(options.hasOwnProperty('text') && options.text !== undefined && options.text !== null){
     object.innerHTML = options.text;
   }
   if(options.style){
@@ -180,7 +180,9 @@ module.exports = (tag,options)=>{
       i !== 'list_id' &&
       i !== 'id'
     ){
-      object[i] = options[i];
+      if(options[i]){
+        object[i] = options[i];
+      }
     }
   }
 
@@ -201,6 +203,9 @@ module.exports = (tag,options)=>{
           if(options.value == data.value){
             option.selected = true;
           }
+        }
+        if(!data.hasOwnProperty('value') || data.disabled){
+          option.disabled = true;
         }
         object.add(option);
       }

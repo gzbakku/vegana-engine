@@ -1,5 +1,3 @@
-const common = require('./common');
-
 module.exports = {
   json:json,
   email:checkEmail
@@ -13,12 +11,12 @@ function json(schema,data,schema_type,maxSize){
 
   //check schema
   if(!schema || typeof(schema) !== 'object' || Object.keys(schema).length == 0){
-    return common.error('not_found-valid_schema');
+    return engine.common.error('not_found-valid_schema');
   }
 
   //check data
   if(!data || typeof(data) !== 'object' || Object.keys(data).length == 0){
-    return common.error('not_found-valid_data');
+    return engine.common.error('not_found-valid_data');
   }
 
   let keys_schema = Object.keys(schema);
@@ -27,14 +25,14 @@ function json(schema,data,schema_type,maxSize){
   //check size of both objects
   if(schema_type == 'static'){
     if(keys_schema.length !== keys_data.length){
-      return common.error('miss_matched-object_size');
+      return engine.common.error('miss_matched-object_size');
     }
   }
 
   //check data object keys size if maxSize property is set
   if(schema_type == 'dynamic' && maxSize){
     if(keys_data.length > maxSize){
-      return common.error('max_limit_reached-data_size');
+      return engine.common.error('max_limit_reached-data_size');
     }
   }
 
@@ -51,13 +49,13 @@ function json(schema,data,schema_type,maxSize){
 
     //check shcema item type
     if(typeof(item) !== 'object'){
-      return common.error('invalid-schema_item_type-' + key);
+      return engine.common.error('invalid-schema_item_type-' + key);
       break;
     }
 
     //check if schema item have been declared
     if(!item.type || dataTypes.indexOf(item.type) < 0){
-      return common.error('not_found/invalid-schema_item_type-' + key);
+      return engine.common.error('not_found/invalid-schema_item_type-' + key);
       break;
     }
 
@@ -69,7 +67,7 @@ function json(schema,data,schema_type,maxSize){
     //check if the item is elective
     if(item.elective && item.elective == true){
       if(schema_type == 'static'){
-        return common.error('invalid-elective_item_in_static_schema-schema_key_in_data-' + key);
+        return engine.common.error('invalid-elective_item_in_static_schema-schema_key_in_data-' + key);
         break;
       } else {
         needed = false;
@@ -78,7 +76,7 @@ function json(schema,data,schema_type,maxSize){
 
     //check if schema key exists in data
     if(needed == true && data.hasOwnProperty(key) == false){
-      return common.error('not_found-schema_key_in_data-' + key);
+      return engine.common.error('not_found-schema_key_in_data-' + key);
       break;
     }
 
@@ -89,13 +87,13 @@ function json(schema,data,schema_type,maxSize){
 
     //check if the data is needed and present
     if(present == false && needed == true){
-      return common.error('not_found-data-data_type_for_key-' + key);
+      return engine.common.error('not_found-data-data_type_for_key-' + key);
       break;
     }
 
     //check if data type is valid
     if(present == true && type !== 'email' && checkType(data[key]) !== type){
-      return common.error('invalid-data_type_for_key-' + key);
+      return engine.common.error('invalid-data_type_for_key-' + key);
       break;
     }
 
@@ -103,20 +101,20 @@ function json(schema,data,schema_type,maxSize){
     if((type == 'array' || type == 'string') && present == true){
 
       if(!data[key]){
-        return common.error('not_found-data-schema_key_in_data-' + key);
+        return engine.common.error('not_found-data-schema_key_in_data-' + key);
         break;
       }
 
       if(item.min && data[key].length < item.min){
-        return common.error('min_length_reached-schema_key_in_data-' + key);
+        return engine.common.error('min_length_reached-schema_key_in_data-' + key);
         break;
       }
 
       if(item.max && data[key].length > item.max){
-        return common.error('max_length_reached-schema_key_in_data-' + key);
+        return engine.common.error('max_length_reached-schema_key_in_data-' + key);
         break;
       } else if(!item.max && type == 'string' && data[key].length > defaultStrLen){
-        return common.error('default_max_length_reached-schema_key_in_data-' + key);
+        return engine.common.error('default_max_length_reached-schema_key_in_data-' + key);
         break;
       }
 
@@ -124,7 +122,7 @@ function json(schema,data,schema_type,maxSize){
       if(type == 'string'){
         if(item.options && checkType(item.options)){
           if(item.options.indexOf(data[key]) < 0){
-            return common.error('invalid_option-schema_key_in_data-' + key);
+            return engine.common.error('invalid_option-schema_key_in_data-' + key);
             break;
           }
         }
@@ -136,17 +134,17 @@ function json(schema,data,schema_type,maxSize){
     if(type == 'number' && present == true){
 
       if(data[key] == false){
-        return common.error('not_found-data-schema_key_in_data-' + key);
+        return engine.common.error('not_found-data-schema_key_in_data-' + key);
         break;
       }
 
       if(item.min && data[key] < item.min){
-        return common.error('min_length_reached-schema_key_in_data-' + key);
+        return engine.common.error('min_length_reached-schema_key_in_data-' + key);
         break;
       }
 
       if(item.max && data[key] > item.max){
-        return common.error('max_length_reached-schema_key_in_data-' + key);
+        return engine.common.error('max_length_reached-schema_key_in_data-' + key);
         break;
       }
 
@@ -156,17 +154,17 @@ function json(schema,data,schema_type,maxSize){
     if(type == 'object' && present == true){
 
       if(data[key] == false){
-        return common.error('not_found-data-schema_key_in_data-' + key);
+        return engine.common.error('not_found-data-schema_key_in_data-' + key);
         break;
       }
 
       if(item.min && Object.keys(data[key]).length < item.min){
-        return common.error('min_length_reached-schema_key_in_data-' + key);
+        return engine.common.error('min_length_reached-schema_key_in_data-' + key);
         break;
       }
 
       if(item.max && Object.keys(data[key]).length > item.max){
-        return common.error('max_length_reached-schema_key_in_data-' + key);
+        return engine.common.error('max_length_reached-schema_key_in_data-' + key);
         break;
       }
 
@@ -175,7 +173,7 @@ function json(schema,data,schema_type,maxSize){
     //check the boolean data type
     if(type == 'boolean' && present == true){
       if(data[key] !== true && data[key] !== false){
-        return common.error('invalid-invalid_data-expected_boolean' + key);
+        return engine.common.error('invalid-invalid_data-expected_boolean' + key);
         break;
       }
     }
@@ -184,22 +182,22 @@ function json(schema,data,schema_type,maxSize){
     if(type == 'email' && present == true){
 
       if(checkType(data[key]) !== 'string'){
-        return common.error('invalid-schema_key_in_data-' + key);
+        return engine.common.error('invalid-schema_key_in_data-' + key);
         break;
       }
 
       if(item.min && Object.keys(data[key]).length < item.min){
-        return common.error('min_length_reached-schema_key_in_data-' + key);
+        return engine.common.error('min_length_reached-schema_key_in_data-' + key);
         break;
       }
 
       if(item.max && Object.keys(data[key]).length > item.max){
-        return common.error('max_length_reached-schema_key_in_data-' + key);
+        return engine.common.error('max_length_reached-schema_key_in_data-' + key);
         break;
       }
 
       if(checkEmail(data[key]) == false){
-        return common.error('invalid-email_key-' + key);
+        return engine.common.error('invalid-email_key-' + key);
         break;
       }
 

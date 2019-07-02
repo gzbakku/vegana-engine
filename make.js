@@ -3,7 +3,7 @@ const viewersImport = require('./make/viewers');
 const inputsImport = require('./make/inputs');
 const listImport = require('./make/list');
 const customImport = require('./make/custom');
-const tabsImport = require('./make/tabs');
+const tabsImport = require('./make/tabs/index');
 const a = require('./make/a.js');
 
 module.exports = {

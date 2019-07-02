@@ -1,6 +1,4 @@
-const common = require('./common');
 const log = false;
-
 const initWorker = require('./router/init');
 const navWorker = require('./router/nav');
 const getWorker = require('./router/get');
