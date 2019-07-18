@@ -12,7 +12,7 @@ const make = require('./make');
 function build(type,options,clickFunction,activeFunction){
 
   if(!options || !options.tabs.length || !options.parent || !document.getElementById(options.parent)){
-    return common.error('invalid_parent : ' + options);
+    return engine.common.error('invalid_parent : ' + options);
   }
 
   options.tabClass = options.tabClass || 'tab-idle';

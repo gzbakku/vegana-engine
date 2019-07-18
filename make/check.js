@@ -9,8 +9,8 @@ module.exports = {
     }
 
     //check parent property
-    if(object.hasOwnProperty('parent') !== true){
-      return common.error('not_found-id');
+    if(!object.hasOwnProperty('parent') == true){
+      return common.error('not_found-parent');
     }
       if(typeof(object.parent) !== 'string'){
         return common.error('not_found-parent');

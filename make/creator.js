@@ -214,7 +214,7 @@ module.exports = (tag,options)=>{
 
 
   let default_event = 'click';
-  if(tag == 'input' && options.type !== 'button'){
+  if((tag == 'input' || tag == 'textarea') && options.type !== 'button'){
     default_event = 'input'
   }
   if(options.function && tag !== 'ol' && tag !== 'ul'){
@@ -235,8 +235,8 @@ module.exports = (tag,options)=>{
           typeof(e.event) == 'string' &&
           typeof(e.function) == 'function'
         ){
-          object.addEventListener(e.event,()=>{
-            e.function(object.id)
+          object.addEventListener(e.event,(eve)=>{
+            e.function(object.id,eve)
           });
         }
       }
@@ -249,8 +249,8 @@ module.exports = (tag,options)=>{
       typeof(options.event.type) == 'string' &&
       typeof(options.event.function) == 'function'
     ){
-      object.addEventListener(options.event.type,()=>{
-        options.event.function(object.id)
+      object.addEventListener(options.event.type,(eve)=>{
+        options.event.function(object.id,eve)
       });
     }
   }
