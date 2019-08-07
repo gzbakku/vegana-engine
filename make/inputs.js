@@ -71,11 +71,6 @@ module.exports = {
     } else {
       label.className = 'form-checkbox-label';
     }
-    if(options.function){
-      label.addEventListener('click',()=>{
-        options.function(object.id);
-      });
-    }
 
     //create object
     let object = document.createElement("input");
@@ -93,6 +88,12 @@ module.exports = {
     }
     label.appendChild(object);
     label.appendChild(document.createElement('span'));
+
+    if(options.function){
+      object.addEventListener('click',()=>{
+        options.function(object.id);
+      });
+    }
 
     get.appendChild(label);
     return object.id;

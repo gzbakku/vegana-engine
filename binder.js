@@ -79,6 +79,8 @@ module.exports= {
 
     if(Number(get.value)){
       return Number(get.value);
+    } else if(get.value === '0'){
+      return 0;
     } else {
       return false;
     }

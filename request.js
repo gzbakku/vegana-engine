@@ -59,6 +59,7 @@ module.exports = {
     let worker = await fetch(options.url,build)
     .then((response)=>{
       //console.log(response);
+
       if(typeof(response) == 'string'){
         return reponseProcessor(response);
       } else {
