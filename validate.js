@@ -42,10 +42,9 @@ function json(schema,data,schema_type,maxSize){
   const defaultStrLen = 255;
 
   //loop the schema and check the data
-  for(var i=0;i<keys_schema.length;i++){
+  for(let key in schema){
 
-    let key = keys_schema[i];
-    let item = schema[key];
+    const item = schema[key];
 
     //check shcema item type
     if(typeof(item) !== 'object'){
@@ -133,7 +132,7 @@ function json(schema,data,schema_type,maxSize){
     //check the number for schema key in data
     if(type == 'number' && present == true){
 
-      if(data[key] == false){
+      if(data[key] !== 0 && !data[key){
         return engine.common.error('not_found-data-schema_key_in_data-' + key);
         break;
       }
