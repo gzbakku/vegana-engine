@@ -80,8 +80,12 @@ function json(schema,data,schema_type,maxSize){
     }
 
     //check if static data exists
-    if(data.hasOwnProperty(key) == true){
+    if(data.hasOwnProperty(key) == true && data[key] !== undefined && data[key] !== null){
       present = true;
+    }
+
+    if(present && type !== 'boolean' && data[key] === false){
+      present = false;
     }
 
     //check if the data is needed and present
@@ -92,6 +96,7 @@ function json(schema,data,schema_type,maxSize){
 
     //check if data type is valid
     if(present == true && type !== 'email' && checkType(data[key]) !== type){
+      console.log(data[key]);
       return engine.common.error('invalid-data_type_for_key-' + key);
       break;
     }
