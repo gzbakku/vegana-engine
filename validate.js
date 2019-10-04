@@ -84,6 +84,7 @@ function json(schema,data,schema_type,maxSize){
       present = true;
     }
 
+	//check if the data value is not false for non boolean keys
     if(present && type !== 'boolean' && data[key] === false){
       present = false;
     }

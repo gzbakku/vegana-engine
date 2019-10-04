@@ -56,7 +56,7 @@ function build(type,options,clickFunction,activeFunction){
     options.navButtonClass
   );
 
-  return true;
+  return parentModuleCont;
 
 }
 
