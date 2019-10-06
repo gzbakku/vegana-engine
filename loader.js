@@ -10,6 +10,60 @@ module.exports = {
       img.src=url;
     },
 
+    js : function(options){
+
+      return new Promise((resolve,reject)=>{
+
+        engine.common.tell('loading page module',log);
+
+        let error;
+
+        if(!engine.validate.json({
+          type:{type:'string',options:['local','url']},
+          url:{type:'string',max:4048}
+        },options)){
+          error = 'invalid/not_found-compName';
+          reject(error);
+        }
+
+        let location;
+
+        if(options.type == 'local'){
+          location = baseHref + 'js/' + options.url;
+        }
+        if(options.type == 'url'){
+          location = options.url;
+        }
+
+        let parent = document.getElementsByTagName("head")[0];
+
+        let scp = document.createElement('script');
+        scp.type = "text/javascript";
+        scp.src = location;
+
+        scp.onload  = function(){
+          engine.common.tell('js_loaded',log);
+          resolve(true);
+        };
+
+        scp.onreadystatechange = function(){
+          engine.common.tell('js_loaded',log);
+          resolve(true);
+        };
+
+        scp.onerror = function(e){
+          console.error(e);
+          engine.common.error('failed-load_js');
+          error = 'failed-load_js';
+          reject(error);
+        }
+
+        parent.appendChild(scp);
+
+      });
+
+    },
+
     comp : function(compName){
 
       return new Promise((resolve,reject)=>{
