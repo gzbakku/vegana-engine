@@ -262,7 +262,13 @@ module.exports = (tag,options)=>{
     }, options.expire);
   }
 
-  get.appendChild(object);
+  if(options.position){
+    get.insertAdjacentElement(options.position,object);
+  } else {
+    get.appendChild(object);
+  }
+
+
   scrollFunction();
 
   return object.id;
