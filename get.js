@@ -1,5 +1,94 @@
 module.exports = {
 
+  platform:(data)=>{
+
+    if(!data){
+      //check cordova here
+      if(/AppName\/[0-9\.]+$/.test(navigator.userAgent)){
+        return 'cordova';
+      }
+      //check electron here
+      if(
+        typeof window !== 'undefined' &&
+        typeof window.process === 'object' &&
+        window.process.type === 'renderer'
+      ){
+        return 'electron';
+      }
+      if(
+        typeof process !== 'undefined' &&
+        typeof process.versions === 'object' &&
+        !!process.versions.electron
+      ){
+        return 'electron';
+      }
+      if (
+        typeof navigator === 'object' &&
+        typeof navigator.userAgent === 'string' &&
+        navigator.userAgent.indexOf('Electron') >= 0
+      ){
+        return 'electron';
+      }
+      data = 'platform';
+    }
+
+    if(data == 'electron'){
+      if(
+        typeof window !== 'undefined' &&
+        typeof window.process === 'object' &&
+        window.process.type === 'renderer'
+      ){
+        return true;
+      }
+      if(
+        typeof process !== 'undefined' &&
+        typeof process.versions === 'object' &&
+        !!process.versions.electron
+      ){
+        return true;
+      }
+      if (
+        typeof navigator === 'object' &&
+        typeof navigator.userAgent === 'string' &&
+        navigator.userAgent.indexOf('Electron') >= 0
+      ){
+        return true;
+      }
+      return false;
+    }
+
+    if(data == 'cordova'){
+      return /AppName\/[0-9\.]+$/.test(navigator.userAgent);
+    }
+
+    let w = document.body.offsetWidth;
+    let h = Math.max(window.innerHeight, document.body.clientHeight);
+    let ans;
+
+    if(w >= h){
+      if(data == 'platform'){
+        ans = 'pc';
+      } else if(data == 'mobile'){
+        ans = false;
+      } else if(data == 'pc'){
+        ans = true;
+      }
+    }
+
+    if(w < h){
+      if(data == 'platform'){
+        ans = 'mobile';
+      } else if(data == 'mobile'){
+        ans = true;
+      } else if(data == 'pc'){
+        ans = false;
+      }
+    }
+
+    return ans;
+
+  },
+
   pageModule : function(pageName){
 
     if(window.pageModules[pageName]){
