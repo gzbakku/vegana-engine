@@ -198,8 +198,10 @@ let exp = {
         // if(document.URL.split('?').length > 1){
         //   url += '?' + document.URL.split('?')[1];
         // }
-        if(!vegana_do_not_route_with_url){
-          window.history.pushState("object or string", null, url);
+        if(window.hasOwnProperty('vegana_do_not_route_with_url')){
+          if(!vegana_do_not_route_with_url){
+            window.history.pushState("object or string", null, url);
+          }
         }
         return url;
       },
@@ -215,8 +217,10 @@ let exp = {
         // if(document.URL.split('?').length > 1){
         //   url += '?' + document.URL.split('?')[1];
         // }
-        if(!vegana_do_not_route_with_url){
-          window.history.pushState("object or string", null, url);
+        if(window.hasOwnProperty('vegana_do_not_route_with_url')){
+          if(!vegana_do_not_route_with_url){
+            window.history.pushState("object or string", null, url);
+          }
         }
         return url;
       },
@@ -233,8 +237,10 @@ let exp = {
         // if(document.URL.split('?').length > 1){
         //   url += '?' + document.URL.split('?')[1];
         // }
-        if(!vegana_do_not_route_with_url){
-          window.history.pushState("object or string", null, url);
+        if(window.hasOwnProperty('vegana_do_not_route_with_url')){
+          if(!vegana_do_not_route_with_url){
+            window.history.pushState("object or string", null, url);
+          }
         }
         return url;
       }
