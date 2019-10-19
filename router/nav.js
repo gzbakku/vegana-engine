@@ -198,7 +198,9 @@ let exp = {
         // if(document.URL.split('?').length > 1){
         //   url += '?' + document.URL.split('?')[1];
         // }
-        window.history.pushState("object or string", null, url);
+        if(!vegana_do_not_route_with_url){
+          window.history.pushState("object or string", null, url);
+        }
         return url;
       },
       cont:function(id){
@@ -213,7 +215,9 @@ let exp = {
         // if(document.URL.split('?').length > 1){
         //   url += '?' + document.URL.split('?')[1];
         // }
-        window.history.pushState("object or string", null, url);
+        if(!vegana_do_not_route_with_url){
+          window.history.pushState("object or string", null, url);
+        }
         return url;
       },
       panel:function(id){
@@ -229,7 +233,9 @@ let exp = {
         // if(document.URL.split('?').length > 1){
         //   url += '?' + document.URL.split('?')[1];
         // }
-        window.history.pushState("object or string", null, url);
+        if(!vegana_do_not_route_with_url){
+          window.history.pushState("object or string", null, url);
+        }
         return url;
       }
     }
