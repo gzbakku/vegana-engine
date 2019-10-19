@@ -87,13 +87,10 @@ module.exports = {
 
         let location;
         if(window.hasOwnProperty('is_electron') || window.hasOwnProperty('is_cordova')){
-          alert('striped');
           location = 'js/globals/' + compName + 'Comp/globalComp.js';
         } else {
           location = baseHref + '/js/globals/' + compName + 'Comp/globalComp.js';
         }
-
-        alert(location);
 
         let parent = document.getElementsByTagName("head")[0];
 
