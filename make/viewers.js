@@ -131,6 +131,11 @@ module.exports = {
       options.type = 'local';
     }
     if(options.type == 'local'){
+      if(options.location[0] !== '/'){
+        if(!window.hasOwnProperty('is_electron') && !window.hasOwnProperty('is_cordova')){
+          options.location = '/' + options.location;
+        }
+      }
       options.src = window.baseHref + options.location;
     }
     if(options.type == 'url'){

@@ -29,7 +29,11 @@ module.exports = {
         let location;
 
         if(options.type == 'local'){
-          location = baseHref + 'js/' + options.url;
+          if(window.hasOwnProperty('is_electron') || window.hasOwnProperty('is_cordova')){
+            location = 'js/' + options.url;
+          } else {
+            location = baseHref + '/js/' + options.url;
+          }
         }
         if(options.type == 'url'){
           location = options.url;
@@ -81,7 +85,15 @@ module.exports = {
           reject(error);
         }
 
-        let location = baseHref + 'js/globals/' + compName + 'Comp/globalComp.js';
+        let location;
+        if(window.hasOwnProperty('is_electron') || window.hasOwnProperty('is_cordova')){
+          alert('striped');
+          location = 'js/globals/' + compName + 'Comp/globalComp.js';
+        } else {
+          location = baseHref + '/js/globals/' + compName + 'Comp/globalComp.js';
+        }
+
+        alert(location);
 
         let parent = document.getElementsByTagName("head")[0];
 
@@ -128,7 +140,12 @@ module.exports = {
           reject(error);
         }
 
-        let location = baseHref + '/js/pages/' + pageName + '/page.js';
+        let location;
+        if(window.hasOwnProperty('is_electron') || window.hasOwnProperty('is_cordova')){
+          location = 'js/pages/' + pageName + '/page.js';
+        } else {
+          location = baseHref + '/js/pages/' + pageName + '/page.js';
+        }
 
         let parent = document.getElementsByTagName("head")[0];
 
@@ -181,7 +198,12 @@ module.exports = {
           reject(error);
         }
 
-        let location = baseHref + 'js/pages/' + pageName + '/conts/' + contName + '/cont.js';
+        let location;
+        if(window.hasOwnProperty('is_electron') || window.hasOwnProperty('is_cordova')){
+          location = 'js/pages/' + pageName + '/conts/' + contName + '/cont.js';
+        } else {
+          location = baseHref + '/js/pages/' + pageName + '/conts/' + contName + '/cont.js';
+        }
 
         //console.log(location);
 
@@ -228,7 +250,12 @@ module.exports = {
           reject(error);
         }
 
-        let location = baseHref + '/js/pages/' + pageName + '/conts/' + contName + '/panels/' + panelName + '/panel.js';
+        let location;
+        if(window.hasOwnProperty('is_electron') || window.hasOwnProperty('is_cordova')){
+          location = 'js/pages/' + pageName + '/conts/' + contName + '/panels/' + panelName + '/panel.js';
+        } else {
+          location = baseHref + '/js/pages/' + pageName + '/conts/' + contName + '/panels/' + panelName + '/panel.js';
+        }
 
         let parent = document.getElementsByTagName("head")[0];
 
@@ -268,6 +295,12 @@ module.exports = {
       }
 
       let location = baseHref + '/css/' + fileName + '.css';
+
+      if(window.hasOwnProperty('is_electron') || window.hasOwnProperty('is_cordova')){
+        location = 'css/' + fileName + '.css';
+      } else {
+        location = baseHref + '/css/' + fileName + '.css';
+      }
 
       let parent = document.getElementsByTagName("head")[0];
 

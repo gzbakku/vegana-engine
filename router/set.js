@@ -66,21 +66,21 @@ module.exports = {
     let host = window.location.hostname;
     let port = window.location.port;
 
-    if(typeof(url) == 'string'){
-      if(port){
-        location = protocol + '//' + host + ':' + port + '/' + url;
-      } else {
-        location = protocol + '//' + host + '/' + url;
-      }
-    } else {
-      if(port){
-        location = protocol + '//' + host + ':' + port + '/';
-      } else {
-        location = protocol + '//' + host + '/';
-      }
+    let hold = '';
+    if(protocol && protocol !== 'file:'){
+      hold += protocol + '//';
+    }
+    if(host){
+      hold += host;
+    }
+    if(port){
+      hold += ':' + port;
+    }
+    if(url && url !== '/'){
+      hold += '/' + url;
     }
 
-    window.baseHref = location;
+    window.baseHref = hold;
 
     return true;
 
