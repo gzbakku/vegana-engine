@@ -52,6 +52,10 @@ module.exports = (options)=>{
 
     options.function = (object,data,e)=>{
 
+      if(options.baseFunction){
+        options.baseFunction();
+      }
+
       e.preventDefault();
       e.stopPropagation();
 
