@@ -3,62 +3,29 @@ module.exports = {
   platform:(data)=>{
 
     if(!data){
-      //check cordova here
-      if(/AppName\/[0-9\.]+$/.test(navigator.userAgent)){
+      if(window.hasOwnProperty('is_cordova')){
         return 'cordova';
       }
-      //check electron here
-      if(
-        typeof window !== 'undefined' &&
-        typeof window.process === 'object' &&
-        window.process.type === 'renderer'
-      ){
-        return 'electron';
-      }
-      if(
-        typeof process !== 'undefined' &&
-        typeof process.versions === 'object' &&
-        !!process.versions.electron
-      ){
-        return 'electron';
-      }
-      if (
-        typeof navigator === 'object' &&
-        typeof navigator.userAgent === 'string' &&
-        navigator.userAgent.indexOf('Electron') >= 0
-      ){
+      if(window.hasOwnProperty('is_electron')){
         return 'electron';
       }
       data = 'platform';
     }
 
     if(data == 'electron'){
-      if(
-        typeof window !== 'undefined' &&
-        typeof window.process === 'object' &&
-        window.process.type === 'renderer'
-      ){
+      if(window.hasOwnProperty('is_electron')){
         return true;
+      } else {
+        return false;
       }
-      if(
-        typeof process !== 'undefined' &&
-        typeof process.versions === 'object' &&
-        !!process.versions.electron
-      ){
-        return true;
-      }
-      if (
-        typeof navigator === 'object' &&
-        typeof navigator.userAgent === 'string' &&
-        navigator.userAgent.indexOf('Electron') >= 0
-      ){
-        return true;
-      }
-      return false;
     }
 
     if(data == 'cordova'){
-      return /AppName\/[0-9\.]+$/.test(navigator.userAgent);
+      if(window.hasOwnProperty('is_cordova')){
+        return true;
+      } else {
+        return false;
+      }
     }
 
     let w = document.body.offsetWidth;

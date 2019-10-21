@@ -199,7 +199,7 @@ let exp = {
         //   url += '?' + document.URL.split('?')[1];
         // }
         if(window.hasOwnProperty('vegana_do_not_route_with_url')){
-          if(!vegana_do_not_route_with_url){
+          if(vegana_do_not_route_with_url){
             window.history.pushState("object or string", null, url);
           }
         }
@@ -218,7 +218,7 @@ let exp = {
         //   url += '?' + document.URL.split('?')[1];
         // }
         if(window.hasOwnProperty('vegana_do_not_route_with_url')){
-          if(!vegana_do_not_route_with_url){
+          if(vegana_do_not_route_with_url){
             window.history.pushState("object or string", null, url);
           }
         }
@@ -238,7 +238,7 @@ let exp = {
         //   url += '?' + document.URL.split('?')[1];
         // }
         if(window.hasOwnProperty('vegana_do_not_route_with_url')){
-          if(!vegana_do_not_route_with_url){
+          if(vegana_do_not_route_with_url){
             window.history.pushState("object or string", null, url);
           }
         }
