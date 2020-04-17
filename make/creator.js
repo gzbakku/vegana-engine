@@ -268,9 +268,75 @@ module.exports = (tag,options)=>{
     get.appendChild(object);
   }
 
+  if(options.hasOwnProperty("touch")){
+    if(typeof(options.touch) == "function"){
+      let startX,startY,lastX,lastY;
+      object.addEventListener("touchstart",(eve)=>{
+        x = eve.touches[0].clientX,y = eve.touches[0].clientY;
+        startX = x;startY = y;
+      });
+      object.addEventListener("touchmove",(eve)=>{
+        x = eve.touches[0].clientX,y = eve.touches[0].clientY;
+        if(!lastX || !lastY){lastX = x,lastY = y;return;}
+        const process = process_move(startX,startY,x,y,"continue");
+        lastX = process.posX,lastY = process.posY;
+        options.touch(object.id,process,eve);
+      });
+      object.addEventListener("touchend",(eve)=>{
+        if(!startX || !startY){startX = lastX,startY = lastY;return;}
+        const process = process_move(startX,startY,lastX,lastY,"end");
+        options.touch(object.id,process,eve);
+      });
+      // mouse functions
+      object.draggable = true;
+      const img = new Image();
+      object.addEventListener("dragstart",(eve)=>{
+        eve.dataTransfer.setDragImage(img,0,0);
+        x = eve.clientX,y = eve.clientY;
+        startX = x;startY = y;
+      });
+      object.addEventListener("dragover",(eve)=>{
+        eve.dataTransfer.setDragImage(img,0,0);
+        x = eve.clientX,y = eve.clientY;
+        if(!lastX || !lastY){lastX = x,lastY = y;return;}
+        const process = process_move(startX,startY,x,y,"continue");
+        lastX = process.posX,lastY = process.posY;
+        options.touch(object.id,process,eve);
+      });
+      object.addEventListener("dragend",(eve)=>{
+        eve.dataTransfer.setDragImage(img,0,0);
+        if(!startX || !startY){startX = lastX,startY = lastY;return;}
+        const process = process_move(startX,startY,lastX,lastY,"end");
+        options.touch(object.id,process,eve);
+      });
+    }
+  }
 
   scrollFunction();
 
   return object.id;
 
+}
+
+function process_move(lastX,lastY,x,y,type){
+  let dirX = 'left',dirY = 'up',
+  diffX = x - lastX,diffY = y - lastY,
+  perc_x = Math.ceil((Math.abs(diffX) / screen.width) * 100),
+  perc_y = Math.ceil((Math.abs(diffY) / screen.height) * 100);
+  if(diffY === 0){dirY = 'none';}
+  if(diffY > 0){dirY = 'down';}
+  if(diffY < 0){dirY = 'up';}
+  if(diffX === 0){dirX = 'none';}
+  if(diffX > 0){dirX = 'right';}
+  if(diffX < 0){dirX = 'left';}
+  let collect = {
+    type:type,
+    dirX:dirX,dirY:dirY,
+    moveX:Math.abs(diffX),moveY:Math.abs(diffY),
+    posX:x,posY:y,
+    basePosX:lastX,
+    basePosY:lastY,
+    percX:perc_x,percY:perc_y
+  };
+  return collect;
 }

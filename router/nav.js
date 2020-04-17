@@ -198,11 +198,16 @@ let exp = {
         // if(document.URL.split('?').length > 1){
         //   url += '?' + document.URL.split('?')[1];
         // }
+        let platform = engine.get.platform();
+        if(platform == "cordova" || platform == "electron"){
+          return url;
+        }
         if(window.hasOwnProperty('vegana_do_not_route_with_url')){
-          if(vegana_do_not_route_with_url){
-            window.history.pushState("object or string", null, url);
+          if(window.vegana_do_not_route_with_url === true){
+            return url;
           }
         }
+        window.history.pushState("object or string", null, url);
         return url;
       },
       cont:function(id){
@@ -217,11 +222,16 @@ let exp = {
         // if(document.URL.split('?').length > 1){
         //   url += '?' + document.URL.split('?')[1];
         // }
+        let platform = engine.get.platform();
+        if(platform == "cordova" || platform == "electron"){
+          return url;
+        }
         if(window.hasOwnProperty('vegana_do_not_route_with_url')){
-          if(vegana_do_not_route_with_url){
-            window.history.pushState("object or string", null, url);
+          if(window.vegana_do_not_route_with_url === true){
+            return url;
           }
         }
+        window.history.pushState("object or string", null, url);
         return url;
       },
       panel:function(id){
@@ -237,11 +247,16 @@ let exp = {
         // if(document.URL.split('?').length > 1){
         //   url += '?' + document.URL.split('?')[1];
         // }
+        let platform = engine.get.platform();
+        if(platform == "cordova" || platform == "electron"){
+          return url;
+        }
         if(window.hasOwnProperty('vegana_do_not_route_with_url')){
-          if(vegana_do_not_route_with_url){
-            window.history.pushState("object or string", null, url);
+          if(window.vegana_do_not_route_with_url === true){
+            return url;
           }
         }
+        window.history.pushState("object or string", null, url);
         return url;
       }
     }
