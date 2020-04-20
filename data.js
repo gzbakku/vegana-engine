@@ -119,6 +119,28 @@ module.exports = {
 
     return true;
 
+  },
+
+  delete:(tag,where)=>{
+
+    if(!type_collection){
+      process_type_collection();
+    }
+
+    if(where == 'mem'){
+      delete db[tag];
+    }
+    if(where == 'session'){
+      remove_data_type(tag,'session');
+      sessionStorage.removeItem(tag);
+    }
+    if(where == 'local'){
+      remove_data_type(tag,'local');
+      localStorage.removeItem(tag);
+    }
+
+    return true;
+
   }
 
 }
@@ -134,6 +156,25 @@ function convert(type,data){
     return JSON.parse(data);
   }
   return data;
+}
+
+function remove_data_type(tag,where){
+
+  if(!type_collection){
+    process_type_collection();
+  }
+
+  if(where === "local"){
+    delete type_collection.local[tag];
+    localStorage.setItem("type_collection_local",JSON.stringify(type_collection.local));
+  }
+  if(where === "session"){
+    delete type_collection.session[tag];
+    localStorage.setItem("type_collection_session",JSON.stringify(type_collection.session));
+  }
+
+  return true;
+
 }
 
 function save_data_type(tag,where,type){

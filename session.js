@@ -4,23 +4,23 @@ let token,user,user_type,uid,session_type;
 
 function check(){
 
-  let type = localStorage.getItem('session_type');
+  let type = engine.data.get('session_type','local');
   if(!type){
     return false;
   }
 
   if(type == 'temp'){
-    token = sessionStorage.getItem('token');
-    user = sessionStorage.getItem('user');
-    user_type = sessionStorage.getItem('user_type');
-    uid = sessionStorage.getItem('uid');
-    session_type = localStorage.getItem('session_type');
+    token = engine.data.get('token','session');
+    user = engine.data.get('user','session');
+    user_type = engine.data.get('user_type','session');
+    uid = engine.data.get('uid','session');
+    session_type = engine.data.get('session_type','local');
   } else {
-    token = localStorage.getItem('token');
-    user = localStorage.getItem('user');
-    user_type = localStorage.getItem('user_type');
-    uid = localStorage.getItem('uid');
-    session_type = localStorage.getItem('session_type');
+    token = engine.data.get('token','local');
+    user = engine.data.get('user','local');
+    user_type = engine.data.get('user_type','local');
+    uid = engine.data.get('uid','local');
+    session_type = engine.data.get('session_type','local');
   }
 
   if(!token){
@@ -33,23 +33,23 @@ function check(){
 
 function end(){
 
-  let type = localStorage.getItem('session_type');
+  let type = engine.data.get('session_type','local');
   if(!type){
     return false;
   }
 
   if(type == 'temp'){
-    token = sessionStorage.removeItem('token');
-    user = sessionStorage.removeItem('user');
-    user_type = sessionStorage.removeItem('user_type');
-    uid = sessionStorage.removeItem('uid');
-    session_type = localStorage.removeItem('session_type');
+    token = engine.data.delete('token','session');
+    user = engine.data.delete('user','session');
+    user_type = engine.data.delete('user_type','session');
+    uid = engine.data.delete('uid','session');
+    session_type = engine.data.delete('session_type','local');
   } else {
-    token = localStorage.removeItem('token');
-    user = localStorage.removeItem('user');
-    user_type = localStorage.removeItem('user_type');
-    uid = localStorage.removeItem('uid');
-    session_type = localStorage.removeItem('session_type');
+    token = engine.data.delete('token','local');
+    user = engine.data.delete('user','local');
+    user_type = engine.data.delete('user_type','local');
+    uid = engine.data.delete('uid','local');
+    session_type = engine.data.delete('session_type','local');
   }
 
   return true;
@@ -68,21 +68,16 @@ module.exports = {
       return engine.common.error("not_found-token");
     }
 
-    if(user_arg && typeof(user_arg) == 'object'){
-      user_type = 'object';
-      user_arg = JSON.stringify(user_arg);
-    }
-
-    if(remember == true){
-      localStorage.setItem('token',token_arg);
-      localStorage.setItem('user',user_arg);
-      localStorage.setItem('uid',uid);
-      localStorage.setItem('session_type','persistant');
+    if(remember === true){
+      engine.data.reset('token',token_arg,'local');
+      engine.data.reset('user',user_arg,'local');
+      engine.data.reset('uid',uid,'local');
+      engine.data.reset('session_type','persistant','local');
     } else {
-      sessionStorage.setItem('token',token_arg);
-      sessionStorage.setItem('user',user_arg);
-      sessionStorage.setItem('uid',uid);
-      localStorage.setItem('session_type','temp');
+      engine.data.reset('token',token_arg,'session');
+      engine.data.reset('user',user_arg,'session');
+      engine.data.reset('uid',uid,'session');
+      engine.data.reset('session_type','temp','local');
     }
 
     return check();
