@@ -143,7 +143,7 @@ module.exports = {
 
   }
 
-}
+};
 
 function convert(type,data){
   if(type == "number"){
@@ -196,7 +196,7 @@ function save_data_type(tag,where,type){
 
 }
 
-function process_type_collection(){
+async function process_type_collection(){
   let get_local,get_session;
   try{
     const fetch = localStorage.getItem("type_collection_session");
@@ -205,7 +205,7 @@ function process_type_collection(){
     } else {
       get_session = {};
     }
-  } catch {
+  } catch(e) {
     get_session = {}
   }
   try{
@@ -215,7 +215,7 @@ function process_type_collection(){
     } else {
       get_local = {};
     }
-  } catch {
+  } catch(e) {
     get_local = {}
   }
   type_collection = {
