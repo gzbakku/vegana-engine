@@ -18,7 +18,7 @@ module.exports = (options)=>{
     if(options.page){
       let local = options.page;
       let replace = local.replace('Page','');
-      href += replace;
+      href += '/' + replace;
     }
     if(options.cont){
       let local = options.cont;
@@ -52,12 +52,17 @@ module.exports = (options)=>{
 
     options.function = (object,data,e)=>{
 
+      e.preventDefault();
+      e.stopPropagation();
+
       if(options.baseFunction){
         options.baseFunction();
       }
 
-      e.preventDefault();
-      e.stopPropagation();
+      if(options.superFuction){
+        options.superFuction();
+        return;
+      }
 
       if(options.page && !options.cont && !options.panel){
         const page = engine.get.pageModule(options.page);
