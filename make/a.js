@@ -59,8 +59,8 @@ module.exports = (options)=>{
         options.baseFunction();
       }
 
-      if(options.superFuction){
-        options.superFuction();
+      if(options.superFunction){
+        options.superFunction();
         return;
       }
 
