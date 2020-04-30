@@ -218,8 +218,8 @@ module.exports = (tag,options)=>{
     default_event = 'input'
   }
   if(options.function && tag !== 'ol' && tag !== 'ul'){
-    object.addEventListener(default_event,(e)=>{
-      options.function(object,options.functionData,e);
+    object.addEventListener(default_event,(eve)=>{
+      options.function(object,options.functionData,eve);
     });
   }
 
@@ -268,23 +268,27 @@ module.exports = (tag,options)=>{
     get.appendChild(object);
   }
 
+  let startTime;
+
   if(options.hasOwnProperty("touch")){
     if(typeof(options.touch) == "function"){
       let startX,startY,lastX,lastY;
       object.addEventListener("touchstart",(eve)=>{
+        startTime
         x = eve.touches[0].clientX,y = eve.touches[0].clientY;
         startX = x;startY = y;
+        startTime = new Date().getTime();
       });
       object.addEventListener("touchmove",(eve)=>{
         x = eve.touches[0].clientX,y = eve.touches[0].clientY;
         if(!lastX || !lastY){lastX = x,lastY = y;return;}
-        const process = process_move(startX,startY,x,y,"continue");
+        const process = process_move(startX,startY,x,y,"continue",startTime);
         lastX = process.posX,lastY = process.posY;
         options.touch(object.id,process,eve);
       });
       object.addEventListener("touchend",(eve)=>{
         if(!startX || !startY){startX = lastX,startY = lastY;return;}
-        const process = process_move(startX,startY,lastX,lastY,"end");
+        const process = process_move(startX,startY,lastX,lastY,"end",startTime);
         options.touch(object.id,process,eve);
       });
       // mouse functions
@@ -294,19 +298,20 @@ module.exports = (tag,options)=>{
         eve.dataTransfer.setDragImage(img,0,0);
         x = eve.clientX,y = eve.clientY;
         startX = x;startY = y;
+        startTime = new Date().getTime();
       });
       object.addEventListener("dragover",(eve)=>{
         eve.dataTransfer.setDragImage(img,0,0);
         x = eve.clientX,y = eve.clientY;
         if(!lastX || !lastY){lastX = x,lastY = y;return;}
-        const process = process_move(startX,startY,x,y,"continue");
+        const process = process_move(startX,startY,x,y,"continue",startTime);
         lastX = process.posX,lastY = process.posY;
         options.touch(object.id,process,eve);
       });
       object.addEventListener("dragend",(eve)=>{
         eve.dataTransfer.setDragImage(img,0,0);
         if(!startX || !startY){startX = lastX,startY = lastY;return;}
-        const process = process_move(startX,startY,lastX,lastY,"end");
+        const process = process_move(startX,startY,lastX,lastY,"end",startTime);
         options.touch(object.id,process,eve);
       });
     }
@@ -318,7 +323,7 @@ module.exports = (tag,options)=>{
 
 }
 
-function process_move(lastX,lastY,x,y,type){
+function process_move(lastX,lastY,x,y,type,startTime){
   let dirX = 'left',dirY = 'up',
   diffX = x - lastX,diffY = y - lastY,
   perc_x = Math.ceil((Math.abs(diffX) / screen.width) * 100),
@@ -329,6 +334,8 @@ function process_move(lastX,lastY,x,y,type){
   if(diffX === 0){dirX = 'none';}
   if(diffX > 0){dirX = 'right';}
   if(diffX < 0){dirX = 'left';}
+  let now = new Date().getTime();
+  let time_diff = now - startTime;
   let collect = {
     type:type,
     dirX:dirX,dirY:dirY,
@@ -336,7 +343,8 @@ function process_move(lastX,lastY,x,y,type){
     posX:x,posY:y,
     basePosX:lastX,
     basePosY:lastY,
-    percX:perc_x,percY:perc_y
+    percX:perc_x,percY:perc_y,
+    time:time_diff
   };
   return collect;
 }
