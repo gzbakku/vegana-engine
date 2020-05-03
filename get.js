@@ -1,5 +1,9 @@
 module.exports = {
 
+  element:(id)=>{
+    return document.getElementById(id);
+  },
+
   platform:(data)=>{
 
     if(!data){
@@ -28,8 +32,11 @@ module.exports = {
       }
     }
 
-    let w = document.body.offsetWidth;
-    let h = Math.max(window.innerHeight, document.body.clientHeight);
+    // let w = document.body.offsetWidth;
+    // let h = Math.max(window.innerHeight, document.body.clientHeight);
+
+    let w = screen.width;
+    let h = screen.height;
     let ans;
 
     if(w >= h){
