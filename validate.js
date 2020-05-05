@@ -225,17 +225,12 @@ function checkType(data){
   let base = typeof(data);
 
   if(base == 'object'){
-
-    if(Object.keys(data).length == 0){
-      return 'object';
-    }
-
-    if(!data.length){
-      return 'object';
-    } else if(data.length > 0){
+    if(data instanceof Array){
       return 'array';
     }
-
+    if(data instanceof Object){
+      return 'object';
+    }
   }
 
   if(base == 'string' || base == 'number'){
