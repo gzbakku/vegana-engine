@@ -1,5 +1,9 @@
 module.exports = {
 
+  host:()=>{
+    return window.location.hostname;
+  },
+
   element:(id)=>{
     return document.getElementById(id);
   },
