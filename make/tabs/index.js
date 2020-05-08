@@ -90,7 +90,7 @@ module.exports = {
       const page = engine.router.active.page + '-router-cont';
       const cont = engine.router.track.cont[page];
       routerId = engine.router.init.panels(cont);
-      mod.init(routerId);
+      mod.init(routerId,data);
     }
 
     return build('panel',options,clickFunction,activeFunction);

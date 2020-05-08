@@ -36,6 +36,12 @@ module.exports = {
 
       if(tab.value && tab.module){
 
+        let tabRef = parent + tab.module.ref;
+        let data = null;
+        if(tab.data){
+          data = tab.data;
+        }
+
         const tabId = engine.make.button({
           parent:parent,
           value:tab.value,
@@ -68,12 +74,6 @@ module.exports = {
         });
 
         tab_ids.push(tabId);
-
-        let tabRef = parent + tab.module.ref;
-        let data = null;
-        if(tab.data){
-          data = tab.data;
-        }
 
         //set active tab class here
         if(tab.active){
