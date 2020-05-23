@@ -10,6 +10,121 @@ module.exports = {
       img.src=url;
     },
 
+    wasm : async function(options){
+
+      return new Promise(async (resolve,reject)=>{
+
+        engine.common.tell('loading page module',log);
+
+        let error;
+
+        if(!engine.validate.json({
+          type:{type:'string',options:['local','url']},
+          url:{type:'string',elective:true},
+          module:{type:'string',elective:true}
+        },options,'dynamic',3)){
+          error = 'invalid/not_found-compName';
+          reject(error);
+        }
+
+        let location;
+
+        if(options.type === 'local'){
+          if(!options.module){
+            error = 'invalid/not_found-module';
+            reject(error);
+          }
+          if(window.hasOwnProperty('is_electron') || window.hasOwnProperty('is_cordova')){
+            location = 'js/wasm/' + options.module + '/index.wasm';
+          } else {
+            location = baseHref + '/js/wasm/' + options.module + '/' + '/index.wasm';
+          }
+        }
+        if(options.type === 'url'){
+          location = options.url;
+        }
+
+        let js_path = 'wasm/' + options.module + '/wrapper.js';
+        const load_js = await engine.loader.load.js({
+          type:'local',
+          url:js_path,
+        });
+        if(!load_js){
+          reject("failed-load_wasm_js_wrapper_file");
+          return false;
+        }
+
+        let controller = options.module + '_wasm_controller';
+        if(!eval(controller)){
+          reject("failed-load_wasm_js_wrapper_controller");
+          return false;
+        }
+
+        let hold_controller = eval(controller);
+        if(!window.wasmControllers){
+          window.wasmControllers = {};
+        }
+        window.wasmControllers[controller] = hold_controller;
+
+        if(engine.get.platform("cordova")){
+          let cordova_location = 'file:///android_asset/www/' + location;
+          document.addEventListener("deviceready", ()=>{
+              window.resolveLocalFileSystemURL(cordova_location,(fileEntry)=>{
+                fileEntry.file((file)=>{
+                  var reader = new FileReader();
+                  reader.onloadend = async ()=>{
+                    let init = await hold_controller(reader.result);
+                    if(!init){
+                      error = "failed-init-wasm_module";
+                      console.log(e);
+                      console.log(error);
+                      reject(error);
+                      return false;
+                    }
+                    if(!window.wasmModules){
+                      window.wasmModules = {};
+                    }
+                    window.wasmModules[options.module] = init;
+                    resolve(init);
+                  };
+                  reader.onerror = (e)=>{
+                    error = "failed-file_reader";
+                    console.log(e);
+                    console.log(error);
+                    reject(error);
+                  }
+                  reader.readAsArrayBuffer(file);
+                },(e)=>{
+                  error = "failed-file_opener";
+                  console.log(e);
+                  console.log(error);
+                  reject(error);
+                });
+              },(e)=>{
+                error = "failed-resolveLocalFileSystemURL";
+                console.log(e);
+                console.log(error);
+                reject(error);
+              });
+          }, false);
+          return;
+        }
+
+        let init = await hold_controller(location);
+        if(!init){
+          reject("failed-init-wasm_module");
+          return false;
+        }
+        if(!window.wasmModules){
+          window.wasmModules = {};
+        }
+        window.wasmModules[options.module] = init;
+        resolve(init);
+
+      });
+
+    },
+
     js : function(options){
 
       return new Promise((resolve,reject)=>{
@@ -19,9 +134,11 @@ module.exports = {
         let error;
 
         if(!engine.validate.json({
+          id:{type:'string',elective:true},
           type:{type:'string',options:['local','url']},
-          url:{type:'string',max:4048}
-        },options)){
+          url:{type:'string',max:4048},
+          module:{type:'boolean',elective:true}
+        },options,'dynamic',4)){
           error = 'invalid/not_found-compName';
           reject(error);
         }
@@ -44,8 +161,14 @@ module.exports = {
         let scp = document.createElement('script');
         scp.type = "text/javascript";
         scp.src = location;
+        if(options.module){
+          scp.type = "module";
+          if(options.id){
+            scp.id = options.id;
+          }
+        }
 
-        scp.onload  = function(){
+        scp.onload  = function(dd){
           engine.common.tell('js_loaded',log);
           resolve(true);
         };
