@@ -118,8 +118,8 @@ module.exports = {
         if(!window.wasmModules){
           window.wasmModules = {};
         }
-        window.wasmModules[options.module] = init;
-        resolve(init);
+        window.wasmModules[options.module] = hold_controller;
+        resolve(hold_controller);
 
       });
 
