@@ -7,6 +7,7 @@ let scoll_direction = 'down';
 let last_scroll_position = window.pageYOffset;
 let showing = {};
 let exit = {};
+let os,platform;
 
 window.addEventListener('scroll', scrollFunction);
 
@@ -95,6 +96,10 @@ function scrollFunction(){
 
 module.exports = (tag,options)=>{
 
+  if(!os || !platform){
+    os = engine.get.os(),platform = engine.get.platform();
+  }
+
   //check options object
   let check = checkBaseOptions(options);
   if(check == false){
@@ -178,7 +183,8 @@ module.exports = (tag,options)=>{
       i !== 'parent' &&
       i !== 'tag' &&
       i !== 'list_id' &&
-      i !== 'id'
+      i !== 'id' &&
+      i !== 'draw'
     ){
       if(options[i]){
         object[i] = options[i];
@@ -268,6 +274,72 @@ module.exports = (tag,options)=>{
     get.appendChild(object);
   }
 
+  //***************************
+  //draw here
+
+  if(options.draw){
+
+    let draw;
+    if(options.draw.all){
+      draw = options.draw.all;
+    }
+    if(platform === "pc" && options.draw.browser){
+      if(options.draw.browser.pc){
+        reduce_draw(draw,options.draw.browser.pc);
+      }
+    }
+    if(platform === "mobile" && options.draw.browser){
+      if(options.draw.browser.mobile){
+        reduce_draw(draw,options.draw.browser.mobile);
+      }
+    }
+    if(platform === "cordova" && options.draw.cordova){
+      if(options.draw.cordova.all){
+        reduce_draw(draw,options.draw.cordova.all);
+      }
+      if(os==="ios" && options.draw.cordova.ios){
+        reduce_draw(draw,options.draw.cordova.ios);
+      }
+      if(os==="android" && options.draw.cordova.android){
+        reduce_draw(draw,options.draw.cordova.android);
+      }
+    }
+    if(platform === "electron"){
+      if(options.draw.electron.all){
+        reduce_draw(draw,options.draw.electron.all);
+      }
+      if(os==="windows" && options.draw.electron.windows){
+        reduce_draw(draw,options.draw.electron.windows);
+      }
+      if(os==="linux" && options.draw.electron.linux){
+        reduce_draw(draw,options.draw.electron.linux);
+      }
+      if(os==="mac" && options.draw.electron.mac){
+        reduce_draw(draw,options.draw.electron.mac);
+      }
+    }
+
+    object.style = draw_as_string(draw);
+
+  }
+
+  function reduce_draw(base,next){
+    for(let k in next){
+      if(next[k] === false){delete base[k];} else if(typeof(next[k]) === "string"){base[k] = next[k];}
+    }
+  }
+  function draw_as_string(final){
+    let collect = '';
+    for(let k in final){
+      collect += k + ":" + final[k] + ";"
+    }
+    console.log(collect);
+    return collect;
+  }
+
+  //***************************
+  //touch func
+
   let startTime;
 
   if(options.hasOwnProperty("touch")){
@@ -313,6 +385,32 @@ module.exports = (tag,options)=>{
         if(!startX || !startY){startX = lastX,startY = lastY;return;}
         const process = process_move(startX,startY,lastX,lastY,"end",startTime);
         options.touch(object.id,process,eve);
+      });
+    }
+  }
+
+  //****************************************
+  //timer
+
+  if(options.timer){
+    if(options.timer.time && options.timer.function){
+      let timer_started = false,timer_timeout;
+      object.addEventListener("mousedown",(eve)=>{
+        timer_started = true;
+        timer_timeout = setTimeout(function () {
+          timer_started = false;
+          options.timer.function();
+        }, options.timer.time);
+      });
+      object.addEventListener("mouseout",(eve)=>{
+        if(!timer_started){return;} else {
+          clearTimeout(timer_timeout);
+        }
+      });
+      object.addEventListener("mouseup",(eve)=>{
+        if(!timer_started){return;} else {
+          clearTimeout(timer_timeout);
+        }
       });
     }
   }

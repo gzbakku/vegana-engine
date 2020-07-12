@@ -28,7 +28,6 @@ module.exports = {
         }
 
         let location;
-
         if(options.type === 'local'){
           if(!options.module){
             error = 'invalid/not_found-module';

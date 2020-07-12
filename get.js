@@ -1,5 +1,16 @@
 module.exports = {
 
+  os:()=>{
+    let ua = navigator.userAgent.toLowerCase();
+    if(!ua){return 'unknown';}
+    if(ua && /ipad|iphone|ipod/.test(ua)){return 'ios';}
+    if(ua && /android/.test(ua)){return 'android';}
+    if(ua && /windows/.test(ua)){return 'windows';}
+    if(ua && /mac/.test(ua)){return 'mac';}
+    if(ua && /linux/.test(ua)){return 'linux';}
+    return 'unknown';
+  },
+
   host:()=>{
     return window.location.hostname;
   },
