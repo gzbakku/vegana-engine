@@ -333,7 +333,6 @@ module.exports = (tag,options)=>{
     for(let k in final){
       collect += k + ":" + final[k] + ";"
     }
-    console.log(collect);
     return collect;
   }
 
