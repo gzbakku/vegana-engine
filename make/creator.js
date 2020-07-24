@@ -1,6 +1,7 @@
 const common = require('../common');
 const checkBaseOptions = require('./check').check;
 const httpMarker = 'http://';
+const body = document.getElementsByTagName("BODY")[0];
 let scollers = {};
 let keepScroller = [];
 let scoll_direction = 'down';
@@ -345,7 +346,6 @@ module.exports = (tag,options)=>{
     if(typeof(options.touch) == "function"){
       let startX,startY,lastX,lastY;
       object.addEventListener("touchstart",(eve)=>{
-        startTime
         x = eve.touches[0].clientX,y = eve.touches[0].clientY;
         startX = x;startY = y;
         startTime = new Date().getTime();
@@ -362,29 +362,26 @@ module.exports = (tag,options)=>{
         const process = process_move(startX,startY,lastX,lastY,"end",startTime);
         options.touch(object.id,process,eve);
       });
-      // mouse functions
-      object.draggable = true;
-      const img = new Image();
-      object.addEventListener("dragstart",(eve)=>{
-        eve.dataTransfer.setDragImage(img,0,0);
-        x = eve.clientX,y = eve.clientY;
-        startX = x;startY = y;
+      object.addEventListener("mousedown",(eve)=>{
+        startX = eve.clientX;startY = eve.clientY;
         startTime = new Date().getTime();
+        document.addEventListener("mousemove",move);
+        document.addEventListener("mouseup",end);
       });
-      object.addEventListener("dragover",(eve)=>{
-        eve.dataTransfer.setDragImage(img,0,0);
+      const move = (eve)=>{
         x = eve.clientX,y = eve.clientY;
         if(!lastX || !lastY){lastX = x,lastY = y;return;}
         const process = process_move(startX,startY,x,y,"continue",startTime);
         lastX = process.posX,lastY = process.posY;
         options.touch(object.id,process,eve);
-      });
-      object.addEventListener("dragend",(eve)=>{
-        eve.dataTransfer.setDragImage(img,0,0);
+      };
+      const end = (eve)=>{
         if(!startX || !startY){startX = lastX,startY = lastY;return;}
         const process = process_move(startX,startY,lastX,lastY,"end",startTime);
+        document.removeEventListener("mousemove", move);
+        document.removeEventListener("mouseup", end);
         options.touch(object.id,process,eve);
-      });
+      };
     }
   }
 

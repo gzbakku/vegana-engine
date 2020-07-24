@@ -23,7 +23,7 @@ let built = {
   comp:[]
 };
 
-let route = [];
+let route = [],closeures = [];
 
 let track = {
   cont:{},
@@ -41,11 +41,13 @@ let mods = {
 module.exports = {
 
   //nav data
+  closeures:closeures,
   active:active,
   built:built,
   route:route,
   track:track,
   mods:mods,
+  back:back,
 
   //functions
   get : getWorker,
