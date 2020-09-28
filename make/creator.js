@@ -351,6 +351,7 @@ module.exports = (tag,options)=>{
         startTime = new Date().getTime();
       });
       object.addEventListener("touchmove",(eve)=>{
+        eve.preventDefault();
         x = eve.touches[0].clientX,y = eve.touches[0].clientY;
         if(!lastX || !lastY){lastX = x,lastY = y;return;}
         const process = process_move(startX,startY,x,y,"continue",startTime);
