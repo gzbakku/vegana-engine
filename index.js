@@ -16,6 +16,7 @@ const time = require('./time');
 const params = require('./params');
 const meta = require('./meta');
 const sketch = require('./sketch');
+const ui = require("./ui");
 
 const md5 = require('md5');
 const uniqid = require('uniqid');
@@ -30,6 +31,7 @@ let hooks = {
 };
 
 module.exports = {
+  ui:ui,
   sketch:sketch,
   meta:meta,
   add:add,
