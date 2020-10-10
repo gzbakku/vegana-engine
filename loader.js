@@ -413,12 +413,15 @@ module.exports = {
         reject(error);
       }
 
-      let location = baseHref + '/css/' + fileName + '.css';
-
+      let location;
       if(window.hasOwnProperty('is_electron') || window.hasOwnProperty('is_cordova')){
-        location = 'css/' + fileName + '.css';
+        location = 'css/' + fileName;
       } else {
-        location = baseHref + '/css/' + fileName + '.css';
+        location = baseHref + '/css/' + fileName;
+      }
+
+      if(location.indexOf(".css") < 0){
+        location += ".css"
       }
 
       let parent = document.getElementsByTagName("head")[0];
@@ -428,7 +431,7 @@ module.exports = {
       css.type = 'text/css';
       css.href = location;
       css.media = 'all';
-      parent.appendChild(link);
+      parent.appendChild(css);
 
       resolve(true);
 
