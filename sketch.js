@@ -17,15 +17,17 @@ module.exports = {
  },
 
  fonts:{
-   add:async (tag,name,location,style)=>{
+   add:async (tag,name,location,style,global_url)=>{
      return new Promise((resolve,reject)=>{
        if(window.hasOwnProperty('is_electron') || window.hasOwnProperty('is_cordova')){
-         location = location
+         location = location;
        } else {
-         if(location[0] !== "/"){
-           location = "/" + location;
+         if(!global_url){
+           if(location[0] !== "/"){
+             location = "/" + location;
+           }
+           location = baseHref + location;
          }
-         location = baseHref + location;
        }
        location = "URL(" + location + ")";
        const run = new FontFace(name,location);
