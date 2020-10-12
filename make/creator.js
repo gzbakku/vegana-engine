@@ -305,7 +305,7 @@ module.exports = (tag,options)=>{
         reduce_draw(draw,options.draw.cordova.android);
       }
     }
-    if(platform === "electron"){
+    if(platform === "electron" && options.draw.electron){
       if(options.draw.electron.all){
         reduce_draw(draw,options.draw.electron.all);
       }
