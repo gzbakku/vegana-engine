@@ -50,8 +50,8 @@ module.exports = {
     // let w = document.body.offsetWidth;
     // let h = Math.max(window.innerHeight, document.body.clientHeight);
 
-    let w = screen.width;
-    let h = screen.height;
+    let w = window.innerWidth;
+    let h = window.innerHeight;
     let ans;
 
     if(w >= h){
