@@ -1,15 +1,23 @@
 # Vegana
 
-Vegana is a js framework to build single page apps with native support of a defined document structure for ease of developemnt in big teams, code sharing, native and fast lazyness for a smooth browsing experience and native js web api plugins for ease of use and faster development speeds.basic concept is to reduce final bundle size and break the bundle based on a document structure making the browsing experience smooth and fast. 
+Vegana is a js framework to build single page apps with native support of a defined document structure for ease of developemnt in big teams, code sharing, native and fast lazyness for a smooth browsing experience and native js web api plugins for ease of use and faster development speeds.basic concept is to reduce final bundle size and break the bundle based on a document structure making the browsing experience smooth and fast.
 
   - tiny and broken up document  structure
-  - native lazyness with super fast loading and web api plugins. 
+  - native lazyness with super fast loading and web api plugins.
   - native api framework support with rocket iron and wet.
   - only js and sass develoment enviorment to speed up development multitudes of time.
   - prebuilt native components and upcoming support for web compoenets.
   - defined code structure to make onboarding new devs easy for big teams.
   - native nodejs cli with cross platform support.
   - non defined sass data structure.
+
+# what's new
+
+  - loader is more efficient in space and faster then before.
+  - module loader now checks if modules are already loaded and resolves if they are.
+  - loader now allows to load module css just by passing load_css param as true.
+  - you can load sassPack from sassPack loader api
+  - native sass lazy files are deprecated.
 
 # When to use!
 
@@ -40,7 +48,7 @@ official docs at [Docs]
 
 ## Installation
 
- - install node js here [NodeJs] 
+ - install node js here [NodeJs]
  - make sure npm is installed.
  - install vegana as a global module  ``` $ npm i --global vegana ```
  - check if vegana is installed globally ``` $ vegana check ```
@@ -87,10 +95,10 @@ Vegana cli is a nodejs based cli app and gives a cross platform uniform experien
 ### features
 
  - Inbuilt Server with Live Reloading
- - Live sass compilation 
+ - Live sass compilation
  - Native app building and code and image optimization.
  - Fast Component generation and auto lazy componet integration.
- 
+
 ------
 
 ### Commands
@@ -98,7 +106,7 @@ Vegana cli is a nodejs based cli app and gives a cross platform uniform experien
 #### Initiate a new Project
 this shell command generates the files required by the vegana framework in current working directory or the directory where you have called the command. in other words make the directory with project name and initiate the project inside the new directory.
 
-```sh 
+```sh
 $ vegana init test
 ```
 here test is the project name.
@@ -109,7 +117,7 @@ here test is the project name.
 this command starts a server and compiles the app files and serves a built app to the browser. Vegana use the port 5566 to start the server at and currently cannot use any other port please make sure the port is not in use while you serve the app.
 this app listens for file chnages in the app directory and re buods the app as nessesery. the app is optimized to reload only the compoent rebuild you should not have any issue with the optimization either.the bundle served is non optimized for faster builds and does not represent the final bundle size.
 
-```sh 
+```sh
 $ vegana serve
 ```
 
@@ -120,7 +128,7 @@ you can now start you app development. the app comes with a test document which 
 #### Build the Project
 this app builds a optimized version of you app with app the lazy components integrated in the build folder the build folder is now ready to be deployed to any server.the code generated cannot be used for further generated so please keep you app sources code backed up for future development.
 
-```sh 
+```sh
 $ vegana build
 ```
 
@@ -132,7 +140,7 @@ this command generates a predined set of components please read the component do
 #### Generate a Page
 this command generates a page ocmponets and takes page name and lazziness flag as argument please make sure you are running this command in the app/pages folder for it to work. if page name is repeated i guess the query fails if not a folder with page name will be generated with a page.js file inside of it all the further page componets have to be built inside of the page folder.this mod can be routed inside the page router.
 
-```sh 
+```sh
 $ vegana generate page home --lazy
 ```
 
@@ -140,9 +148,9 @@ here the page name is home and the lazy flag integartes the component as a lazy 
 you dont have to use the lazy flag if the page is not lazy.
 
 #### Generate a Cont
-this command have to be called inside the page folder 'app/page/homePage/' and generates and cont mod inside a folder names cont in page direcoty. again the format is same and this component is also lazy and can be loaded when is required by the user.this component can be routed inside the page in cont router. 
+this command have to be called inside the page folder 'app/page/homePage/' and generates and cont mod inside a folder names cont in page direcoty. again the format is same and this component is also lazy and can be loaded when is required by the user.this component can be routed inside the page in cont router.
 
-```sh 
+```sh
 $ vegana generate cont home --lazy
 ```
 
@@ -151,18 +159,18 @@ this componet cannot be shared with other pages.
 #### Generate a Panel
 this module can be generated inside a cont and can be routed in the panel router with the cont module.this command generated the panel file insde a panel folder with the cont folder 'app/pages/homePage/cont/mainCont/panels/mainPanel/panel.js' with a panel js file insdie of it.
 
-```sh 
+```sh
 $ vegana generate panel main --lazy
 ```
 
 #### Generate a Component
 this module can be genearted in any of the other modules and can be shared inbetween other modules by making itself global within the app. this module cannot be lazy and is to be available whenever is called. is have to be called within the app folder to work.
 
-```sh 
-$ vegana generate comp menu 
+```sh
+$ vegana generate comp menu
 ```
 
-where menu is the name of the component generated. this can be used by multiple pages. 
+where menu is the name of the component generated. this can be used by multiple pages.
 
 ------
 ------
@@ -588,7 +596,7 @@ the options array are the arguments passed with the html dom element.tag have to
 
 ### Add Class to a Element
 
-```sh 
+```sh
 engine.make.addClass({
     id:'test-textarea',
     class:'super-text'
@@ -597,7 +605,7 @@ engine.make.addClass({
 
 ### Remove a Class from a Element
 
-```sh 
+```sh
 engine.make.removeClass({
     id:'test-textarea',
     class:'super-text'
@@ -667,7 +675,7 @@ engine.make.tabs({
     ]
  })
  ```
- 
+
  custom classes can be passed to style the tabs however you like.for ease of use please use default class to style the tabs in your stylesheet
 
 -----
@@ -740,7 +748,7 @@ token is returned as a string or a null object user gets returnd as a string jso
 # Vegana Validate Api
 this api validates json and email id if you need to do it.
 
-## Validate Json 
+## Validate Json
 this api validates if a varibale is a json object and checks its keys and the data type that the key holds if you need to verify a json object.and takes the following params.
 
 ```sh
@@ -761,15 +769,15 @@ engine.validate.json(schema,user,'dynamic',2048);
 
 ```
 
-api takes the following arguments schema, data, json type and max keys. 
+api takes the following arguments schema, data, json type and max keys.
 
-### Schema 
+### Schema
 this is the validation scheme for the data its an object of objects with the key to be matched with the key in data. the value of the key are the validation parameters to be checked which are data type,min and max length and elective.data type can be string,number,object,boolean and email.
 
 min&max properties on string is chekced on the length of the string.
 min&max properties on number will be checked by '>' & '<' operator.
 min&max properties on object will be checked on the number of keys in a object.
-min&max properties on array will be check on the length of the array. 
+min&max properties on array will be check on the length of the array.
 
 the elective tag makes a key elective meaning if the key doesnt exists on the data the validation will not fail.this param hold a boolean as a value
 
@@ -864,5 +872,3 @@ only url and body are necessary.
 # License - MIT
 
 ##### Vegana By Akku
-
-

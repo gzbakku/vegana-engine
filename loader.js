@@ -124,319 +124,61 @@ module.exports = {
 
     },
 
-    js : function(options){
-
-      return new Promise((resolve,reject)=>{
-
-        engine.common.tell('loading page module',log);
-
-        let error;
-
-        if(!engine.validate.json({
-          id:{type:'string',elective:true},
-          type:{type:'string',options:['local','url']},
-          url:{type:'string',max:4048},
-          module:{type:'boolean',elective:true}
-        },options,'dynamic',4)){
-          error = 'invalid/not_found-compName';
-          reject(error);
-        }
-
-        let location;
-
-        if(options.type == 'local'){
-          if(window.hasOwnProperty('is_electron') || window.hasOwnProperty('is_cordova')){
-            location = 'js/' + options.url;
-          } else {
-            location = baseHref + '/js/' + options.url;
-          }
-        }
-        if(options.type == 'url'){
-          location = options.url;
-        }
-
-        let parent = document.getElementsByTagName("head")[0];
-
-        let scp = document.createElement('script');
-        scp.type = "text/javascript";
-        scp.src = location;
-        if(options.module){
-          scp.type = "module";
-          if(options.id){
-            scp.id = options.id;
-          }
-        }
-
-        scp.onload  = function(dd){
-          engine.common.tell('js_loaded',log);
-          resolve(true);
-        };
-
-        scp.onreadystatechange = function(){
-          engine.common.tell('js_loaded',log);
-          resolve(true);
-        };
-
-        scp.onerror = function(e){
-          console.error(e);
-          engine.common.error('failed-load_js');
-          error = 'failed-load_js';
-          reject(error);
-        }
-
-        parent.appendChild(scp);
-
-      });
-
+    js:(options)=>{
+      if(!engine.validate.json({
+        id:{type:'string',elective:true},
+        type:{type:'string',options:['local','url']},
+        url:{type:'string',max:4048},
+        module:{type:'boolean',elective:true}
+      },options,'dynamic',4)){return engine.common.error("failed-invalid_data-load_js");}
+      let link = options.type != "url"?process_location("js/" + ensure(options.url,".js")):options.url;
+      return load_js(options.id,link,options.module);
     },
 
-    comp : function(compName){
-
-      return new Promise((resolve,reject)=>{
-
-        engine.common.tell('loading page module',log);
-
-        let error;
-
-        if(!compName || typeof(compName) !== 'string'){
-          error = 'invalid/not_found-compName';
-          reject(error);
-        }
-        if(engine.global.comp.hasOwnProperty(compName)){
-          error = 'global_comp-already-loaded';
-          reject(error);
-        }
-
-        let location;
-        if(window.hasOwnProperty('is_electron') || window.hasOwnProperty('is_cordova')){
-          location = 'js/globals/' + compName + 'Comp/globalComp.js';
-        } else {
-          location = baseHref + '/js/globals/' + compName + 'Comp/globalComp.js';
-        }
-
-        let parent = document.getElementsByTagName("head")[0];
-
-        let scp = document.createElement('script');
-        scp.type = "text/javascript";
-        scp.src = location;
-
-        scp.onload  = function(){
-          engine.common.tell('global_comp_loaded',log);
-          resolve(true);
-        };
-
-        scp.onreadystatechange = function(){
-          engine.common.tell('global_comp_loaded',log);
-          resolve(true);
-        };
-
-        scp.onerror = function(){
-          engine.common.error('failed-compLoad');
-          error = 'failed-compLoad';
-          reject(error);
-        }
-
-        parent.appendChild(scp);
-
-      });
-
+    comp:(compName,load_css)=>{
+      if(engine.global.comp[compName]){return return_resolve();}
+      return load_js_with_css(
+        process_location('js/globals/' + ensure(compName,"Comp") + '/globalComp.js'),
+        process_location('css/globals/' + ensure(compName,"Comp") + '/comp.css'),load_css
+      );
     },
 
-    page : function(pageName){
-
-      return new Promise((resolve,reject)=>{
-
-        engine.common.tell('loading page module',log);
-
-        let error;
-
-        if(!pageName || typeof(pageName) !== 'string'){
-          error = 'invalid/not_found-pageName';
-          reject(error);
-        }
-        if(window.pageList[pageName] == 'onboard'){
-          error = 'pageModule-already-loaded';
-          reject(error);
-        }
-
-        let location;
-        if(window.hasOwnProperty('is_electron') || window.hasOwnProperty('is_cordova')){
-          location = 'js/pages/' + pageName + '/page.js';
-        } else {
-          location = baseHref + '/js/pages/' + pageName + '/page.js';
-        }
-
-        let parent = document.getElementsByTagName("head")[0];
-
-        let scp = document.createElement('script');
-        scp.type = "text/javascript";
-        scp.src = location;
-
-        scp.onload  = function(){
-          engine.common.tell('page_loaded',log);
-          resolve(true);
-        };
-
-        scp.onreadystatechange = function(){
-          engine.common.tell('page_loaded',log);
-          resolve(true);
-        };
-
-        scp.onerror = function(){
-          engine.common.error('failed-pageLoad');
-          error = 'failed-pageLoad';
-          reject(error);
-        }
-
-        parent.appendChild(scp);
-        window.pageList[pageName] = 'onboard';
-
-      });
-
+    page:(pageName,load_css)=>{
+      if(engine.get.pageModule(pageName)){return return_resolve();}
+      return load_js_with_css(
+        process_location('js/pages/' + ensure(pageName,"Page") + '/page.js'),
+        process_location('css/pages/' + ensure(pageName,"Page") + '/page.css'),load_css
+      );
     },
 
-    cont : function(pageName,contName){
-
-      return new Promise((resolve,reject)=>{
-
-        let error;
-
-        engine.common.tell('loading cont module',log);
-
-
-        if(!pageName || typeof(pageName) !== 'string'){
-          error = 'invalid/not_found-pageName';
-          reject(error);
-        }
-        if(!contName || typeof(contName) !== 'string'){
-          error = 'invalid/not_found-ContName';
-          reject(error);
-        }
-        if(window.pageModules[pageName].contList[contName] == 'onboard'){
-          error = 'cont-already-loaded';
-          reject(error);
-        }
-
-        let location;
-        if(window.hasOwnProperty('is_electron') || window.hasOwnProperty('is_cordova')){
-          location = 'js/pages/' + pageName + '/conts/' + contName + '/cont.js';
-        } else {
-          location = baseHref + '/js/pages/' + pageName + '/conts/' + contName + '/cont.js';
-        }
-
-        //console.log(location);
-
-        let parent = document.getElementsByTagName("head")[0];
-
-        let scp = document.createElement('script');
-        scp.type = "text/javascript";
-        scp.src = location;
-
-        scp.onload  = function(){
-          engine.common.tell('cont_loaded',log);
-          resolve(true);
-        };
-
-        scp.onreadystatechange   = function(){
-          engine.common.tell('cont_loaded',log);
-          resolve(true);
-        };
-
-        parent.appendChild(scp);
-
-      });
-
+    cont:(pageName,contName,load_css)=>{
+      if(engine.get.contModule(pageName,contName)){return return_resolve();}
+      return load_js_with_css(
+        process_location('js/pages/' + ensure(pageName,"Page") + '/conts/' + ensure(contName,"Cont") + "/cont.js"),
+        process_location('css/pages/' + ensure(pageName,"Page") + '/conts/' + ensure(contName,"Cont") + "/cont.css"),load_css
+      );
     },
 
-    panel : function(pageName,contName,panelName){
+    panel:(pageName,contName,panelName,load_css)=>{
+      if(engine.get.panelModule(pageName,contName,panelName)){return return_resolve();}
+      return load_js_with_css(
+        process_location('js/pages/' + ensure(pageName,"Page") + '/conts/' + ensure(contName,"Cont") + '/panels/' + ensure(panelName,"Panel") + '/panel.js'),
+        process_location('css/pages/' + ensure(pageName,"Page") + '/conts/' + ensure(contName,"Cont") + '/panels/' + ensure(panelName,"Panel") + '/panel.css'),load_css
+      );
+    },
 
-      return new Promise((resolve,reject)=>{
-
-        let error;
-
-        engine.common.tell('loading panel module',log);
-
-        if(!pageName || typeof(pageName) !== 'string'){
-          error = 'invalid/not_found-pageName';
-          reject(error);
-        }
-        if(!contName || typeof(contName) !== 'string'){
-          error = 'invalid/not_found-ContName';
-          reject(error);
-        }
-        if(!panelName || typeof(panelName) !== 'string'){
-          error = 'invalid/not_found-panelName';
-          reject(error);
-        }
-
-        let location;
-        if(window.hasOwnProperty('is_electron') || window.hasOwnProperty('is_cordova')){
-          location = 'js/pages/' + pageName + '/conts/' + contName + '/panels/' + panelName + '/panel.js';
-        } else {
-          location = baseHref + '/js/pages/' + pageName + '/conts/' + contName + '/panels/' + panelName + '/panel.js';
-        }
-
-        let parent = document.getElementsByTagName("head")[0];
-
-        let scp = document.createElement('script');
-        scp.type = "text/javascript";
-        scp.src = location;
-
-        scp.onload  = function(){
-          engine.common.tell('panel_loaded',log);
-          resolve(true);
-        };
-
-        scp.onreadystatechange   = function(){
-          engine.common.tell('panel_loaded',log);
-          resolve(true);
-        };
-
-        parent.appendChild(scp);
-
-      });
-
+    sassPack : function(packName,is_link){
+      return load_css(process_location('css/sassPack/' + ensure(packName,"Pack") + "/pack.css"));
     }
 
   },
 
-  css : function(fileName){
-
-    return new Promise((resolve,reject)=>{
-
-      let error;
-
-      engine.common.tell('loading page module',log);
-
-      if(!fileName || typeof(fileName) !== 'string'){
-        error = 'invalid/not_found-css_file_name';
-        reject(error);
-      }
-
-      let location;
-      if(window.hasOwnProperty('is_electron') || window.hasOwnProperty('is_cordova')){
-        location = 'css/' + fileName;
-      } else {
-        location = baseHref + '/css/' + fileName;
-      }
-
-      if(location.indexOf(".css") < 0){
-        location += ".css"
-      }
-
-      let parent = document.getElementsByTagName("head")[0];
-
-      let css = document.createElement('link');
-      css.rel  = 'stylesheet';
-      css.type = 'text/css';
-      css.href = location;
-      css.media = 'all';
-      parent.appendChild(css);
-
-      resolve(true);
-
-    });
-
+  css : function(fileName,is_link){
+    let link = fileName;
+    if(!is_link){
+      link = process_location('css/' + ensure(fileName,".css"));
+    }
+    return load_css(link);
   },
 
   hook : {
@@ -510,3 +252,92 @@ module.exports = {
   }
 
 };
+
+function return_resolve(){
+  return new Promise((resolve)=>{resolve();});
+}
+
+function ensure(text,anchor){
+  if(text.indexOf(anchor) >= 0){return text;} else {return text + anchor;}
+}
+
+function process_location(location){
+  if(window.hasOwnProperty('is_electron') && window.hasOwnProperty('is_cordova')){
+    return location;
+  } else {
+    return location = baseHref + '/' + location;
+  }
+}
+
+function load_js_with_css(jsPath,cssPath,do_load_css){
+  if(do_load_css){
+    return new Promise((resolve,reject)=>{
+      Promise.all([
+        load_js(null,jsPath,false),
+        load_css(cssPath)
+      ])
+      .then(()=>{
+        resolve();
+      })
+      .catch((e)=>{
+        reject(e);
+      });
+    });
+  } else {
+    return load_js(null,jsPath,false);
+  }
+}
+
+function load_js(id,location,is_module){
+
+  return new Promise((resolve,reject)=>{
+
+    let parent = document.getElementsByTagName("head")[0];
+    let scp = document.createElement('script');
+    scp.type = "text/javascript";
+    scp.src = location;
+    if(is_module){
+      scp.type = "module";
+      if(id){
+        scp.id = id;
+      }
+    }
+
+    scp.onload  = function(dd){
+      engine.common.tell('js_loaded',log);
+      resolve(true);
+    };
+
+    scp.onerror = function(e){
+      console.error(e);
+      engine.common.error('failed-load_js');
+      reject('failed-load_js');
+    }
+
+    parent.appendChild(scp);
+
+  });
+
+}
+
+function load_css(location){
+
+  return new Promise((resolve,reject)=>{
+    let parent = document.getElementsByTagName("head")[0];
+    let css = document.createElement('link');
+    css.rel  = 'stylesheet';
+    css.type = 'text/css';
+    css.href = location;
+    css.media = 'all';
+    parent.appendChild(css);
+    css.onload  = function(dd){
+      resolve();
+    };
+    css.onerror = function(e){
+      console.error(e);
+      engine.common.error('failed-load_js');
+      reject('failed-load_css =>' + e);
+    }
+  });
+
+}
