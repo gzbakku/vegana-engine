@@ -262,7 +262,7 @@ function ensure(text,anchor){
 }
 
 function process_location(location){
-  if(window.hasOwnProperty('is_electron') && window.hasOwnProperty('is_cordova')){
+  if(window.hasOwnProperty('is_electron') || window.hasOwnProperty('is_cordova')){
     return location;
   } else {
     return location = baseHref + '/' + location;

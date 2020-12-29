@@ -10,6 +10,7 @@ Vegana is a js framework to build single page apps with native support of a defi
   - defined code structure to make onboarding new devs easy for big teams.
   - native nodejs cli with cross platform support.
   - non defined sass data structure.
+  - sass loader for electron and cordova is now supported sorry guys for breaking that.
 
 # what's new
 
