@@ -3,14 +3,17 @@ var address = null;
 //this function takes a authetication token from sessions api
 async function query(options){
 
-  if(engine.session.check() == false){
-    return engine.common.error('not_found-session');
-  }
+  // if(engine.session.check() == false){
+  //   return engine.common.error('not_found-session');
+  // }
   if(typeof(options) !== 'object'){
     return engine.common.error('invalid_options');
   }
 
-  let token = engine.session.get.token();
+
+  if(!options.method){
+    options.method = 'POST';
+  }
 
   if(options){
     if(typeof(options) == 'object'){
@@ -20,19 +23,23 @@ async function query(options){
       if(!options.body){
         return engine.common.error('not_found-body=>options');
       }
-      if(options.headers){
-        if(typeof(options.headers) !== 'object'){
-          options.headers['td-wet-token'] = token;
+      if(engine.session.check()){
+        let token = engine.session.get.token();
+        if(options.headers){
+          if(typeof(options.headers) !== 'object'){
+            options.headers['td-wet-token'] = token;
+          } else {
+            options.headers = {
+              'td-wet-token':token
+            };
+          }
         } else {
           options.headers = {
             'td-wet-token':token
           };
         }
-      } else {
-        options.headers = {
-          'td-wet-token':token
-        };
       }
+
     }
   }
 

@@ -84,7 +84,7 @@ module.exports = {
       }
     }
 
-    save_data_type(tag,where,typeof(value));
+    return save_data_type(tag,where,typeof(value));
 
   },
 
