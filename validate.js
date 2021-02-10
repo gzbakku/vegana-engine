@@ -201,6 +201,15 @@ function json(schema,data,schema_type,maxSize,returnError){
         break;
       }
 
+      if(item.validate && typeof(item.validate) === "object" && item.validate.hasOwnProperty('schema')){
+        let checkSchema = json(item.validate.schema,data[key],item.validate.dynamic,item.validate.maxSize,item.validate.returnError);
+        if(!checkSchema){
+          if(returnError && item.validate.returnError){return error(false,key,'failed-object_schema_check-schema_key_in_data-'+key);}
+          return engine.common.error('failed-object_schema_check-schema_key_in_data-' + key);
+          break;
+        }
+      }
+
     }
 
     //check the boolean data type
