@@ -1,22 +1,19 @@
-const common = require('../common');
-const log = false;
+
 
 async function build(type,id,parent,cls){
 
-  common.tell('initiating ' + type,log);
-
   //security checks
   if(id == null){
-    return common.error('not_found-id');
+    return engine.common.error('not_found-id');
   }
   if(parent == null){
-    return common.error('not-found-parent');
+    return engine.common.error('not-found-parent');
   }
 
   //check parent
   let get = document.getElementById(parent);
   if(get == null){
-    return common.error('invalid_parent');
+    return engine.common.error('invalid_parent');
   }
 
   //make element

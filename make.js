@@ -2,11 +2,13 @@ const initImport = require('./make/init');
 const viewersImport = require('./make/viewers');
 const inputsImport = require('./make/inputs');
 const listImport = require('./make/list');
-const customImport = require('./make/custom');
 const tabsImport = require('./make/tabs/index');
 const a = require('./make/a.js');
+const creator = require("./make/creator");
 
 module.exports = {
+
+  creator:creator,
 
   a:a,
 
@@ -23,8 +25,6 @@ module.exports = {
   addClass:viewersImport.addClass,
   removeClass:viewersImport.removeClass,
   style:viewersImport.style,
-  message:viewersImport.message,
-  tabs:tabsImport,
 
   //inputs
   select:inputsImport.select,
@@ -42,6 +42,11 @@ module.exports = {
   listItems:listImport.listItems,
 
   //custom
-  element:customImport.element
+  element:(options)=>{
+    if(!options.tag){
+      return engine.common.error('not_found-tag-custom-make-engine');
+    }
+    return creator(options.tag,options);
+  }
 
 };

@@ -1,28 +1,3 @@
-const make = require('./make');
-const view = require('./view');
-const router = require('./router');
-const common = require('./common');
-const binder = require('./binder');
-const loader = require('./loader');
-const session = require('./session');
-const request = require('./request');
-const get = require('./get');
-const wet = require('./wet');
-const validate = require('./validate');
-const set = require('./set');
-const add = require('./add');
-const data = require('./data');
-const time = require('./time');
-const params = require('./params');
-const meta = require('./meta');
-const sketch = require('./sketch');
-const ui = require("./ui");
-
-const md5 = require('md5');
-const uniqid = require('uniqid');
-
-//common.tell('one');
-
 let hooks = {
   pages:{},
   conts:{},
@@ -31,25 +6,26 @@ let hooks = {
 };
 
 module.exports = {
-  ui:ui,
-  sketch:sketch,
-  meta:meta,
-  add:add,
-  binder:binder,
-  make:make,
-  view:view,
-  router:router,
-  common:common,
-  loader:loader,
-  session:session,
-  request:request.send,
-  validate:validate,
-  get:get,
-  wet:wet,
-  set:set,
-  data:data,
-  time:time,
-  params:params,
+  static:require('./static'),
+  ui:require('./ui'),
+  sketch:require('./sketch'),
+  meta:require('./meta'),
+  add:require('./add'),
+  binder:require('./binder'),
+  make:require('./make'),
+  view:require('./view'),
+  router:require('./router'),
+  common:require('./common'),
+  loader:require('./loader'),
+  session:require('./session'),
+  request:require('./request').send,
+  validate:require('./validate'),
+  get:require('./get'),
+  wet:require('./wet'),
+  set:require('./set'),
+  data:require('./data'),
+  time:require('./time'),
+  params:require('./params'),
   global:{
     function:{},
     comp:new Proxy({},{
@@ -63,7 +39,7 @@ module.exports = {
     object:{}
   },
   hooks:hooks,
-  md5:md5,
-  uniqid:uniqid,
+  md5:require('md5'),
+  uniqid:require('uniqid'),
   app_version:null
 };

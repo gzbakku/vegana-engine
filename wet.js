@@ -1,11 +1,7 @@
 var address = null;
 
-//this function takes a authetication token from sessions api
 async function query(options){
 
-  // if(engine.session.check() == false){
-  //   return engine.common.error('not_found-session');
-  // }
   if(typeof(options) !== 'object'){
     return engine.common.error('invalid_options');
   }

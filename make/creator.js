@@ -1,4 +1,3 @@
-const common = require('../common');
 const checkBaseOptions = require('./check').check;
 const httpMarker = 'http://';
 const body = document.getElementsByTagName("BODY")[0];
@@ -104,7 +103,7 @@ module.exports = (tag,options)=>{
   //check options object
   let check = checkBaseOptions(options);
   if(check == false){
-    return common.error('invalid_options',options);
+    return engine.common.error('invalid_options',options);
   }
 
   if(!options.id){
@@ -114,7 +113,7 @@ module.exports = (tag,options)=>{
   //check parent
   let get = document.getElementById(options.parent);
   if(get == null){
-    return common.error('invalid_parent',options);
+    return engine.common.error('invalid_parent',options);
   }
 
   //make element
@@ -226,12 +225,22 @@ module.exports = (tag,options)=>{
   }
   if(options.function && tag !== 'ol' && tag !== 'ul'){
     object.addEventListener(default_event,(eve)=>{
-      options.function(object,options.functionData,eve);
+      if(tag !== "input" && tag !== "textarea" && tag !== "select"){
+        options.function(object.id,options.functionData,eve);
+      } else if(options.type === "string" || tag === "textarea"){
+        options.function(object.id,String(object.value),options.functionData,eve);
+      } else if(options.type === "number"){
+        options.function(object.id,Number(object.value),options.functionData,eve);
+      } else if(options.type === "file"){
+        options.function(object.id,object.files,options.functionData,eve);
+      } else {
+        options.function(object.id,object.value,options.functionData,eve);
+      }
     });
   }
 
   if(options.event && options.events){
-    common.error('invalid_config=>event&&events__cannot_co_exists',options);
+    engine.common.error('invalid_config=>event&&events__cannot_co_exists',options);
   }
 
   if(options.events && !options.event){
@@ -243,7 +252,7 @@ module.exports = (tag,options)=>{
           typeof(e.function) == 'function'
         ){
           object.addEventListener(e.event,(eve)=>{
-            e.function(object.id,eve)
+            e.function(object.id,options.functionData,eve)
           });
         }
       }
