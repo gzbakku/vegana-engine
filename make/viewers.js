@@ -7,14 +7,12 @@ module.exports = {
     if(!options.id || !options.style){
       return engine.common.error('not_found-id/style-addStyle-make-engine');
     }
-
-    let object = document.getElementById(options.id);
-    if(object){
-      object.style = options.style;
-      return true;
-    } else {
-      return engine.common.error('not_found-doc_element_by_id-addStyle-make-engine');
+    let object = engine.get.element(options.id);
+    if(!object){return engine.common.error('not_found-doc_element_by_id-addStyle-make-engine');}
+    for(let prop in options.style){
+      object.style[prop] = options.style[prop];
     }
+    return true;
 
   },
 
@@ -24,7 +22,7 @@ module.exports = {
       return engine.common.error('not_found-id/class-addClass-make-engine');
     }
 
-    let object = document.getElementById(options.id);
+    let object = engine.get.element(options.id);
     if(object){
       let style = object.className;
       if(style.indexOf(options.class) >= 0){
@@ -46,13 +44,13 @@ module.exports = {
       return engine.common.error('not_found-id/class-removeClass-make-engine');
     }
 
-    let object = document.getElementById(options.id);
+    let object = engine.get.element(options.id);
     if(object){
       let style = object.className;
       if(style.indexOf(options.class) < 0){
         return true;
       }
-      let updated = style.replace(options.class,"");
+      let updated = style.replace(' ' + options.class,"");
       object.className = updated;
       return true;
     } else {

@@ -45,20 +45,10 @@ module.exports = {
 }
 
 function style(id,styles){
-
-  if(!id || typeof(styles) !== 'object' || !styles.length || styles.length == 0){
-    return engine.common.error("not_found-id/styles");
+  if(!id || !styles){return engine.common.error("not_found-id/styles");}
+  let object = engine.get.element(id);
+  if(!object){return engine.common.error('invalid-parent');}
+  for(let style in styles){
+    object.style[style] = styles[style];
   }
-
-  let get = document.getElementById(id);
-  if(get == null){
-    return engine.common.error('invalid-parent');
-  }
-
-  for(var i=0;i<styles.length;i++){
-    let hold = styles[i];
-    let key = Object.keys(hold)[0];
-    get.style[key] = hold[key];
-  }
-
 }
