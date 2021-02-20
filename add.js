@@ -9,13 +9,13 @@ module.exports = {
   },
 
   function : function(key,func){
-    if(!key || !object){return engine.common.error("not_found-key/function");}
+    if(!key || !func){return engine.common.error("not_found-key/function");}
     engine['global']['function'][key] = func;
     return true;
   },
 
   comp : function(key,mod){
-    if(!key || !object){return engine.common.error("not_found-key/mod");}
+    if(!key || !mod){return engine.common.error("not_found-key/mod");}
     engine['global']['comp'][key] = mod;
     return true;
   }
