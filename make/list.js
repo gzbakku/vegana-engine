@@ -3,7 +3,7 @@ module.exports = {
   list : function(options){
 
     if(options.type !== 'ol' && options.type !== 'ul'){
-      options.type == 'ol';
+      options.type = 'ol';
     }
     if(!options.data){
       options.data = 0;

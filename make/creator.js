@@ -1,6 +1,5 @@
-const checkBaseOptions = require('./check').check;
-const httpMarker = 'http://';
-const body = document.getElementsByTagName("BODY")[0];
+
+
 let scollers = {};
 let keepScroller = [];
 let scoll_direction = 'down';
@@ -100,10 +99,14 @@ module.exports = (tag,options)=>{
     os = engine.get.os(),platform = engine.get.platform();
   }
 
-  //check options object
-  let check = checkBaseOptions(options);
-  if(check == false){
-    return engine.common.error('invalid_options',options);
+  if(
+    !tag || typeof(tag) !== "string" || tag.length === 0 ||
+    typeof(options) !== 'object' ||
+    !options.hasOwnProperty('parent') ||
+    typeof(options.parent) !== 'string'
+  ){
+    console.log(tag,options);
+    return engine.common.error('invalid_object/parent_value/tag');
   }
 
   if(!options.id){
@@ -119,7 +122,12 @@ module.exports = (tag,options)=>{
   //make element
   let id = options.parent + '-' + tag + '-' + options.id;
   let object = document.createElement(tag);
-  object.id = id;
+  if(options.only_id){
+    object.id = options.id;
+  } else {
+    object.id = id;
+  }
+
 
   if(options.enter){
     if(!scollers.hasOwnProperty(id)){
@@ -175,15 +183,20 @@ module.exports = (tag,options)=>{
   for(var i in options){
     if(
       i !== 'function' &&
+      i !== 'functionData' &&
       i !== 'events' &&
       i !== 'event' &&
       i !== 'text' &&
       i !== 'style' &&
-      i !== 'class' &&
+      i !== 'data' &&
+      i !== 'options' &&
       i !== 'parent' &&
       i !== 'tag' &&
       i !== 'list_id' &&
       i !== 'id' &&
+      i !== 'touch' &&
+      i !== 'timer' &&
+      i !== "only_id" &&
       i !== 'draw'
     ){
       if(options[i]){
@@ -223,6 +236,7 @@ module.exports = (tag,options)=>{
   if((tag == 'input' || tag == 'textarea') && options.type !== 'button'){
     default_event = 'input'
   }
+  if(tag === "select"){default_event = 'change';}
   if(options.function && tag !== 'ol' && tag !== 'ul'){
     object.addEventListener(default_event,(eve)=>{
       if(tag !== "input" && tag !== "textarea" && tag !== "select"){
@@ -233,6 +247,8 @@ module.exports = (tag,options)=>{
         options.function(object.id,Number(object.value),options.functionData,eve);
       } else if(options.type === "file"){
         options.function(object.id,object.files,options.functionData,eve);
+      } else if(options.type === "checkbox"){
+        options.function(object.id,object.checked,options.functionData,eve);
       } else {
         options.function(object.id,object.value,options.functionData,eve);
       }
@@ -405,7 +421,7 @@ module.exports = (tag,options)=>{
         timer_started = true;
         timer_timeout = setTimeout(function () {
           timer_started = false;
-          options.timer.function();
+          options.timer.function(object.id,options.timer.functionData);
         }, options.timer.time);
       });
       object.addEventListener("mouseout",(eve)=>{
