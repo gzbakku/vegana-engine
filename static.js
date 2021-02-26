@@ -1,7 +1,7 @@
 
 
 module.exports = {
-  onWeb:()=>{return true;},
+  onWeb:(d,f)=>{return f(d);},
   publish:()=>{return true;},
   add:{
     globalComp:()=>{return true;},
