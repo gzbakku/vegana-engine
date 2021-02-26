@@ -28,7 +28,18 @@ module.exports = {
       if(window.hasOwnProperty('is_electron')){
         return 'electron';
       }
+      if(window.hasOwnProperty('is_static')){
+        return 'static';
+      }
       data = 'platform';
+    }
+
+    if(data == 'static'){
+      if(window.hasOwnProperty('is_static')){
+        return true;
+      } else {
+        return false;
+      }
     }
 
     if(data == 'electron'){
