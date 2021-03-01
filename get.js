@@ -19,6 +19,12 @@ module.exports = {
     return document.getElementById(id);
   },
 
+  elementPosition:(id)=>{
+    let e = engine.get.element(id);
+    if(!e){return false;}
+    return e.getBoundingClientRect();
+  },
+
   platform:(data)=>{
 
     if(!data){
