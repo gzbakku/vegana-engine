@@ -16,7 +16,6 @@ module.exports = {
   init : initImport,
   //viewers
   div:viewersImport.div,
-  card:viewersImport.card,
   text:viewersImport.text,
   span:viewersImport.span,
   p:viewersImport.p,
@@ -31,7 +30,6 @@ module.exports = {
   input:inputsImport.input,
   upload:inputsImport.upload,
   textarea:inputsImport.textarea,
-  checkBox:inputsImport.checkBox,
   checkbox:inputsImport.checkBox,
   button:inputsImport.button,
   enableButton:inputsImport.enableButton,

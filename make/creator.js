@@ -381,12 +381,12 @@ module.exports = (tag,options)=>{
         if(!lastX || !lastY){lastX = x,lastY = y;return;}
         const process = process_move(startX,startY,x,y,"continue",startTime);
         lastX = process.posX,lastY = process.posY;
-        options.touch(object.id,process,eve);
+        options.touch(object.id,process,option.functionData,eve);
       });
       object.addEventListener("touchend",(eve)=>{
         if(!startX || !startY){startX = lastX,startY = lastY;return;}
         const process = process_move(startX,startY,lastX,lastY,"end",startTime);
-        options.touch(object.id,process,eve);
+        options.touch(object.id,process,option.functionData,eve);
       });
       object.addEventListener("mousedown",(eve)=>{
         startX = eve.clientX;startY = eve.clientY;
@@ -399,14 +399,14 @@ module.exports = (tag,options)=>{
         if(!lastX || !lastY){lastX = x,lastY = y;return;}
         const process = process_move(startX,startY,x,y,"continue",startTime);
         lastX = process.posX,lastY = process.posY;
-        options.touch(object.id,process,eve);
+        options.touch(object.id,process,option.functionData,eve);
       };
       const end = (eve)=>{
         if(!startX || !startY){startX = lastX,startY = lastY;return;}
         const process = process_move(startX,startY,lastX,lastY,"end",startTime);
         document.removeEventListener("mousemove", move);
         document.removeEventListener("mouseup", end);
-        options.touch(object.id,process,eve);
+        options.touch(object.id,process,option.functionData,eve);
       };
     }
   }
