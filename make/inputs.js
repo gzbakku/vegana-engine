@@ -16,16 +16,6 @@ module.exports = {
   button : function(options){
     options.type = 'button';
     return engine.make.creator('input',options);
-  },
-
-  enableButton : function(buttonId){
-    let get = document.getElementById(buttonId);
-    if(get == null){
-      return common.error('not-found/invalid-buttonId');
-    } else {
-      get.disabled = false;
-      return true;
-    }
   }
 
 };
