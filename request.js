@@ -9,14 +9,15 @@ module.exports = {
     if(typeof(options) !== 'object'){
       return engine.common.error('invalid_options');
     }
-    if(!options.body || !options.url){
+    if(!options.url){
       return engine.common.error('not_found-body/headers/url/method||options');
     }
-
     let build = {
-      method:'get',
-      body:JSON.stringify(options.body)
+      method:'get'
     };
+    if(options.body){
+      build.body = JSON.stringify(options.body);
+    }
 
     engine.common.tell('build configured',log);
 
