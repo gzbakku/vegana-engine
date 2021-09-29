@@ -6,6 +6,7 @@ let hooks = {
 };
 
 module.exports = {
+  common:require('./common'),
   static:require('./static'),
   ui:require('./ui'),
   sketch:require('./sketch'),
@@ -15,7 +16,6 @@ module.exports = {
   make:require('./make'),
   view:require('./view'),
   router:require('./router'),
-  common:require('./common'),
   loader:require('./loader'),
   session:require('./session'),
   request:require('./request').send,

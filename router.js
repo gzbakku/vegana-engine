@@ -38,6 +38,11 @@ let mods = {
   panel:{}
 };
 
+let routers = {
+  conts:{},
+  panels:{}
+};
+
 module.exports = {
 
   //nav data
@@ -48,6 +53,7 @@ module.exports = {
   track:track,
   mods:mods,
   back:back,
+  routers:routers,
 
   //functions
   get : getWorker,

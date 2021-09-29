@@ -1,65 +1,73 @@
-
+const common = require('../common');
+const log = false;
 
 function toWorker(app,type,reset,routerId,data){
 
-  const log = false;
+  common.tell("navigation initiated",log);
+  common.tell("reinitiate module : " + reset,log);
 
-  //------------------------------
+  //other modules
+  let router = require('../router');
+  let view = require('../view');
+
+  common.tell("router / view localised",log);
+
   //catalogs
-  //------------------------------
-  let active = engine.router.active;
-  let built = engine.router.built;
-  let route = engine.router.route;
-  let track = engine.router.track;
-  let mods = engine.router.mods;
+  let active = router.active;
+  let built = router.built;
+  let route = router.route;
+  let track = router.track;
+  let mods = router.mods;
 
-  //------------------------------
+  common.tell("router objects localised",log);
+
   //check if there is a initiated page heres
-  //------------------------------
   if(type == 'page'){
     if(active[type] == null){
-      return new engine.common.Error('no_page_initiated_from_app_starter');
+      return common.error('no_page_initiated_from_app_starter');
     }
   }
 
-  //------------------------------
+  common.tell("base page intiation validated",log);
+
   //security checks
-  //------------------------------
   if(app == null || app == undefined){
-    return new engine.common.Error('not_found-app');
+    return common.error('not_found-app');
   }
   if(app.ref == null || app.ref == undefined){
-    return new engine.common.Error('invalid_app');
+    return common.error('invalid_app');
   }
   if(type == 'comp'){
     if(!routerId){
-      return new engine.common.Error('not_found-routerId');
+      return common.error('not_found-routerId');
     }
   }
 
-  //------------------------------
-  //calculate module div dom element id by combining module refenrce with router id
-  //------------------------------
+  common.tell("module checks completed",log);
+
+  /*
+    calculate module div dom element id by combining module refenrce with router id
+  */
+
   let toId;
   if(type === "page"){toId = app.ref;} else
   if(type === "cont"){
     if(!engine.router.routers.conts[engine.router.active.page]){
-      return new engine.common.Error("no-cont_router-initiated_on_page");
+      return common.error("no-cont_router-initiated_on_page");
     }
     toId = engine.router.routers.conts[engine.router.active.page] + app.ref;
   } else if(type === "panel"){
     if(!engine.router.routers.conts[engine.router.active.page])
-    {return new engine.common.Error("no-panel_router-initiated_on_panel");}
+    {return common.error("no-panel_router-initiated_on_panel");}
     if(!engine.router.routers.panels[engine.router.active.page][engine.router.active.cont])
-    {return new engine.common.Error("no-panel_router-initiated_on_panel");}
+    {return common.error("no-panel_router-initiated_on_panel");}
     toId = engine.router.routers.panels[engine.router.active.page][engine.router.active.cont] + app.ref;
   } else if(type == 'comp'){
     toId = routerId + app.ref;
   }
 
-  //------------------------------
-  //remove prebuilt module
-  //------------------------------
+  common.tell("module ref built",log);
+
   if(reset == true){
     if(document.getElementById(toId)){
       document.getElementById(toId).remove();
@@ -72,27 +80,27 @@ function toWorker(app,type,reset,routerId,data){
     }
   }
 
-  //------------------------------
+  common.tell("pre-built module removed",log);
+
   //remove previous module
-  //------------------------------
   if(type == 'page'){
-    engine.view.hide(active.page);
+    view.hide(active.page);
   } else if(type == 'cont'){
     let page = active.page + '-router-cont';
     let cont = track.cont[page];
-    engine.view.hide(cont);
+    view.hide(cont);
   } else if(type == 'panel'){
     let page = active.page + '-router-cont';
     let cont = track.cont[page] + '-router-panel';
     let panel = track.panel[cont];
-    engine.view.hide(panel);
+    view.hide(panel);
   } else if(type == 'comp'){
-    engine.view.hide(track['comp'][routerId]);
+    view.hide(track['comp'][routerId]);
   }
 
-  //------------------------------
+  common.tell("active module hidden",log);
+
   //update track catalog with toId
-  //------------------------------
   if(type == 'page'){
     active[type] = toId;
   } else if(type == 'cont'){
@@ -108,9 +116,9 @@ function toWorker(app,type,reset,routerId,data){
     track.comp[routerId] = toId;
   }
 
-  //------------------------------
+  common.tell("to-module cataloged",log);
+
   //navigate here
-  //------------------------------
   let url;
   if(type == 'page'){
     url = exp.url.add.page(toId);
@@ -123,9 +131,6 @@ function toWorker(app,type,reset,routerId,data){
     route.push({type:type,id:toId,url:url,mod:app});
   }
 
-  //------------------------------
-  //run tracnkers
-  //------------------------------
   if(app.trackers){
     let trackers = app.trackers;
     if(trackers.title){
@@ -145,16 +150,13 @@ function toWorker(app,type,reset,routerId,data){
     }
   }//run tracker functions
 
-  //------------------------------
   //already built the app
-  //------------------------------
   if(built[type].indexOf(toId) >= 0 && document.getElementById(toId)){
-    engine.view.show(toId);
+    view.show(toId);
+    common.tell("to-module view activated",log);
   }
 
-  //------------------------------
   //app not built yet
-  //------------------------------
   if(built[type].indexOf(toId) < 0 || !document.getElementById(toId)){
 
     //initiate app
@@ -165,10 +167,10 @@ function toWorker(app,type,reset,routerId,data){
       app.init(router,data);
     } else if(type == 'panel'){
       if(!engine.router.routers.panels[engine.router.active.page]){
-        return new engine.common.Error("not_found-cont_router");
+        return common.error("not_found-cont_router");
       }
       if(!engine.router.routers.panels[engine.router.active.page][engine.router.active.cont]){
-        return new engine.common.Error("not_found-panel_router");
+        return common.error("not_found-panel_router");
       }
       let router = engine.router.routers.panels[engine.router.active.page][engine.router.active.cont];
       app.init(router,data);
@@ -180,7 +182,11 @@ function toWorker(app,type,reset,routerId,data){
       built[type].push(toId);
     }
 
+    common.tell("to-module built",log);
+
   }//app not built
+
+  common.tell("to-module router tags pushed",log);
 
   return true;
 
@@ -252,91 +258,43 @@ let exp = {
   },
 
   to : {
-    page : function(app,data,returnError){
+    page : function(app,data){
       if(engine.router.active.page == app.ref){
         return true;
       }
-      let run = toWorker(app,'page',false,null,data);
-      if(run instanceof engine.common.Error){
-        if(returnError){return run;} else {
-          run.log();
-          return false;
-        }
-      } else {return run;}
+      return toWorker(app,'page',false,null,data);
     },
-    cont : function(app,data,returnError){
+    cont : function(app,data){
       let parse = engine.router.active.page + '-router-cont' + app.ref;
       if(engine.router.active.cont == parse){
         return true;
       }
-      let run = toWorker(app,'cont',false,null,data);
-      if(run instanceof engine.common.Error){
-        if(returnError){return run;} else {
-          run.log();
-          return false;
-        }
-      } else {return run;}
+      return toWorker(app,'cont',false,null,data);
     },
-    panel : function(app,data,returnError){
+    panel : function(app,data){
       let parse = engine.router.active.cont + '-router-panel' + app.ref;
       if(engine.router.active.panel == parse){
         return true;
       }
-      let run = toWorker(app,'panel',false,null,data);
-      if(run instanceof engine.common.Error){
-        if(returnError){return run;} else {
-          run.log();
-          return false;
-        }
-      } else {return run;}
+      return toWorker(app,'panel',false,null,data);
     },
-    comp : function(app,data,routerId,returnError){
-      let run = toWorker(app,'comp',false,routerId,data);
-      if(run instanceof engine.common.Error){
-        if(returnError){return run;} else {
-          run.log();
-          return false;
-        }
-      } else {return run;}
+    comp : function(app,data,routerId){
+      return toWorker(app,'comp',false,routerId,data);
     }
   },
 
   new : {
     page : function(app,data){
-      let run = toWorker(app,'page',true,null,data);
-      if(run instanceof engine.common.Error){
-        if(returnError){return run;} else {
-          run.log();
-          return false;
-        }
-      } else {return run;}
+      return toWorker(app,'page',true,null,data);
     },
     cont : function(app,data){
-      let run = toWorker(app,'cont',true,null,data);
-      if(run instanceof engine.common.Error){
-        if(returnError){return run;} else {
-          run.log();
-          return false;
-        }
-      } else {return run;}
+      return toWorker(app,'cont',true,null,data);
     },
     panel : function(app,data){
-      let run = toWorker(app,'panel',true,null,data);
-      if(run instanceof engine.common.Error){
-        if(returnError){return run;} else {
-          run.log();
-          return false;
-        }
-      } else {return run;}
+      return toWorker(app,'panel',true,null,data);
     },
     comp : function(app,data,routerId){
-      let run = toWorker(app,'comp',true,routerId,data);
-      if(run instanceof engine.common.Error){
-        if(returnError){return run;} else {
-          run.log();
-          return false;
-        }
-      } else {return run;}
+      return toWorker(app,'comp',true,routerId,data);
     }
   }
 
@@ -346,11 +304,11 @@ module.exports = exp;
 
 function clean_page(c){
   if(!c || c.length === 0){
-    return new engine.common.Error('invalid-url-clean_page-navigate-router');
+    return engine.common.error('invalid-url-clean_page-navigate-router');
   }
   let index_of_page = c.indexOf("page-");
   if(index_of_page.length < 0){
-    return new engine.common.Error('not_found-page-router');
+    return engine.common.error('not_found-page-router');
   }
   index_of_page += "page-".length;
   let collect_page = '';
@@ -366,11 +324,11 @@ function clean_page(c){
 
 function clean_cont(c){
   if(!c || c.length === 0){
-    return new engine.common.Error('invalid-url-clean_cont-navigate-router');
+    return engine.common.error('invalid-url-clean_cont-navigate-router');
   }
   let index_of_cont = c.indexOf("router-cont-cont-");
   if(index_of_cont.length < 0){
-    return new engine.common.Error('not_found-page-router');
+    return engine.common.error('not_found-page-router');
   }
   index_of_cont += "router-cont-cont-".length;
   let collect_cont = '';
@@ -388,11 +346,11 @@ function clean_cont(c){
 
 function clean_panel(c){
   if(!c || c.length === 0){
-    return new engine.common.Error('invalid-url-clean_panel-navigate-router');
+    return engine.common.error('invalid-url-clean_panel-navigate-router');
   }
   let index_of_panel = c.indexOf("-router-panel-panel-");
   if(index_of_panel.length < 0){
-    return new engine.common.Error('not_found-page-router');
+    return engine.common.error('not_found-page-router');
   }
   index_of_panel += "-router-panel-panel-".length;
   let collect_panel = '';
@@ -403,5 +361,4 @@ function clean_panel(c){
     collect_panel += c[index_of_panel];
     index_of_panel++;
   }
-  return collect_panel;
 }

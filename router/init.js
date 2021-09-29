@@ -17,13 +17,23 @@ function build(parent,type,mod,data,cls){
     router.id = parent + '-router-' + type;
   }
 
+  if(type === "cont"){
+    engine.router.routers.conts[engine.router.active.page] = router.id;
+  } else if(type === "panel"){
+    if(!engine.router.routers.panels[engine.router.active.page]){
+      engine.router.routers.panels[engine.router.active.page] = {};
+    }
+    engine.router.routers.panels[engine.router.active.page][engine.router.active.cont] = router.id;
+  }
+
   if(cls){
     router.className = cls;
   } else {
     router.className = 'router-' + type;
   }
 
-  let routerApp = require('../router');
+  // let routerApp = require('../router');
+  let routerApp = engine.router;
 
   //append router
   get.appendChild(router);
