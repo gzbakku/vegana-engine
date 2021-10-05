@@ -12,6 +12,13 @@ module.exports = {
 
   },
 
+  cssVar:(key,val)=>{
+    let root = document.querySelector(':root');
+    if(!root){return false;}
+    root.style.setProperty(key, val);
+    return true;
+  },
+
   input : {
 
     value : function(id,value){
