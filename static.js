@@ -54,7 +54,7 @@ module.exports = {
         builder.add.variable(`const ${name} = ${v};`);
         return name;
       },
-      font:(v)=>{if(builder){builder.add.font(v);}},
+      // font:(v)=>{if(builder){builder.add.font(v);}},
       variableChecked:(v)=>{
         if(!builder){return;}
         v = builder.object_to_string.parse_value(v);
@@ -70,13 +70,12 @@ module.exports = {
       },
     },
     font:(v)=>{
-      let location = v.location;
       if(!v.global_url){
         v.location = engine.loader.process_location(v.location);
       }
       return builder.fonts.push({
         location:v.location,
-        tag:v.name
+        name:v.name
       });
     },
     css:(v)=>{
