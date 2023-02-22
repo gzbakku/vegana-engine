@@ -1,5 +1,17 @@
 
+window.veganaStaticOnInits = [];
+window.veganaStaticOnInitiated = false;
+
 module.exports = {
+  init:()=>{
+    window.veganaStaticOnInitiated = true;
+    for(let item of window.veganaStaticOnInits){item();}
+    delete window.veganaStaticOnInits;
+  },
+  onInit:(v)=>{
+    if(window.veganaStaticOnInitiated){v();}
+    window.veganaStaticOnInits.push(v);
+  },
   publish:async ()=>{
     return await builder.publish();
   },
@@ -57,10 +69,18 @@ module.exports = {
         return new_name;
       },
     },
+    font:(v)=>{
+      let location = v.location;
+      if(!v.global_url){
+        v.location = engine.loader.process_location(v.location);
+      }
+      return builder.fonts.push({
+        location:v.location,
+        tag:v.name
+      });
+    },
     css:(v)=>{
       return builder.add.css(v);
-      console.log({sc:v,t:builder.css instanceof Array});
-      builder.css.push(v);
     }
   },
 };
