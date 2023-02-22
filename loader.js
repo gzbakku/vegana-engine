@@ -135,6 +135,13 @@ module.exports = {
       return load_js(options.id,link,options.module);
     },
 
+    uiLib:(name,load_css)=>{
+      return load_js_with_css(
+        process_location('js/ui/' + ensure(name,"Ui") + '/ui.js'),
+        process_location('css/ui/' + ensure(name,"Ui") + '/lazy.css'),load_css
+      );
+    },
+
     comp:(compName,load_css)=>{
       if(engine.global.comp[compName]){return return_resolve();}
       return load_js_with_css(
@@ -169,13 +176,18 @@ module.exports = {
 
     sassPack : function(packName,is_link){
       return load_css(process_location('css/sassPack/' + ensure(packName,"Pack") + "/pack.css"));
+    },
+
+    langPack:async (lang)=>{
+      const hold = await load_json(process_location('js/languages/' + lang + ".json"));
+      if(!hold){return false;} else {window.veganaLanguagePack = {name:lang,dict:hold};}
     }
 
   },
 
-  css : function(fileName,is_link){
+  css : function(fileName,only_link){
     let link = fileName;
-    if(!is_link){
+    if(!only_link){
       link = process_location('css/' + ensure(fileName,".css"));
     }
     return load_css(link);
@@ -249,7 +261,9 @@ module.exports = {
 
     }
 
-  }
+  },
+
+  process_location:process_location
 
 };
 
@@ -262,14 +276,21 @@ function ensure(text,anchor){
 }
 
 function process_location(location){
-  if(window.hasOwnProperty('is_electron') || window.hasOwnProperty('is_cordova')){
+  if(window.is_static && location.includes(".js") && !location.includes("js/bundle.js")){
+    // console.log("loading in page : " + location);
+    require(`../${location}`);
+    // console.log(window.pageModules);
+  }
+  if(window.is_electron || window.is_cordova || window.is_native){
     return location;
   } else {
-    return location = baseHref + '/' + location;
+    // console.log("process_location : " + window.baseHref + '/' + location);
+    return location = window.baseHref + '/' + location;
   }
 }
 
 function load_js_with_css(jsPath,cssPath,do_load_css){
+  if(do_load_css !== false){do_load_css = true;}
   if(do_load_css){
     return new Promise((resolve,reject)=>{
       Promise.all([
@@ -292,6 +313,12 @@ function load_js(id,location,is_module){
 
   return new Promise((resolve,reject)=>{
 
+    if(is_static){
+      engine.static.load.js({id:id,location:location,is_module:is_module});
+      resolve();
+      return;
+    }
+
     let parent = document.getElementsByTagName("head")[0];
     let scp = document.createElement('script');
     scp.type = "text/javascript";
@@ -310,7 +337,7 @@ function load_js(id,location,is_module){
 
     scp.onerror = function(e){
       console.error(e);
-      engine.common.error('failed-load_js');
+      console.error('failed-load_js');
       reject('failed-load_js');
     }
 
@@ -323,6 +350,11 @@ function load_js(id,location,is_module){
 function load_css(location){
 
   return new Promise((resolve,reject)=>{
+    if(is_static){
+      engine.static.load.css({location:location});
+      resolve();
+      return;
+    }
     let parent = document.getElementsByTagName("head")[0];
     let css = document.createElement('link');
     css.rel  = 'stylesheet';
@@ -340,4 +372,11 @@ function load_css(location){
     }
   });
 
+}
+
+async function load_json(location){
+  return fetch(location)
+  .then((response)=>{return response.json();})
+  .catch((data)=>{return false;});
+  return request;
 }

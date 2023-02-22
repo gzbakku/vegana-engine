@@ -1,161 +1,137 @@
 
-
-let scollers = {};
-let keepScroller = [];
-let scoll_direction = 'down';
-let last_scroll_position = window.pageYOffset;
-let showing = {};
-let exit = {};
 let os,platform;
 
-window.addEventListener('scroll', scrollFunction);
-
-function scrollFunction(){
-
-  let keys = Object.keys(scollers);
-  let windowHeight = window.innerHeight;
-
-  let current_scroll_position = window.pageYOffset;
-  if(current_scroll_position < last_scroll_position){
-    scoll_direction = 'up';
-  } else {
-    scoll_direction = 'down';
-  }
-  let view_count = windowHeight + current_scroll_position;
-
-  for(var id in scollers){
-
-    let e = document.getElementById(id);
-    if(!e){
-      delete scollers[id];
-    } else {
-
-      if(!showing.hasOwnProperty(id)){
-        showing[id] = false;
+function extract_translations(read){
+  let started = false;
+  let index = 0;
+  let collect = [];
+  let build = '';
+  for(let i=0;i<read.length;i++){
+      let char = read[i];
+      if(started && char !== "]"){
+          build += char;
       }
+      if(char === "$" && !started){
+          if(
+              read[i+1] === 'T' && 
+              read[i+2] === 'S' && 
+              read[i+3] === '['
+          ){
+              started = true;
+              i += 3;
+          }
+      }
+      if(started && char === "]"){
+          if(
+              read[i+1] === 'T' && 
+              read[i+2] === 'S' && 
+              read[i+3] === '$'
+          ){
+              started = false;
+              collect.push(build);
+              i += 3;
+              build = '';
+          }
+      }
+      index++;
+  }
+  return collect;
+}
 
-      let positionFromBottom = e.getBoundingClientRect().bottom;
-      let positionFromTop = e.getBoundingClientRect().top;
-
-      let bottom_diff = windowHeight - positionFromBottom;
-      let top_diff = windowHeight - positionFromTop;
-
-      if(scoll_direction == 'up'){
-        if(positionFromBottom >= 0 && bottom_diff >= 0 && showing[id] == false){
-          process_enter(id);
-        }
-        if(top_diff < 0){
-          process_exit(id);
+function translate(options){
+  let keys = ['text','value','placeholder','input'];
+  for(let key of keys){
+    if(options.hasOwnProperty(key)){
+      if(typeof(options[key] === "string")){
+        if(options[key].includes("$TS[")){
+          let value = options[key];
+          const translations = extract_translations(options[key]);
+          while(value.includes("$TS[")){
+            value = value.replace("$TS[","");
+          } 
+          while(value.includes("]TS$")){
+            value = value.replace("]TS$","");
+          }
+          for(let item of translations){
+            if(window.veganaLanguagePack){
+              if(window.veganaLanguagePack.dict[item]){
+                value = value.replace(item,window.veganaLanguagePack.dict[item]);
+              }
+            }
+          }
+          options[key] = value;
         }
       }
-
-      if(scoll_direction == 'down'){
-        if(top_diff >= 0 && positionFromBottom >= 0 && showing[id] == false){
-          process_enter(id);
-        }
-        if(positionFromBottom <= 0){
-          process_exit(id);
-        }
-      }
-
     }
-
-
-
-  }//loop ends here
-
-  function process_enter(id){
-    if(showing[id] == true){return false;}
-    showing[id] = true;
-    let func = scollers[id]
-    if(typeof(func) == 'function'){func(id);}
-    if(keepScroller.indexOf(id) < 0 && exit.hasOwnProperty(id) == false){
-      delete scollers[id];
-      delete showing[id];
-    }
-    return true;
   }
-
-  function process_exit(id){
-    if(showing[id] == false){return false;}
-    showing[id] = false;
-    let func = exit[id]
-    if(typeof(func) == 'function'){func(id);}
-    if(keepScroller.indexOf(id) < 0){
-      delete scollers[id];
-      delete showing[id];
-      delete exit[id];
-    }
-    return true;
-  }
-
-  last_scroll_position = current_scroll_position;
-
-};
+  return options;
+}
 
 module.exports = (tag,options)=>{
 
   if(!os || !platform){
-    os = engine.get.os(),platform = engine.get.platform();
+    os = engine.get.os(),
+    platform = engine.get.platform();
   }
 
   if(
     !tag || typeof(tag) !== "string" || tag.length === 0 ||
     typeof(options) !== 'object' ||
-    !options.hasOwnProperty('parent') ||
-    typeof(options.parent) !== 'string'
+    (
+      typeof(options.parent) !== 'string' &&
+      typeof(options.p) !== 'string' &&
+      typeof(options.parent_tag) !== 'string'
+    )
   ){
     console.log(tag,options);
     return engine.common.error('invalid_object/parent_value/tag');
   }
 
-  if(!options.id){
-    options.id = engine.uniqid();
+  //****************************************
+  //static check
+  //****************************************
+
+  if((options.static || options.s) && !is_static){
+    return;
   }
 
-  //check parent
-  let get = document.getElementById(options.parent);
-  if(get == null){
+  //****************************************
+  //get parent
+  //****************************************
+
+  let get = document.getElementById(options.parent || options.p);
+  if(!get){
+    get = document.getElementsByTagName(options.parent || options.p);
+    if(get.length > 0){get = get[0];}
+  }
+  if(!get || get.length === 0){
     return engine.common.error('invalid_parent',options);
   }
 
+  // if(){}
+
+  //****************************************
   //make element
-  let id = options.parent + '-' + tag + '-' + options.id;
+  //****************************************
+
+  if(!options.id){
+    options.id = engine.uniqid();
+  }
+  if(options.translate || options.t){
+    options = translate(options);
+  }
+  let id = (options.parent || options.p) + '-' + tag + '-' + options.id;
   let object = document.createElement(tag);
   if(options.only_id){
     object.id = options.id;
   } else {
     object.id = id;
-  }
-
-
-  if(options.enter){
-    if(!scollers.hasOwnProperty(id)){
-      scollers[id] = options.enter;
-    }
-    if(options.keepScroller && options.keepScroller == true){
-      if(keepScroller.indexOf(id) < 0){
-        keepScroller.push(id);
-      }
+    // if(options.fold || options.f){object.id = engine.md5(id);}
+    if(window.VeganaElementIdFold !== false){
+      object.id = engine.md5(id);
     }
   }
-
-  if(options.exit){
-    if(!scollers.hasOwnProperty(id)){
-      if(!options.enter){
-        scollers[id] = null;
-      }
-    }
-    if(exit.hasOwnProperty(id) == false){
-      exit[id] = options.exit;
-    }
-    if(options.keepScroller && options.keepScroller == true){
-      if(keepScroller.indexOf(id) < 0){
-        keepScroller.push(id);
-      }
-    }
-  }
-
+  
   if(options.class){
     object.className = options.class;
   } else {
@@ -176,9 +152,6 @@ module.exports = (tag,options)=>{
   if(options.hasOwnProperty('text') && options.text !== undefined && options.text !== null){
     object.innerHTML = options.text;
   }
-  if(options.style){
-    object.style = options.style;
-  }
 
   for(var i in options){
     if(
@@ -191,6 +164,7 @@ module.exports = (tag,options)=>{
       i !== 'data' &&
       i !== 'options' &&
       i !== 'parent' &&
+      i !== 'p' &&
       i !== 'tag' &&
       i !== 'list_id' &&
       i !== 'id' &&
@@ -205,7 +179,9 @@ module.exports = (tag,options)=>{
     }
   }
 
+  //****************************************
   //select items
+
   if(options.options && typeof(options.options) == 'object' && options.options.length > 0){
     for(var i=0;i<options.options.length;i++){
       let data = options.options[i];
@@ -231,77 +207,11 @@ module.exports = (tag,options)=>{
     }
   }
 
+  //****************************************
+  //all styles are resolved here
+  //****************************************
 
-  let default_event = 'click';
-  if((tag == 'input' || tag == 'textarea') && options.type !== 'button'){
-    default_event = 'input'
-  }
-  if(tag === "select"){default_event = 'change';}
-  if(options.function && tag !== 'ol' && tag !== 'ul'){
-    object.addEventListener(default_event,(eve)=>{
-      if(tag !== "input" && tag !== "textarea" && tag !== "select"){
-        options.function(object.id,options.functionData,eve);
-      } else if(options.type === "string" || tag === "textarea"){
-        options.function(object.id,String(object.value),options.functionData,eve);
-      } else if(options.type === "number"){
-        options.function(object.id,Number(object.value),options.functionData,eve);
-      } else if(options.type === "file"){
-        options.function(object.id,object.files,options.functionData,eve);
-      } else if(options.type === "checkbox"){
-        options.function(object.id,object.checked,options.functionData,eve);
-      } else {
-        options.function(object.id,object.value,options.functionData,eve);
-      }
-    });
-  }
-
-  if(options.event && options.events){
-    engine.common.error('invalid_config=>event&&events__cannot_co_exists',options);
-  }
-
-  if(options.events && !options.event){
-    for(var i in options.events){
-      let e = options.events[i];
-      if(e.event && e.function){
-        if(
-          typeof(e.event) == 'string' &&
-          typeof(e.function) == 'function'
-        ){
-          object.addEventListener(e.event,(eve)=>{
-            e.function(object.id,options.functionData,eve)
-          });
-        }
-      }
-    }
-
-  }
-
-  if(options.event){
-    if(
-      typeof(options.event.type) == 'string' &&
-      typeof(options.event.function) == 'function'
-    ){
-      object.addEventListener(options.event.type,(eve)=>{
-        options.event.function(object.id,eve)
-      });
-    }
-  }
-
-  if(options.expire && typeof(options.expire) == 'number' && options.expire > 1000){
-    setTimeout(function(){
-      engine.view.remove(object.id);
-      scrollFunction();
-    }, options.expire);
-  }
-
-  if(options.position){
-    get.insertAdjacentElement(options.position,object);
-  } else {
-    get.appendChild(object);
-  }
-
-  //***************************
-  //draw here
+  let style = {};
 
   if(options.draw){
 
@@ -345,8 +255,29 @@ module.exports = (tag,options)=>{
       }
     }
 
-    object.style = draw_as_string(draw);
+    style = engine.make.integrate_objects(
+      style,
+      draw
+    );
 
+  }
+
+  if(options.style){
+    style = engine.make.integrate_objects(
+      style,
+      options.style
+    );
+  }
+
+  if(options.styles){
+    style = engine.make.integrate_objects(
+      style,
+      engine.make.styles.build_styles(options.styles)
+    );
+  }
+
+  if(style instanceof Object){
+    object.style = draw_as_string(style);
   }
 
   function reduce_draw(base,next){
@@ -362,52 +293,90 @@ module.exports = (tag,options)=>{
     return collect;
   }
 
-  //***************************
+  //****************************************
+  //functions events
+  //****************************************
+
+  if(is_static){
+    if(options.functionData){
+      options.functionData = engine.static.add.js.variable(null,options.functionData);
+    }
+    if(options.funcData){
+      options.functionData = engine.static.add.js.variable(null,options.funcData);
+    }
+  }
+
+  // id,tag,func,funcData,object
+  if(options.function){
+    if(is_static){
+      options.function = engine.static.add.js.function(null,options.function);
+      engine.static.add.js.call(`${get_event_function_id()}(${variableChecked(object.id)},"${tag}",${options.function},${options.functionData},document.getElementById(${variableChecked(object.id)}),"${options.type}")`);
+    } else {
+      event_function(id,tag,options.function,options.funcData || options.functionData,object);
+    }
+  }
+
+  //****************************************
+  //custom events and expire
+
+  if(options.event && options.events){
+    engine.common.error('invalid_config=>event&&events__cannot_co_exists',options);
+  }
+
+  if(options.events && !options.event){
+    for(var i in options.events){
+      let e = options.events[i];
+      if(e.event && e.function){
+        if(
+          typeof(e.event) == 'string' &&
+          typeof(e.function) == 'function'
+        ){
+          // const funcName = engine.static.add.js.function(null,e.function);
+          // object.addEventListener(e.event,`(e)=>{
+          //   ${funcName}(${variableChecked(object.id)},${options.functionData},e);
+          // }`);
+        }
+      }
+    }
+  }
+
+  if(options.event){
+    if(
+      typeof(options.event.type) == 'string' &&
+      typeof(options.event.function) == 'function'
+    ){
+      // const funcName = engine.static.add.js.function(null,options.event.function);
+      // object.addEventListener(options.event.type,`(e)=>{
+      //   ${funcName}(${variableChecked(object.id)},${options.functionData},e)
+      // }`);
+    }
+  }
+
+  //****************************************
+  //expire functions
+
+  if(options.expire && typeof(options.expire) == 'number' && options.expire > 1000){
+    if(is_static){
+      let expire_function_id = get_expire_function_id();
+      engine.static.add.js.call(`${expire_function_id}(${variableChecked(object.id)},${options.expire})`);
+    } else {
+      expire_function(
+        object.id,options.expire
+      );
+    }
+  }
+
+  //****************************************
   //touch func
 
-  let startTime;
-
-  if(options.hasOwnProperty("touch")){
-    if(typeof(options.touch) == "function"){
-      let startX,startY,lastX,lastY;
-      object.addEventListener("touchstart",(eve)=>{
-        x = eve.touches[0].clientX,y = eve.touches[0].clientY;
-        startX = x;startY = y;
-        startTime = new Date().getTime();
-      });
-      object.addEventListener("touchmove",(eve)=>{
-        eve.preventDefault();
-        x = eve.touches[0].clientX,y = eve.touches[0].clientY;
-        if(!lastX || !lastY){lastX = x,lastY = y;return;}
-        const process = process_move(startX,startY,x,y,"continue",startTime);
-        lastX = process.posX,lastY = process.posY;
-        options.touch(object.id,process,options.functionData,eve);
-      });
-      object.addEventListener("touchend",(eve)=>{
-        if(!startX || !startY){startX = lastX,startY = lastY;return;}
-        const process = process_move(startX,startY,lastX,lastY,"end",startTime);
-        options.touch(object.id,process,options.functionData,eve);
-      });
-      object.addEventListener("mousedown",(eve)=>{
-        startX = eve.clientX;startY = eve.clientY;
-        startTime = new Date().getTime();
-        document.addEventListener("mousemove",move);
-        document.addEventListener("mouseup",end);
-      });
-      const move = (eve)=>{
-        x = eve.clientX,y = eve.clientY;
-        if(!lastX || !lastY){lastX = x,lastY = y;return;}
-        const process = process_move(startX,startY,x,y,"continue",startTime);
-        lastX = process.posX,lastY = process.posY;
-        options.touch(object.id,process,options.functionData,eve);
-      };
-      const end = (eve)=>{
-        if(!startX || !startY){startX = lastX,startY = lastY;return;}
-        const process = process_move(startX,startY,lastX,lastY,"end",startTime);
-        document.removeEventListener("mousemove", move);
-        document.removeEventListener("mouseup", end);
-        options.touch(object.id,process,options.functionData,eve);
-      };
+  if(options.touch){
+    if(is_static){
+      const inputFunctionName = engine.static.add.js.function(null,options.touch);
+      engine.static.add.js.call(`${get_touch_function_id()}(${variableChecked(object.id)},document.getElementById(${variableChecked(object.id)}),${inputFunctionName},${options.functionData});`);
+    } else {
+      touch_function(
+        object.id,object,options.touch,options.functionData || options.funcData
+      );
     }
   }
 
@@ -416,55 +385,176 @@ module.exports = (tag,options)=>{
 
   if(options.timer){
     if(options.timer.time && options.timer.function){
-      let timer_started = false,timer_timeout;
-      object.addEventListener("mousedown",(eve)=>{
-        timer_started = true;
-        timer_timeout = setTimeout(function () {
-          timer_started = false;
-          options.timer.function(object.id,options.timer.functionData);
-        }, options.timer.time);
-      });
-      object.addEventListener("mouseout",(eve)=>{
-        if(!timer_started){return;} else {
-          clearTimeout(timer_timeout);
-        }
-      });
-      object.addEventListener("mouseup",(eve)=>{
-        if(!timer_started){return;} else {
-          clearTimeout(timer_timeout);
-        }
-      });
+      if(is_static){
+        const inputFunctionName = engine.static.add.js.function(null,options.timer.function);
+        engine.static.add.js.call(`${get_timer_function_id()}(${variableChecked(object.id)},document.getElementById(${variableChecked(object.id)}),${options.functionData},${options.timer.time},${inputFunctionName});`);
+      } else {
+        timer_function(
+          object.id,object,options.functionData || options.funcData,
+          options.timer.time,options.timer.function
+        );
+      }
     }
   }
 
-  scrollFunction();
+  //****************************************
+  //add to document
+  //****************************************
+
+  if(options.position){
+    get.insertAdjacentElement(options.position,object);
+  } else {
+    get.appendChild(object);
+  }
 
   return object.id;
 
 }
 
-function process_move(lastX,lastY,x,y,type,startTime){
-  let dirX = 'left',dirY = 'up',
-  diffX = x - lastX,diffY = y - lastY,
-  perc_x = Math.ceil((Math.abs(diffX) / screen.width) * 100),
-  perc_y = Math.ceil((Math.abs(diffY) / screen.height) * 100);
-  if(diffY === 0){dirY = 'none';}
-  if(diffY > 0){dirY = 'down';}
-  if(diffY < 0){dirY = 'up';}
-  if(diffX === 0){dirX = 'none';}
-  if(diffX > 0){dirX = 'right';}
-  if(diffX < 0){dirX = 'left';}
-  let now = new Date().getTime();
-  let time_diff = now - startTime;
-  let collect = {
-    type:type,
-    dirX:dirX,dirY:dirY,
-    moveX:Math.abs(diffX),moveY:Math.abs(diffY),
-    posX:x,posY:y,
-    basePosX:lastX,
-    basePosY:lastY,
-    percX:perc_x,percY:perc_y,
-    time:time_diff
+let timer_function_id;
+function get_timer_function_id(){
+  if(timer_function_id){return timer_function_id;}
+  timer_function_id = engine.static.add.js.function(null,timer_function);
+  return timer_function_id;
+}
+
+let expire_function_id;
+function get_expire_function_id(){
+  if(expire_function_id){return expire_function_id;}
+  expire_function_id = engine.static.add.js.function(null,expire_function);
+  return expire_function_id;
+}
+
+let touch_function_id;
+function get_touch_function_id(){
+  if(touch_function_id){return touch_function_id;}
+  touch_function_id = engine.static.add.js.function(null,touch_function);
+  return touch_function_id;
+}
+
+let event_function_id;
+function get_event_function_id(){
+  if(event_function_id){return event_function_id;}
+  event_function_id = engine.static.add.js.function(null,event_function);
+  return event_function_id;
+}
+
+function event_function(id,tag,func,funcData,object,type){
+  let default_event = 'click';
+  if((tag == 'input' || tag == 'textarea') && type !== 'button'){
+    default_event = 'input'
+  }
+  if(tag === "select"){default_event = 'change';}
+  if(func && tag !== 'ol' && tag !== 'ul'){
+    object.addEventListener(default_event,(eve)=>{
+      if(tag !== "input" && tag !== "textarea" && tag !== "select"){
+        func(id,funcData,eve);
+      } else if(type === "string" || tag === "textarea"){
+        func(id,String(object.value),funcData,eve);
+      } else if(type === "number"){
+        func(id,Number(object.value),funcData,eve);
+      } else if(type === "file"){
+        func(id,object.files,funcData,eve);
+      } else if(type === "checkbox"){
+        func(id,object.checked,funcData,eve);
+      } else {
+        func(id,object.value,funcData,eve);
+      }
+    });
+  }
+}
+
+const expire_function = (id,time)=>{
+  setTimeout(()=>{
+    engine.view.remove(id);
+  }, time);
+}
+
+const timer_function = (id,object,data,time,func)=>{
+  let timer_started = false,timer_timeout;
+  object.addEventListener("mousedown",(eve)=>{
+    timer_started = true;
+    timer_timeout = setTimeout(function(){
+      timer_started = false;
+      func(id,data);
+    }, time);
+  });
+  object.addEventListener("mouseout",(eve)=>{
+    if(!timer_started){return;} else {
+      clearTimeout(timer_timeout);
+    }
+  });
+  object.addEventListener("mouseup",(eve)=>{
+    if(!timer_started){return;} else {
+      clearTimeout(timer_timeout);
+    }
+  });
+}
+
+const touch_function = (id,object,func,data)=>{
+  let startTime;
+  let startX,startY,lastX,lastY;
+  object.addEventListener("touchstart",(eve)=>{
+    x = eve.touches[0].clientX,y = eve.touches[0].clientY;
+    startX = x;startY = y;
+    startTime = new Date().getTime();
+  });
+  object.addEventListener("touchmove",(eve)=>{
+    eve.preventDefault();
+    x = eve.touches[0].clientX,y = eve.touches[0].clientY;
+    if(!lastX || !lastY){lastX = x,lastY = y;return;}
+    const process = process_move(startX,startY,x,y,"continue",startTime);
+    lastX = process.posX,lastY = process.posY;
+    func(id,process,data,eve);
+  });
+  object.addEventListener("touchend",(eve)=>{
+    if(!startX || !startY){startX = lastX,startY = lastY;return;}
+    const process = process_move(startX,startY,lastX,lastY,"end",startTime);
+    func(id,process,data,eve);
+  });
+  object.addEventListener("mousedown",(eve)=>{
+    startX = eve.clientX;startY = eve.clientY;
+    startTime = new Date().getTime();
+    document.addEventListener("mousemove",move);
+    document.addEventListener("mouseup",end);
+  });
+  const move = (eve)=>{
+    x = eve.clientX,y = eve.clientY;
+    if(!lastX || !lastY){lastX = x,lastY = y;return;}
+    const process = process_move(startX,startY,x,y,"continue",startTime);
+    lastX = process.posX,lastY = process.posY;
+    func(id,process,data,eve);
   };
-  return collect;
+  const end = (eve)=>{
+    if(!startX || !startY){startX = lastX,startY = lastY;return;}
+    const process = process_move(startX,startY,lastX,lastY,"end",startTime);
+    document.removeEventListener("mousemove", move);
+    document.removeEventListener("mouseup", end);
+    func(id,process,data,eve);
+  };
+  function process_move(lastX,lastY,x,y,type,startTime){
+    let dirX = 'left',dirY = 'up',
+    diffX = x - lastX,diffY = y - lastY,
+    perc_x = Math.ceil((Math.abs(diffX) / screen.width) * 100),
+    perc_y = Math.ceil((Math.abs(diffY) / screen.height) * 100);
+    if(diffY === 0){dirY = 'none';}
+    if(diffY > 0){dirY = 'down';}
+    if(diffY < 0){dirY = 'up';}
+    if(diffX === 0){dirX = 'none';}
+    if(diffX > 0){dirX = 'right';}
+    if(diffX < 0){dirX = 'left';}
+    let now = new Date().getTime();
+    let time_diff = now - startTime;
+    let collect = {
+      type:type,
+      dirX:dirX,dirY:dirY,
+      moveX:Math.abs(diffX),moveY:Math.abs(diffY),
+      posX:x,posY:y,
+      basePosX:lastX,
+      basePosY:lastY,
+      percX:perc_x,percY:perc_y,
+      time:time_diff
+    };
+    return collect;
+  }
 }

@@ -1,5 +1,7 @@
 module.exports = {
 
+  url:()=>{return document.URL},
+
   os:()=>{
     let ua = navigator.userAgent.toLowerCase();
     if(!ua){return 'unknown';}
@@ -64,26 +66,67 @@ module.exports = {
       }
     }
 
-    let w = window.innerWidth,h = window.innerHeight,ans;
-
-    if(w >= h){
-      if(data == 'platform'){
-        ans = 'pc';
-      } else if(data == 'mobile'){
-        ans = false;
-      } else if(data == 'pc'){
-        ans = true;
+    if(data == 'web'){
+      if(
+        !window.hasOwnProperty('is_static') &&
+        !window.hasOwnProperty('is_electron') &&
+        !window.hasOwnProperty('is_cordova')
+      ){
+        return true;
+      } else {
+        return false;
       }
     }
 
-    if(w < h){
-      if(data == 'platform'){
-        ans = 'mobile';
-      } else if(data == 'mobile'){
-        ans = true;
-      } else if(data == 'pc'){
-        ans = false;
+    if(data == 'native'){
+      if(
+        window.hasOwnProperty('is_electron') ||
+        window.hasOwnProperty('is_cordova')
+      ){
+        return true;
+      } else {
+        return false;
       }
+    }
+
+    // let w = window.innerWidth,h = window.innerHeight,ans;
+    let w = engine.get.body.width(),h = engine.get.body.height(),ans;
+
+    if(data === "mobile"){
+      if(w < 500 || h < 500){
+        return true;
+      } else {
+        return false;
+      }
+    }
+    if(data === "tablet"){
+      if(w <= 1080 || h <= 1080){
+        return true;
+      } else {
+        return false;
+      }
+    }
+    if(data === "pc"){
+      if(w > 1080 || h > 1080){
+        return true;
+      } else {
+        return false;
+      }
+    }
+
+    if(data == "platform" || data == "device"){
+      // console.log({w:w,h:h});
+      if(w <= 500 || h <= 500){ans = "mobile";} else
+      if(w <= 1080 || h <= 1080){ans = "tablet";} else
+      if(w > 1080 || h > 1080){ans = "pc";}
+    }
+
+    if(data === 'size'){
+      return {
+        mobile:{smallest_max:501,orientation:'portrait'},
+        tablet:{biggest_max:1080,both_min:500,orientation:'landscape'},
+        pc:{some_min:1081,orientation:'landscape'}
+      };
     }
 
     return ans;
@@ -139,11 +182,17 @@ module.exports = {
   body : {
 
     width : function(){
-      return document.body.offsetWidth;
+      //old document.body.offsetWidth;
+      const width = window.innerWidth || document.documentElement.clientWidth || 
+      document.body.clientWidth;
+      return width;
     },
 
     height : function(){
-      return document.body.offsetHeight;
+      //old document.body.offsetHeight;
+      const height = window.innerHeight|| document.documentElement.clientHeight|| 
+      document.body.clientHeight;
+      return height;
     }
 
   },

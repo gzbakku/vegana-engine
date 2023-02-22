@@ -5,6 +5,7 @@ window.uiModules = {};
 module.exports = {
 
   add:(name,modules)=>{
+    if(!window.uiModules){window.uiModules = {};}
     window.uiModules[name] = modules;
   },
 

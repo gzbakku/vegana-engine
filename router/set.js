@@ -1,17 +1,14 @@
-const common = require('../common');
-const log = false;
+
 
 module.exports = {
 
   pageModule : function(pageName,controller){
 
-    common.tell('activating pageModule : ' + controller.pageName,log);
-
     if(!pageName || !controller){
-      return common.error('not_found-inputs');
+      return new engine.common.Error('not_found-inputs');
     }
     if(typeof(controller) !== 'object'){
-      return common.error('invalid-controller');
+      return new engine.common.Error('invalid-controller');
     }
 
     window.pageModules[pageName] = controller;
@@ -23,13 +20,11 @@ module.exports = {
 
   contModule : function(pageName,contName,controller){
 
-    common.tell('activating contModule : ' + controller.contName,log);
-
     if(!pageName || !contName || !controller){
-      return common.error('not_found-inputs');
+      return new engine.common.Error('not_found-inputs');
     }
     if(typeof(controller) !== 'object'){
-      return common.error('invalid-controller');
+      return new engine.common.Error('invalid-controller');
     }
 
     window.pageModules[pageName].contModules[contName] = controller;
@@ -41,13 +36,11 @@ module.exports = {
 
   panelModule : function(pageName,contName,panelName,controller){
 
-    common.tell('activating panelModule : ' + panelName,log);
-
     if(!pageName || !contName || !panelName || !controller){
-      return common.error('not_found-inputs');
+      return new engine.common.Error('not_found-inputs');
     }
     if(typeof(controller) !== 'object'){
-      return common.error('invalid-controller');
+      return new engine.common.Error('invalid-controller');
     }
 
     window.pageModules[pageName].contModules[contName].panelModules[panelName] = controller;
@@ -57,9 +50,12 @@ module.exports = {
 
   },
 
-  baseHref : function(url){
+  baseHref : function(url,only_url){
 
-    common.tell('activating baseHref',log);
+    if(only_url){
+      window.baseHref = url;
+      return true;
+    }
 
     let location;
     let protocol = window.location.protocol;

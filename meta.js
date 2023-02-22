@@ -2,40 +2,38 @@
 
 module.exports = {
 
-  add:(options)=>{
-    if(!options.name){return engine.common.error('not_found-name-add-meta-engine');}
-    if(document.querySelector('meta[name="' + options.name + '"]')){
-      return engine.common.error('already_exists-meta_tag-add-meta-engine=>"you might wanna update the meta tag, not set it again."');
-    }
+  add:(options,unbase)=>{
+    if(is_static && !unbase){return builder.add.meta(options);}
     var meta = document.createElement('meta');
-    if(options.href){meta.httpEquiv = options.href;}
-    meta.content = options.content;
-    meta.name = options.name;
+    for(let key in options){
+      let key_name = key;
+      if(key_name === "httpEquiv"){key_name = "href";}
+      meta[key_name] = options[key];
+    }
     document.getElementsByTagName('head')[0].appendChild(meta);
     return true;
   },
 
   update:(options)=>{
-    let get = document.querySelector('meta[name="' + options.name + '"]');
-    if(!get){
-      let check = engine.meta.add(options);
-      if(!check){
-        return engine.common.error('failed-add_meta_tag-update-meta-engine');
-      } else {
-         get = document.querySelector('meta[name="' + options.name + '"]');
+    if(is_static){return builder.add.meta(options);}
+    if(options.name){
+      let get = document.querySelector('meta[name="' + options.name + '"]');
+      if(get){
+        get.setAttribute("content", options.content);
+        return true;
       }
     }
-    get.setAttribute("content", options.content);
-    return true;
+    return engine.meta.add(options,true);
   },
 
   delete:(name)=>{
+    if(is_static){return builder.remove.meta(name);}
     let get = document.querySelector('meta[name="' + name + '"]');
     if(get){
       get.remove();
       return true;
     } else {
-      return engine.common.error('not_found-meta_tag-delete-meta-engine');
+      return false;
     }
   }
 

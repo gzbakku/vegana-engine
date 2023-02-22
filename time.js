@@ -27,69 +27,16 @@ module.exports = {
     return (d.getDay() + 1);
   },
 
-  diff : {
-
-    days : function(time1,time2){
-
-      let
-      aHold = new Date(time1),
-      bHold = new Date(time2),
-      a,b;
-
-      a = {
-        day:aHold.getDate(),
-        month:aHold.getMonth(),
-        year:aHold.getFullYear(),
-        hour:aHold.getHours(),
-        minutes:aHold.getMinutes(),
-        seconds:aHold.getSeconds()
-      };
-
-      b = {
-        day:bHold.getDate(),
-        month:bHold.getMonth(),
-        year:bHold.getFullYear(),
-        hour:bHold.getHours(),
-        minutes:bHold.getMinutes(),
-        seconds:bHold.getSeconds()
-      };
-
-      let base = 0;
-
-      //check if same year
-      if(a.year !== b.year){
-        let yearDiff = b.year - a.year;
-        base += yearDiff * 365;
-      }
-
-      //check month
-      if(a.month !== b.month){
-        let monthDiff = b.month - a.month;
-        base += monthDiff * 30;
-      }
-
-      //check days
-      if(a.day !== b.day){
-        let dayDiff = b.day - a.day;
-        if(dayDiff > 0){
-          base += dayDiff;
-        }
-      }
-
-      if(base > 0){
-        return base;
-      }
-
-      //check hours
-      if(a.hour !== b.hour){
-        let hourDiff = b.hour - a.hour;
-        base += hourDiff / 100;
-      }
-
-      return base;
-
-    }
-
-  }
+  elapsed:(one)=>{
+    let two = engine.time.now();
+    let diff = two - one;
+    let t = '';
+    if(diff > (1000*60*60*24)){diff = diff/(1000*60*60*24);t = 'd';} else
+    if(diff > (1000*60*60)){diff = diff/(1000*60*60);t = 'h';} else
+    if(diff > (1000*60)){diff = diff/(1000*60);t = 'm';} else
+    if(diff > (1000)){diff = diff/(1000);t = 's';} else
+    if(diff < 1000){diff = diff/1000;t = 'ms';}
+    return {t:t,d:diff,value:`${diff}${t}`};
+  },
 
 };

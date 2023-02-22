@@ -4,8 +4,10 @@ function fetch(){
 
   let params = {};
 
-  if (/\?(.+?\=.+){1}/.test(document.URL)) {
-    document.URL.split('?')[1].split('&').forEach(function(both){
+  let url = engine.get.url();
+
+  if (/\?(.+?\=.+){1}/.test(url)) {
+    url.split('?')[1].split('&').forEach(function(both){
       var e = both.split('=');
       params[e[0]] = e[1];
     });
@@ -17,7 +19,7 @@ function fetch(){
 
 function post(params){
 
-  let url = document.URL.split('?')[0];
+  let url = engine.get.url().split('?')[0];
   for(var i in params){
     if(i && params[i]){
       if(url.indexOf("?") < 0){
@@ -80,10 +82,11 @@ module.exports = {
         cont:null,
         panel:null,
         custom:[],
+        all:[],
         params:fetch()
       };
 
-      let url = document.URL;
+      let url = engine.get.url();
       if(url.indexOf('?') >= 0){
         url = url.split('?')[0];
       }
@@ -94,13 +97,14 @@ module.exports = {
       url = url.replace(':','');
 
       let natives = url.split('/');
-
       if(natives.length == 0){
         return result;
       }
       if(natives[0].length == 0){
         delete natives.splice(0,1);
       }
+      result.all = Object.assign([],natives);
+      
       if(natives[0]){
         result.page = natives[0] + 'Page';
         natives.splice(0,1);
