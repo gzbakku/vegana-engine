@@ -2,12 +2,23 @@ const initImport = require('./init');
 const viewersImport = require('./viewers');
 const inputsImport = require('./inputs');
 const listImport = require('./list');
-const tabsImport = require('./tabs/index');
+// const tabsImport = require('./tabs/index');
 const a = require('./a.js');
 const creator = require("./creator");
 const platform = require("./platform");
 
 module.exports = {
+
+  eventName:(n)=>{
+    if(is_static && !n.includes("on")){
+      n = `on${n}`; 
+    } else if(n.includes("on")){
+      n = n.replace("on","");
+    }
+    return n;
+  },
+
+  VeganaUidCounter:0,
 
   platform:platform,
 
@@ -51,19 +62,24 @@ module.exports = {
 
   styles:require("./styles"),
 
+  url:require("./url"),
+
   raw_css:(media_rule)=>{
     if(is_static){
       return engine.static.add.css(media_rule);
     }
     let sheet = window.document.styleSheets[0];
     sheet.insertRule(media_rule,sheet.cssRules.length);
+  },
+
+  get_uid:()=>{
+    engine.make.VeganaUidCounter += 1;
+    return `U${engine.make.VeganaUidCounter}`;
   }
 
 };
 
 function integrate_objects(one,two,checked){
-  // console.log({one:one});
-  // console.log({two:two});
   if((one instanceof Array) && (two instanceof Array)){
     one = one.concat(two);
     return one;

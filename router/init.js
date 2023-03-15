@@ -2,70 +2,57 @@
 
 function build(parent,type,mod,data,cls){
 
-  //check parent
-  let get = document.getElementById(parent);
-  if(get == null){
-    return common.error('invalid_parent : ' + parent);
-  }
+  let router = engine.make.div({
+    id:`router-${type}`,
+    parent:parent,
+    class:cls ? cls : `router-${type}`
+  });
 
-  //make router
-  let router = document.createElement("div");
+  let routers = engine.router.routers;
+  let active = engine.router.active;
 
-  if(type == 'comp'){
-    router.id = parent + '-router-' + engine.uniqid() + '-' + type;
-  } else {
-    router.id = parent + '-router-' + type;
-  }
-
+  let id = `${router}${mod.ref}`;
   if(type === "cont"){
-    engine.router.routers.conts[engine.router.active.page] = router.id;
+    routers.conts[active.page] = router;
+    active.routers[router] = id;
+    engine.router.built[id] = router;
   } else if(type === "panel"){
-    if(!engine.router.routers.panels[engine.router.active.page]){
-      engine.router.routers.panels[engine.router.active.page] = {};
-    }
-    engine.router.routers.panels[engine.router.active.page][engine.router.active.cont] = router.id;
+    let cont_router = routers.conts[active.page];
+    let active_cont = active.routers[cont_router];
+    routers.panels[active_cont] = router;
+    active.routers[router] = id;
+    engine.router.built[id] = router;
+  } else if(type === "comp"){
+    active.routers[router] = id;
+    engine.router.built[id] = router;
   }
 
-  if(cls){
-    router.className = cls;
-  } else {
-    router.className = 'router-' + type;
+  let url = engine.make.url;
+
+  if(type === "page"){url.update("page",mod.name.replace("Page",""));} else
+  if(type === "cont"){url.update("cont",mod.contName.replace("Cont",""));} else
+  if(type === "panel"){url.update("panel",mod.panelName.replace("Panel",""));}
+
+  if(mod){
+    mod.init(router,data);
+    engine.router.navigate.run_trackers(mod);
   }
 
-  // let routerApp = require('../router');
-  let routerApp = engine.router;
-
-  //append router
-  get.appendChild(router);
-  if(mod && type == 'comp'){
-    routerApp.track.comp[router.id] = router.id + mod.ref;
-    routerApp.built.comp.push(router.id + mod.ref);
-    mod.init(router.id,data);
-  }
-  return router.id;
+  return router;
 
 }
 
 module.exports = {
 
-  conts : function(parent,cls){
-    if(parent == null){
-      return common.error('no_parent_found : ' + parent);
-    }
-    return build(parent,'cont',null,null,cls);
+  conts : function(parent,mod,data,cls){
+    return build(parent,'cont',mod,data,cls);
   },
 
-  panels : function(parent,cls){
-    if(parent == null){
-      return common.error('no_parent_found : ' + parent);
-    }
-    return build(parent,'panel',null,null,cls);
+  panels : function(parent,mod,data,cls){
+    return build(parent,'panel',mod,data,cls);
   },
 
   comps : function(parent,mod,data,cls){
-    if(parent == null){
-      return common.error('no_parent_found : ' + parent);
-    }
     return build(parent,'comp',mod,data,cls);
   }
 

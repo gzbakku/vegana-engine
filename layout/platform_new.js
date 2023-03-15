@@ -214,103 +214,82 @@ function extract_platforms(data){
 
     let to_build = [];
     let styles = Object.assign({},data.styles);
-    let layouts = data.layouts;
+    let layouts = Object.assign({},data.layouts);
 
-    //ensure styles
-    if(!data.styles){data.styles = {};}
-    
-    if(!styles.web){styles.web = {};}
-    if(!styles.all){styles.all = {};}
-
-    if(styles.all.portrait || styles.all.landscape){styles.web.all = styles.all;}
-    // if(styles.portrait || styles.landscape){styles.web.all = styles;}
-
-    if(!styles.web.mobile && styles.all.mobile){styles.web.mobile = styles.all.mobile;}
-    if(!styles.web.tablet && styles.all.tablet){styles.web.tablet = styles.all.tablet;}
-    if(!styles.web.pc && styles.all.pc){styles.web.pc = styles.all.pc;}
-
-    if(!styles.web.mobile && !styles.all.mobile && styles.mobile){styles.web.mobile = styles.mobile;}
-    if(!styles.web.tablet && !styles.all.tablet && styles.tablet){styles.web.tablet = styles.tablet;}
-    if(!styles.web.pc && !styles.all.pc && styles.pc){styles.web.pc = styles.pc;}
-
-    if(engine.get.platform("static") || data.build_all){
-
-        if(layouts.web){
-            if(layouts.web.mobile){to_build.push({type:"mobile",layout:layouts.web.mobile,styles:styles.web.mobile});}
-            if(layouts.web.tablet){to_build.push({type:"tablet",layout:layouts.web.tablet,styles:styles.web.tablet});}
-            if(layouts.web.pc){to_build.push({type:"pc",layout:layouts.web.pc,styles:styles.web.pc});}
-            if(layouts.all){
-                if(!layouts.web.mobile && layouts.all.mobile){
-                    to_build.push({type:"mobile",layout:layouts.all.mobile,styles:styles.web.mobile});
-                }
-                if(!layouts.web.tablet && layouts.all.tablet){
-                    to_build.push({type:"tablet",layout:layouts.all.tablet,styles:styles.web.tablet});
-                }
-                if(!layouts.web.pc && layouts.all.pc){
-                    to_build.push({type:"pc",layout:layouts.all.pc,styles:styles.web.pc});
-                }
-                if(!layouts.web.mobile && !layouts.all.mobile && layouts.mobile){
-                    to_build.push({type:"mobile",layout:layouts.mobile,styles:styles.web.mobile});
-                }
-                if(!layouts.web.tablet && !layouts.all.tablet && layouts.tablet){
-                    to_build.push({type:"tablet",layout:layouts.tablet,styles:styles.web.tablet});
-                }
-                if(!layouts.web.pc && !layouts.all.pc && layouts.pc){
-                    to_build.push({type:"pc",layout:layouts.pc,styles:styles.web.pc});
-                }
+    function get_style(name){
+        let hold;
+        function get_local(name){
+            if(name){
+                if(styles.web){if(styles.web[name]){hold = styles.web[name];}} else
+                if(styles.all){if(styles.all[name]){hold = styles.all[name];}} else
+                if(styles[name]){if(styles[name]){hold = styles[name];}}
             }
-            if(!layouts.all){
-                if(!layouts.web.mobile && layouts.mobile){
-                    to_build.push({type:"mobile",layout:layouts.mobile,styles:styles.web.mobile});
-                }
-                if(!layouts.web.tablet && layouts.tablet){
-                    to_build.push({type:"tablet",layout:layouts.tablet,styles:styles.web.tablet});
-                }
-                if(!layouts.web.pc && layouts.pc){
-                    to_build.push({type:"pc",layout:layouts.pc,styles:styles.web.pc});
-                }
+            if(!hold){
+                if(styles.web){hold = styles.web;} else
+                if(styles.all){hold = styles.all;} else
+                {hold = styles;}
             }
-        } else 
-        if(layouts.all){
-            if(layouts.all.mobile){
-                to_build.push({type:"mobile",layout:layouts.all.mobile,styles:styles.web.mobile});
-            }
-            if(layouts.all.tablet){
-                to_build.push({type:"tablet",layout:layouts.all.tablet,styles:styles.web.tablet});
-            }
-            if(layouts.all.pc){
-                to_build.push({type:"pc",layout:layouts.all.pc,styles:styles.web.pc});
-            }
-            if(!layouts.all.mobile && layouts.mobile){
-                to_build.push({type:"mobile",layout:layouts.mobile,styles:styles.web.mobile});
-            }
-            if(!layouts.all.tablet && layouts.tablet){
-                to_build.push({type:"tablet",layout:layouts.tablet,styles:styles.web.tablet});
-            }
-            if(!layouts.all.pc && layouts.pc){
-                to_build.push({type:"pc",layout:layouts.pc,styles:styles.web.pc});
-            }
-            if(layouts.all.portrait || layouts.all.landscape){
-                to_build.push({type:"any",layout:layouts.all,styles:styles.web.all || styles});
-            }
+        }
+        if(name){
+            if(name.includes("mobile")){get_local("mobile");} else
+            if(name.includes("tablet")){get_local("tablet");} else
+            if(name.includes("pc")){get_local("pc");} else
+            {get_local();};
         } else {
-            if(layouts.mobile){
-                to_build.push({type:"mobile",layout:layouts.mobile,styles:styles.web.mobile});
-            }
-            if(layouts.tablet){
-                to_build.push({type:"tablet",layout:layouts.tablet,styles:styles.web.tablet});
-            }
-            if(layouts.pc){
-                to_build.push({type:"pc",layout:layouts.pc,styles:styles.web.pc});
-            }
+            get_local();
         }
+        return hold;
+    }
+
+    //-------------------------
+    //select layouts
+    //-------------------------
+
+    //to_build.push({type:"pc",layout:layouts.web.pc,styles:styles.web.pc});
+    
+    if(is_static || data.build_all){
+
+        function get_layout(name){
+            if(name){
+                if(layouts.web){if(layouts.web[name]){return layouts.web[name];}}
+                if(layouts.all){if(layouts.all[name]){return layouts.all[name];}}
+                if(layouts[name]){return layouts[name];}
+            }
+            if(!name){
+                if(layouts.web){return layouts.web;}
+                if(layouts.all){return layouts.all;}
+                return layouts;
+            }
+            return false;
+        }
+        function get_all(name){
+            let layout = get_layout(name);
+            // console.log({l:layout,n:name});
+            if(!layout){return false;}
+            let style = get_style(name);
+            let build = {};
+            build.type = name;
+            build.layout = layout;
+            if(style){build.styles = style;}
+            return build;
+        }
+
+        let mobile = get_all("mobile");
+        let tablet = get_all("tablet");
+        let pc = get_all("pc");
+
+        if(mobile){to_build.push(mobile);}
+        if(tablet){to_build.push(tablet);}
+        if(pc){to_build.push(pc);}
+
         if(to_build.length === 0){
-            to_build.push({type:"any",layout:layouts,styles:styles.web.all || styles});
+            to_build.push({type:'any',layout:get_layout(),styles:get_style()});
         }
+
     } else {
-        let local_layout = engine.make.platform.resolve(layouts,"orientation");
-        let local_styles = engine.make.platform.resolve(data.styles,"orientation");
-        to_build.push({type:"any",layout:local_layout,styles:local_styles});
+        let local_layout = engine.make.platform.resolve(layouts);
+        let local_styles = engine.make.platform.resolve(data.styles);
+        to_build.push({type:"any",layout:local_layout.data,styles:local_styles.data});
     }
 
     return to_build;

@@ -4,24 +4,18 @@ const log = false;
 
 function check(){
 
-  let cookies = engine.cookie.get_all();
-  console.log(cookies["user_type"]);
-  function get(key){
-    return cookies[key];
-  }
+  let type = engine.data.get('session_type','local');
+  if(!type){return false;}
 
+  let get = engine.data.get;
   let s = engine.session;
-  s.token = get('token');
-  s.user = get('user');
-  s.user_type = get('user_type');
+  let where = type === "temp" ? "session" : "local";
 
-  // if(get('user_type') === "object"){
-  //   s.user = JSON.parse(s.user);
-  //   // console.log({user:s.user});
-  // }
-
-  s.uid = get('uid');
-  // s.session_type = get('session_type','local');
+  s.token = get('token',where);
+  s.user = get('user',where);
+  s.user_type = get('user_type',where);
+  s.uid = get('uid',where);
+  s.session_type = get('session_type','local');
 
   if(!s.token){return false;} else {return true;}
 
@@ -55,6 +49,7 @@ module.exports = {
     if(!token_arg){return new engine.common.Error("not_found-token");}
 
     let where = remember === true ? "local" : "session";
+    let reset = engine.data.reset;
     let cookie = engine.cookie;
     let time;
     if(remember){
@@ -62,19 +57,16 @@ module.exports = {
       time = day * 365;
     }
 
-    let session_types = {};
-    function set(k,v,d){
-      if(!d){session_types[k] = typeof(v);}
+    function set(k,v,w){
+      reset(k,v,w);
       if(typeof(v) === "object"){v = JSON.stringify(v);}
       cookie.set(k,v,time,null,cookie_samesite);
     }
 
-    set('token',token_arg);
-    set('user',user_arg);
-    set("user_type",typeof(user_arg));
-    set('uid',uid);
-    set('session_type',remember === true ? "persistant" : "temp");
-    set('session_data_types',session_types,true);
+    set('token',token_arg,where);
+    set('user',user_arg,where);
+    set('uid',uid,where);
+    set('session_type',remember === true ? "persistant" : "temp",'local');
 
     return check();
 

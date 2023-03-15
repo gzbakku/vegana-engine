@@ -19,134 +19,44 @@ function parse_viewport(key){
     return {height:h,width:w,biggest:b,smallest:s,orientation:o};
 }
 
-function resolve(data,deep){
-
-    // console.log("resolve");
-
-    if(!is_platform_type(data) && false){
-        return {
-            data:data,
-            path:[]
-        };
-    }
+function resolve(data){
 
     let os = engine.get.os();
     let device = engine.get.platform("device");
     let native = engine.get.platform("native");
-    let web = engine.get.platform("web");
+    let web = !native && !is_static;
+    let cordova = engine.get.platform("cordova");
+    let electron = engine.get.platform("electron");
 
-    // console.log({
-    //     device:device
-    // });
-
-    // native = true,web = false;
-
-    // console.log([os,device,native,web]);
-
-    let children;
+    let children = data;
     let path = [];
-    if(native && data.native){
+
+    let native_found = false;
+    if(native && children.native){
         path.push("native");
-        if(data.native[os]){                       
-            path.push(os);
-            if(data.native[os][device]){
-                path.push(device);
-                children = data.native[os][device];
-            } else {
-                if(data.native[os].all){
-                    path.push("all");
-                    children = data.native[os].all;
-                } else {
-                    children = data.native[os];
-                }
-            }
-        } else {
-            if(data.native[device]){
-                path.push(device);
-                children = data[device];
-            } else if(data.native.all){
-                path.push("all");
-                children = data.native.all;
-            } else if(data[device]){
-                path.push("primary_device");
-                path.push(device);
-                children = data[device];
-            } else {
-                children = data.native;
-            }
-        }
-    } else if(web && data.web){
-        // console.log("web");
+        children = children.native;
+        if(cordova && children.cordova){children = children.cordova;path.push("cordova");}
+        if(electron && children.electron){children = children.electron;path.push("electron");}
+        if(children[os]){children = children[os];path.push(os);}
+        if(children[device]){children = children[device];path.push(device);} else 
+        if(children.all){children = children.all;path.push("all");}
+        native_found = true;
+    }
+    
+    let web_found = false;
+    if(web && children.web){
         path.push("web");
-        if(data.web[device]){
-            // console.log("web device");
-            path.push(device);
-            children = data.web[device];
-        } else if(data.web.all){
-            path.push("all");
-            children = data.web.all;
-        } else if(data[device]){
-            path.push("primary_device");
-            path.push(device);
-            children = data[device];
-        } else {
-            children = data.web;
-        }
-    } else {
-        if(data[device]){
-            path.push(device);
-            children = data[device];
-        } else if(data.all){
-            path.push("all");
-            children = data.all;
-        } else {
-            path.push("primary");
-            children = data;
-        }
+        children = children.web;
+        if(children[device]){children = children[device];path.push(device);}
+        web_found = true;
     }
 
-    //select orientation
-    if((
-        children instanceof Object) && 
-        !(children instanceof Array) &&
-        deep !== "orientation"
+    if(
+        ((native && !native_found) || (web && !web_found)) && children.all
     ){
-
-        let height = engine.get.body.height();
-        let width = engine.get.body.width();
-
-        let size = 0;
-        let selected_viewport_key;
-        let selected_viewport;
-        for(let key of Object.keys(children)){
-            let viewport = parse_viewport(key);
-            if(viewport){
-                if(
-                    height >= viewport.height && 
-                    width >= viewport.width
-                ){
-                    if(height*width>size){
-                        selected_viewport_key = key;
-                        selected_viewport = viewport;
-                    }
-                }
-            }
-        }
-
-        if(!selected_viewport){
-            if(height < width){
-                if(children.landscape){
-                    children = children.landscape;
-                }
-            } else {
-                if(children.portrait){
-                    children = children.portrait;
-                }
-            }
-        } else {
-            children = children[selected_viewport_key];
-        }
-
+        path.push("all");
+        children = children.all;
+        if(children[device]){children = children[device];path.push(device);}
     }
 
     return {

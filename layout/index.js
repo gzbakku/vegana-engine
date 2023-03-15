@@ -1,6 +1,7 @@
 
 
-const platform = require("./platform");
+// const platform = require("./platform_og");
+const platform = require("./platform_new");
 const mapper = require("./mapper");
 const builder = require("./builder");
 const fonts = require("./fonts");
@@ -33,10 +34,12 @@ module.exports = {
 function build(data){
 
     let media_queries = platform.build_css_media_queries({
-        build_all:true,
+        build_all:data.build_all,
         styles:data.styles,
         layouts:data.layouts
     });
+
+    // console.log(media_queries);
 
     let elements = {};
     for(let query of media_queries){

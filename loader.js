@@ -277,14 +277,11 @@ function ensure(text,anchor){
 
 function process_location(location){
   if(window.is_static && location.includes(".js") && !location.includes("js/bundle.js")){
-    // console.log("loading in page : " + location);
     require(`../${location}`);
-    // console.log(window.pageModules);
   }
   if(window.is_electron || window.is_cordova || window.is_native){
     return location;
   } else {
-    // console.log("process_location : " + window.baseHref + '/' + location);
     return location = window.baseHref + '/' + location;
   }
 }
@@ -312,7 +309,7 @@ function load_js_with_css(jsPath,cssPath,do_load_css){
 function load_js(id,location,is_module){
 
   return new Promise((resolve,reject)=>{
-
+    
     if(is_static){
       engine.static.load.js({id:id,location:location,is_module:is_module});
       resolve();

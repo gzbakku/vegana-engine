@@ -1,27 +1,15 @@
 
 module.exports = (config)=>{
 
-    // console.log("config called");
-    // console.log(config);
-    // console.log("base_url");
-    // console.log(config.base_url);
-
     if(!(config instanceof Object)){
         engine.router.set.baseHref("");
         return new engine.common.Error("expected a json object");
     }
 
-    //git remote add origin https://github.com/gzbakku/vegana-static.git
-    //git config --global user.name "gzbakku"
-    //git config --global user.email "gzbakku@gmail.com"
-
     function f(v){
-        // console.log("/n/nBASEHREF/n/n");
-        // console.log({base_href:v});
         engine.router.set.baseHref(
             typeof(v) === 'string' ? v : '',true
         );
-        // console.log({baseHref:window.baseHref});
     }
 
     let base;

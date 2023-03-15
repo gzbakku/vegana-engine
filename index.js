@@ -6,17 +6,10 @@ if(!window.is_electron){window.is_electron = false;}
 if(!window.is_native){window.is_native = false;}
 if(!window.is_web){window.is_web = false;}
 
-// console.log("window updated");
-// console.log(window);
-
-let hooks = {
-  pages:{},
-  conts:{},
-  panels:{},
-  comps:{}
-};
+window.pageModules = {};
 
 module.exports = {
+  cookie:require("./cookie"),
   common:require('./common'),
   static:require('./static'),
   ui:require('./ui'),
@@ -25,7 +18,7 @@ module.exports = {
   binder:require('./binder'),
   make:require('./make/index'),
   view:require('./view'),
-  router:require('./router'),
+  router:require('./router/index'),
   loader:require('./loader'),
   session:require('./session'),
   request:require('./request').send,
@@ -35,7 +28,7 @@ module.exports = {
   set:require('./set'),
   data:require('./data'),
   time:require('./time'),
-  params:require('./params'),
+  // params:require('./params'),
   layout:require('./layout/index'),
   animate:require('./animate'),
   config:require('./config'),
@@ -44,14 +37,19 @@ module.exports = {
     comp:new Proxy({},{
       set(obj, prop, value){
         obj[prop] = value;
-        if(hooks.comps.hasOwnProperty(prop) == true){
-          hooks.comps[prop]();
-        }
+        // if(hooks.comps.hasOwnProperty(prop) == true){
+        //   hooks.comps[prop]();
+        // }
       }
     }),
     object:{}
   },
-  hooks:hooks,
+  hooks:{
+    pages:{},
+    conts:{},
+    panels:{},
+    comps:{}
+  },
   md5:require('md5'),
   uniqid:require('uniqid'),
   app_version:null

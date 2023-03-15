@@ -1,5 +1,5 @@
 
-let os,platform;
+let os,platform,variableChecked;
 
 function extract_translations(read){
   let started = false;
@@ -71,7 +71,8 @@ module.exports = (tag,options)=>{
 
   if(!os || !platform){
     os = engine.get.os(),
-    platform = engine.get.platform();
+    platform = engine.get.platform(),
+    variableChecked = engine.static.add.js.variableChecked;
   }
 
   if(
@@ -108,29 +109,28 @@ module.exports = (tag,options)=>{
     return engine.common.error('invalid_parent',options);
   }
 
-  // if(){}
-
   //****************************************
   //make element
   //****************************************
 
-  if(!options.id){
-    options.id = engine.uniqid();
-  }
+  // if(!options.id){
+  //   options.id = engine.uniqid();
+  // }
   if(options.translate || options.t){
     options = translate(options);
   }
-  let id = (options.parent || options.p) + '-' + tag + '-' + options.id;
-  let object = document.createElement(tag);
-  if(options.only_id){
-    object.id = options.id;
+  let id;
+  let get_uid = engine.make.get_uid;
+  if(options.only_id && options.id){
+    id = options.id;
+  } else if(options.id){
+    id = `${get_uid()}-${options.id}`;
   } else {
-    object.id = id;
-    // if(options.fold || options.f){object.id = engine.md5(id);}
-    if(window.VeganaElementIdFold !== false){
-      object.id = engine.md5(id);
-    }
+    id = get_uid();
   }
+
+  let object = document.createElement(tag);
+  object.id = id;
   
   if(options.class){
     object.className = options.class;
@@ -306,13 +306,14 @@ module.exports = (tag,options)=>{
     }
   }
 
-  // id,tag,func,funcData,object
   if(options.function){
     if(is_static){
       options.function = engine.static.add.js.function(null,options.function);
       engine.static.add.js.call(`${get_event_function_id()}(${variableChecked(object.id)},"${tag}",${options.function},${options.functionData},document.getElementById(${variableChecked(object.id)}),"${options.type}")`);
     } else {
-      event_function(id,tag,options.function,options.funcData || options.functionData,object);
+      event_function(
+        id,tag,options.function,options.funcData || options.functionData,object,options.type
+      );
     }
   }
 
@@ -324,17 +325,22 @@ module.exports = (tag,options)=>{
   }
 
   if(options.events && !options.event){
-    for(var i in options.events){
-      let e = options.events[i];
-      if(e.event && e.function){
-        if(
-          typeof(e.event) == 'string' &&
-          typeof(e.function) == 'function'
-        ){
-          // const funcName = engine.static.add.js.function(null,e.function);
-          // object.addEventListener(e.event,`(e)=>{
-          //   ${funcName}(${variableChecked(object.id)},${options.functionData},e);
-          // }`);
+    for(let e of options.events){
+      if(
+        typeof(e) === 'object' &&
+        typeof(e.event) === 'string' &&
+        typeof(e.function) === 'function'
+      ){
+        let n = engine.make.eventName(e.event);
+        if(is_static){
+          const funcName = engine.static.add.js.function(null,e.function);
+          object.addEventListener(n,`(a)=>{
+            ${funcName}(${variableChecked(object.id)},${options.functionData},a);
+          }`);
+        } else {
+          object.addEventListener(n,(evt)=>{
+            e.function(object.id,options.functionData,evt);
+          });
         }
       }
     }
@@ -345,10 +351,17 @@ module.exports = (tag,options)=>{
       typeof(options.event.type) == 'string' &&
       typeof(options.event.function) == 'function'
     ){
-      // const funcName = engine.static.add.js.function(null,options.event.function);
-      // object.addEventListener(options.event.type,`(e)=>{
-      //   ${funcName}(${variableChecked(object.id)},${options.functionData},e)
-      // }`);
+      let n = engine.make.eventName(options.event.type);
+      if(is_static){
+        const funcName = engine.static.add.js.function(null,options.event.function);
+        object.addEventListener(n,`(e)=>{
+          ${funcName}(${variableChecked(object.id)},${options.functionData},e);
+        }`);
+      } else {
+        object.addEventListener(n,(e)=>{
+          options.event.function(object.id,options.functionData,e);
+        });
+      }
     }
   }
 
