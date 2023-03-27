@@ -30,20 +30,20 @@ module.exports = {
   platform:(data)=>{
 
     if(!data){
-      if(window.hasOwnProperty('is_cordova')){
+      if(window.is_cordova){
         return 'cordova';
       }
-      if(window.hasOwnProperty('is_electron')){
+      if(window.is_electron){
         return 'electron';
       }
-      if(window.hasOwnProperty('is_static')){
+      if(window.is_static){
         return 'static';
       }
       data = 'platform';
     }
 
     if(data == 'static'){
-      if(window.hasOwnProperty('is_static')){
+      if(window.is_static){
         return true;
       } else {
         return false;
@@ -51,7 +51,7 @@ module.exports = {
     }
 
     if(data == 'electron'){
-      if(window.hasOwnProperty('is_electron')){
+      if(window.is_electron){
         return true;
       } else {
         return false;
@@ -59,7 +59,7 @@ module.exports = {
     }
 
     if(data == 'cordova'){
-      if(window.hasOwnProperty('is_cordova')){
+      if(window.is_cordova){
         return true;
       } else {
         return false;
@@ -68,9 +68,11 @@ module.exports = {
 
     if(data == 'web'){
       if(
-        !window.hasOwnProperty('is_static') &&
-        !window.hasOwnProperty('is_electron') &&
-        !window.hasOwnProperty('is_cordova')
+        !window.is_static &&
+        !window.is_electron &&
+        !window.is_cordova &&
+        !window.is_static_web &&
+        !window.is_native
       ){
         return true;
       } else {
@@ -80,8 +82,9 @@ module.exports = {
 
     if(data == 'native'){
       if(
-        window.hasOwnProperty('is_electron') ||
-        window.hasOwnProperty('is_cordova')
+        window.is_cordova ||
+        window.is_native ||
+        window.is_electron
       ){
         return true;
       } else {
