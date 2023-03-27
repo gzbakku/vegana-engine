@@ -123,8 +123,6 @@ function parse(url){
     remove("//");
     remove(":");
 
-    console.log({url1:url});
-
     let params = {};
     if(url.includes("?")){
         let hold = url.split("?");
