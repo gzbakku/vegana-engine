@@ -25,7 +25,7 @@ module.exports = {
 
     push_to_url:(url,a)=>{
         // console.log({push_to_url:url,a:a});
-        engine.router.closeures.push(url);
+        engine.router.closures.push(url);
         window.history.pushState("object or string", null, url);
         set();
     },

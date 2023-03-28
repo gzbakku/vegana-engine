@@ -7,7 +7,7 @@ window.onpopstate = function(e){
 module.exports = {
 
   //nav data
-  closeures:[],
+  closures:[],
   active:{
     page:null,
     routers:{}

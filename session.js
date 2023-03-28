@@ -1,30 +1,15 @@
-const log = false;
-
-// let token,user,user_type,uid,session_type;
 
 function check(){
-
   let cookies = engine.cookie.get_all();
-  console.log(cookies["user_type"]);
-  function get(key){
-    return cookies[key];
-  }
-
+  function get(key){return cookies[key];}
   let s = engine.session;
   s.token = get('token');
   s.user = get('user');
   s.user_type = get('user_type');
-
-  // if(get('user_type') === "object"){
-  //   s.user = JSON.parse(s.user);
-  //   // console.log({user:s.user});
-  // }
-
+  if(get('user_type') === "object"){s.user = JSON.parse(s.user);}
   s.uid = get('uid');
-  // s.session_type = get('session_type','local');
-
+  s.session_type = get('session_type','local');
   if(!s.token){return false;} else {return true;}
-
 }
 
 function end(){
@@ -92,12 +77,7 @@ module.exports = {
 
     user: function(){
       if(check() == false){return null;}
-      let s = engine.session;
-      if(s.user_type == "object"){
-        return JSON.parse(s.user);
-      } else {
-        return s.user;
-      }
+      return engine.session.user;
     },
 
     token:function(){

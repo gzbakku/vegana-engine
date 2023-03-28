@@ -4,18 +4,19 @@ module.exports = {
 
   nav_back : function(e){
 
-    let closeures = engine.router.closeures;
+    let closures = engine.router.closures;
+
     let url,url_string;
-    if(closeures.length === 0){
+    if(closures.length === 0){
       window.history.back();
       return;
     }
-    if(closeures.length === 1){
+    if(closures.length === 1){
       window.history.back();
       return;
     } else {
-      closeures.splice(closeures.length-1,1);
-      url_string = closeures[closeures.length-1];
+      closures.splice(closures.length-1,1);
+      url_string = closures[closures.length-1];
       url = engine.make.url.parse(url_string);
     }
 
@@ -46,11 +47,17 @@ module.exports = {
     }
 
     function onroute(mod){
-      if(mod){if(mod.trackers){if(mod.trackers.onBack){mod.trackers.onBack(url);}}}
+      if(mod){
+        if(mod.trackers){
+          if(mod.trackers.onBack){
+            mod.trackers.onBack(url);
+          }
+        }
+      }
     }
 
-    if(url.panel){onroute(panelMod);} else 
-    if(url.cont){onroute(contMod);} else 
+    if(url.panel){onroute(panelMod);} 
+    if(url.cont){onroute(contMod);} 
     if(url.page){onroute(pageMod);}
 
     engine.make.url.update_from_string(url_string,false,true);
