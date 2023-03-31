@@ -1,6 +1,6 @@
 {
   "name": "vegana-engine",
-  "version": "2.2.4",
+  "version": "2.2.5",
   "description": "vengana workers provide routing view binder and make tools for making a vegana project",
   "main": "index.js",
   "scripts": {
