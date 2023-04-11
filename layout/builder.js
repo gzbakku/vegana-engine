@@ -106,7 +106,19 @@ function build_element(data,parent,child,my_path,make_names,is_grid_child){
         builder.styles.push(`border=5px solid ${engine.make.styles.random_color()}`);
     }
 
-    let id = builder.tag ? engine.make.element(builder) : engine.make.div(builder);
+    // let id = builder.tag ? engine.make.element(builder) : engine.make.div(builder);
+
+    let id;
+    if(builder.maker){
+        let maker = builder.maker;
+        delete builder.maker;
+        id = engine.make[maker](builder);
+    } else if(builder.tag){
+        id = engine.make.element(builder);
+    } else {
+        id = engine.make.div(builder);
+    }
+
     elements[my_path] = id;
     for(let key in child.children){
         let child_elements = build_child(
