@@ -32,6 +32,8 @@ module.exports = {
   layout:require('./layout/index'),
   animate:require('./animate'),
   config:require('./config'),
+  stylesheet:require('./stylesheet'),
+  themes:require('./themes'),
   global:{
     function:{},
     comp:new Proxy({},{

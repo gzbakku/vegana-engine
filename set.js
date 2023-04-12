@@ -1,5 +1,15 @@
 
+let root;
+
 module.exports = {
+
+  css_var:(key,value)=>{
+    if(!root){
+      root = document.querySelector(':root').style;
+    }
+    root.setProperty(key,value);
+    // root[key] = value;
+  },
 
   icon:(location,is_url)=>{
     // return;

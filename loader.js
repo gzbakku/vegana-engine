@@ -181,7 +181,11 @@ module.exports = {
     langPack:async (lang)=>{
       const hold = await load_json(process_location('js/languages/' + lang + ".json"));
       if(!hold){return false;} else {window.veganaLanguagePack = {name:lang,dict:hold};}
-    }
+    },
+
+    json:(path)=>{
+      return load_json(process_location(path));
+    },
 
   },
 
@@ -263,7 +267,7 @@ module.exports = {
 
   },
 
-  process_location:process_location
+  process_location:process_location,
 
 };
 
@@ -374,6 +378,5 @@ function load_css(location){
 async function load_json(location){
   return fetch(location)
   .then((response)=>{return response.json();})
-  .catch((data)=>{return false;});
-  return request;
+  .catch(()=>{return false;});
 }
