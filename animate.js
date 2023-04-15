@@ -7,19 +7,20 @@ module.exports = {
 };
 
 function run(key,id){
-    // console.log('-----------');
-    // console.log('run');
-    if(!window.veganaJsAnimations[key]){return false;}
-    // console.log(key);
-    return animate(id,window.veganaJsAnimations[key]);
+    if(window.veganaJsAnimations[key]){
+        return animate(id,window.veganaJsAnimations[key]);
+    } else if(
+        typeof(key) === "string" && typeof(id) === "object"
+    ){
+        return animate(key,id);
+    } else {
+        return false;
+    }
 }
 
 function add(key,data){
     if(!window.veganaJsAnimations){window.veganaJsAnimations = {};}
-    // data = engine.make.platform.resolve(data);
     window.veganaJsAnimations[key] = data;
-    // console.log(key);
-    // console.log(window.veganaJsAnimations[key]);
 }
 
 function animate(id,animation){
@@ -56,11 +57,19 @@ function animate(id,animation){
 
     let element = engine.get.element(id);
     if(!element){return false;}
+
     if(animation.time){
-        element.style.transition = animation.time;
+        element.style.transition = `all ${animation.time}`;
     }
-    for(let key in styles){
-        element.style[key] = styles[key];
+
+    function update(){
+        for(let key in styles){
+            element.style[key] = styles[key];
+        }
     }
+
+    setTimeout(()=>{
+        update();
+    },0);
 
 }
