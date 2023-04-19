@@ -1,7 +1,20 @@
 const log = false;
 const httpMarker = 'http://';
 
+function hook_error(c,data){
+  if(!(data instanceof Object)){return engine.common.Error("expected data to be a object");}
+  for(let i of c){if(!data[i]){return engine.common.Error(`not found => ${i} in data object`)}}
+  return true;
+}
+
 module.exports = {
+
+  hooked:{
+    comps:{},
+    pages:{},
+    conts:{},
+    panels:{}
+  },
 
   load : {
 
@@ -158,9 +171,9 @@ module.exports = {
       );
     },
 
-    cont:(pageName,contName,load_css)=>{
+    cont:async (pageName,contName,load_css)=>{
       if(engine.get.contModule(pageName,contName)){return return_resolve();}
-      return load_js_with_css(
+      await load_js_with_css(
         process_location('js/pages/' + ensure(pageName,"Page") + '/conts/' + ensure(contName,"Cont") + "/cont.js"),
         process_location('css/pages/' + ensure(pageName,"Page") + '/conts/' + ensure(contName,"Cont") + "/cont.css"),load_css
       );
@@ -200,69 +213,23 @@ module.exports = {
   hook : {
 
     comp:(data)=>{
-
-      if(!data.comp || !data.function){
-        return engine.common.error("not_found-comp/function");
-      }
-
-      engine.hooks.comps[data.comp] = data.function;
-
+      let e = hook_error(["comp","function"],data);
+      if(e instanceof engine.common.Error || !e){return e;}
+      if(engine.global.comp[data.comp]){data.function(data.functionData());return;}
+      let c = engine.loader.hooked.comps;
+      if(!c[data.comp]){c[data.comp] = [];}
+      c[data.comp].push(data);
+      return true;
     },
 
     page:(data)=>{
-
-      if(!data.page || !data.function){
-        return engine.common.error("not_found-page/function");
-      }
-
-      engine.hooks.pages[data.page] = data.function;
-      let hold = window.pageModules;
-      window.pageModules = new Proxy(hold,{
-        set(obj,key,val){
-          obj[key] = val;
-          engine.hooks.pages[data.page]();
-        }
-      });
-
-    },
-
-    cont:(data)=>{
-
-      if(!data.page || !data.cont || !data.function){
-        return engine.common.error("not_found-page/cont/function");
-      }
-
-      engine.hooks.conts[data.page] = {};
-      engine.hooks.conts[data.page][data.cont] = data.function;
-      let hold = window.pageModules;
-
-      window.pageModules[data.page].contModules = new Proxy(hold,{
-        set(obj,key,val){
-          obj[key] = val;
-          engine.hooks.conts[data.page][key]();
-        }
-      });
-
-    },
-
-    panel:(data)=>{
-
-      if(!data.page || !data.cont || !data.panel || !data.function){
-        return engine.common.error("not_found-page/cont/panel/function");
-      }
-
-      engine.hooks.panels[data.page] = {};
-      engine.hooks.panels[data.page][data.cont] = {};
-      engine.hooks.panels[data.page][data.cont][data.panel] = data.function;
-      let hold = window.pageModules;
-
-      window.pageModules[data.page].contModules[data.cont].panelModules = new Proxy(hold,{
-        set(obj,key,val){
-          obj[key] = val;
-          engine.hooks.panels[data.page][data.cont][key]();
-        }
-      });
-
+      let e = hook_error(["page","function"],data);
+      if(e instanceof engine.common.Error || !e){return e;}
+      if(window.pageModules[data.page]){data.function(data.functionData());return;}
+      let c = engine.loader.hooked.pages;
+      if(!c[data.page]){c[data.page] = [];}
+      c[data.page].push(data);
+      return true;
     }
 
   },
@@ -299,7 +266,7 @@ function load_js_with_css(jsPath,cssPath,do_load_css){
         load_css(cssPath)
       ])
       .then(()=>{
-        resolve();
+        resolve(true);
       })
       .catch((e)=>{
         reject(e);
@@ -316,7 +283,7 @@ function load_js(id,location,is_module){
     
     if(is_static){
       engine.static.load.js({id:id,location:location,is_module:is_module});
-      resolve();
+      resolve(true);
       return;
     }
 
@@ -349,7 +316,6 @@ function load_js(id,location,is_module){
 }
 
 function load_css(location){
-
   return new Promise((resolve,reject)=>{
     if(is_static){
       engine.static.load.css({location:location});
@@ -364,7 +330,7 @@ function load_css(location){
     css.media = 'all';
     parent.appendChild(css);
     css.onload  = function(dd){
-      resolve();
+      resolve(true);
     };
     css.onerror = function(e){
       console.error(e);
@@ -372,7 +338,6 @@ function load_css(location){
       reject('failed-load_css =>' + e);
     }
   });
-
 }
 
 async function load_json(location){

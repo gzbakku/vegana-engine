@@ -6,7 +6,18 @@ if(!window.is_electron){window.is_electron = false;}
 if(!window.is_native){window.is_native = false;}
 if(!window.is_web){window.is_web = false;}
 
-window.pageModules = {};
+window.pageModules = new Proxy({},{
+  set(obj,key,val){
+    obj[key] = val;
+    let c = engine.loader.hooked.pages;
+    if(c[key]){
+      for(let item of c[key]){
+        item.function(item.functionData);
+      }
+      delete c[key];
+    }
+  }
+});
 
 module.exports = {
   cookie:require("./cookie"),
@@ -37,11 +48,15 @@ module.exports = {
   global:{
     function:{},
     comp:new Proxy({},{
-      set(obj, prop, value){
-        obj[prop] = value;
-        // if(hooks.comps.hasOwnProperty(prop) == true){
-        //   hooks.comps[prop]();
-        // }
+      set(obj, key, value){
+        obj[key] = value;
+        let c = engine.loader.hooked.comps;
+        if(c[key]){
+          for(let item of c[key]){
+            item.function(item.functionData);
+          }
+          delete c[key];
+        }
       }
     }),
     object:{}
