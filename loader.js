@@ -2,8 +2,8 @@ const log = false;
 const httpMarker = 'http://';
 
 function hook_error(c,data){
-  if(!(data instanceof Object)){return engine.common.Error("expected data to be a object");}
-  for(let i of c){if(!data[i]){return engine.common.Error(`not found => ${i} in data object`)}}
+  if(!(data instanceof Object)){return new engine.common.Error("expected data to be a object");}
+  for(let i of c){if(!data[i]){return new engine.common.Error(`not found => ${i} in data object`)}}
   return true;
 }
 
