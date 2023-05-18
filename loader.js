@@ -215,7 +215,7 @@ module.exports = {
     comp:(data)=>{
       let e = hook_error(["comp","function"],data);
       if(e instanceof engine.common.Error || !e){return e;}
-      if(engine.global.comp[data.comp]){data.function(data.functionData());return;}
+      if(engine.global.comp[data.comp]){data.function(data.functionData);return;}
       let c = engine.loader.hooked.comps;
       if(!c[data.comp]){c[data.comp] = [];}
       c[data.comp].push(data);
@@ -225,7 +225,7 @@ module.exports = {
     page:(data)=>{
       let e = hook_error(["page","function"],data);
       if(e instanceof engine.common.Error || !e){return e;}
-      if(window.pageModules[data.page]){data.function(data.functionData());return;}
+      if(window.pageModules[data.page]){data.function(data.functionData);return;}
       let c = engine.loader.hooked.pages;
       if(!c[data.page]){c[data.page] = [];}
       c[data.page].push(data);
