@@ -13,22 +13,13 @@ function check(){
 }
 
 function end(){
-
-  let type = engine.data.get('session_type','local');
-  if(!type){return true;}
-
-  let del = engine.data.delete;
   let s = engine.session;
-  let where = type === "temp" ? "session" : "local";
-
-  s.token = del('token',where);
-  s.user = del('user',where);
-  s.user_type = del('user_type',where);
-  s.uid = del('uid',where);
-  s.session_type = del('session_type','local');
-
+  let del = engine.cookie.delete;
+  for(let name of ["token","user","user_type",'uid',"session_type"]){
+    del('token');
+    s[name] = null;
+  }
   return true;
-
 }
 
 module.exports = {
