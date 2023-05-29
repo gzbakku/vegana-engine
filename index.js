@@ -20,6 +20,7 @@ window.pageModules = new Proxy({},{
 });
 
 module.exports = {
+  sot:require("./sot"),
   cookie:require("./cookie"),
   common:require('./common'),
   static:require('./static'),
@@ -69,5 +70,12 @@ module.exports = {
   },
   md5:require('md5'),
   uniqid:require('uniqid'),
-  app_version:null
+  app_version:null,
+  sleep:(time)=>{
+    return new Promise((resolve)=>{
+      setTimeout(()=>{
+        resolve();
+      },time || 1000);
+    });
+  }
 };
