@@ -235,6 +235,12 @@ module.exports = {
   },
 
   process_location:process_location,
+  return_resolve:return_resolve,
+  ensure:ensure,
+  load_js_with_css:load_js_with_css,
+  load_js:load_js,
+  load_css:load_css,
+  load_json:load_json
 
 };
 
