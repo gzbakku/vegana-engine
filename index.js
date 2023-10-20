@@ -77,5 +77,11 @@ module.exports = {
         resolve();
       },time || 1000);
     });
+  },
+  scrollTo:(id)=>{
+    let vv = engine.get.elementPosition(id);
+    if(!vv){return false;}
+    window.scrollTo(0, vv.bottom);
+    return true;
   }
 };
