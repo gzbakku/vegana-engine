@@ -78,6 +78,10 @@ module.exports = {
       },time || 1000);
     });
   },
+  scroll_pos:()=>{
+    let pos = document.documentElement.scrollHeight;
+    return {to:()=>{window.scrollTo(0, pos);}};
+  },
   scrollTo:(id)=>{
     if(typeof(id) === "number"){
       window.scrollTo(0, id);
