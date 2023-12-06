@@ -1,3 +1,6 @@
+
+
+
 function doo(id,what){
   let get = document.getElementById(id);
   if(get == null){
@@ -23,6 +26,10 @@ module.exports= {
   },
   remove : (id)=>{
     return doo(id,'remove');
+  },
+  
+  to:(id)=>{
+    return engine.scrollTo(id);
   },
 
 };

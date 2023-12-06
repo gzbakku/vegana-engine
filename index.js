@@ -79,9 +79,37 @@ module.exports = {
     });
   },
   scrollTo:(id)=>{
-    let vv = engine.get.elementPosition(id);
-    if(!vv){return false;}
-    window.scrollTo(0, vv.bottom);
+    if(typeof(id) === "number"){
+      window.scrollTo(0, id);
+      return true;
+    }
+    let elem = engine.get.element(id);
+    if(!elem){return false;}
+    elem.scrollIntoView();
     return true;
+  },
+  div:(parent)=>{
+    return engine.make.div({parent:parent});
+  },
+  d:(parent)=>{
+    return engine.make.div({parent:parent});
+  },
+  is_obj:(o)=>{
+    return (o instanceof Object) && !(o instanceof Array) ? true : false;
+  },
+  is_array:(o)=>{
+    return o instanceof Array ? true : false;
+  },
+  is_string:(o)=>{
+    return typeof(o) === 'string' ? true : false;
+  },
+  is_num:(o)=>{
+    return typeof(o) === 'number' || !isNaN(o) ? true : false;
+  },
+  len:(o)=>{
+    if(o instanceof Array || typeof(o) === 'string'){return o.length;}
+    if(o instanceof Object){return Object.keys(o).length;}
+    if(typeof(o) === 'number'){return o;}
+    return 0;
   }
 };
