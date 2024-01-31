@@ -115,5 +115,13 @@ module.exports = {
     if(o instanceof Object){return Object.keys(o).length;}
     if(typeof(o) === 'number'){return o;}
     return 0;
+  },
+  halt:(id)=>{
+    try{
+      let e = engine.get.element(id);
+      return e ? true : false;
+    } catch(_){
+      return false;
+    }
   }
 };

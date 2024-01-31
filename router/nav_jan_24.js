@@ -53,11 +53,8 @@ function toWorker(mod,type,reset,routerId,data,dont_update_url,push_url,dont_run
   if(to_id !== active_id){
     engine.view.hide(active_id);
   }
-  if(built[to_id] && !reset){
+  if(built[to_id]){
     engine.view.show(to_id);
-  }
-  if(built[to_id] && reset){
-    engine.view.remove(to_id);
   }
   
   // console.log({
@@ -71,9 +68,9 @@ function toWorker(mod,type,reset,routerId,data,dont_update_url,push_url,dont_run
   
   if(type === "page"){active.page = to_id;}
   active.routers[router_id] = to_id;
-
   if(!dont_update_url){
     let already_set_url_string = url.get(to_id);
+    // console.log({already_set_url_string:already_set_url_string});
     if(already_set_url_string){
       url.update_from_string(already_set_url_string,true,false);
     } else {
@@ -83,7 +80,7 @@ function toWorker(mod,type,reset,routerId,data,dont_update_url,push_url,dont_run
     }
   }
 
-  if(!built[to_id] || reset){
+  if(!built[to_id]){
     mod.init(router_id,data);
     built[to_id] = router_id;
   }
