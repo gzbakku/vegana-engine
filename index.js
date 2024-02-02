@@ -119,9 +119,9 @@ module.exports = {
   halt:(id)=>{
     try{
       let e = engine.get.element(id);
-      return e ? true : false;
+      return e ? false : true;
     } catch(_){
-      return false;
+      return true;
     }
   }
 };
