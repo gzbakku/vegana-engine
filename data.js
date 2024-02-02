@@ -196,7 +196,7 @@ function save_data_type(tag,where,type){
 
 }
 
-async function process_type_collection(){
+function process_type_collection(){
   let get_local,get_session;
   try{
     const fetch = localStorage.getItem("type_collection_session");
