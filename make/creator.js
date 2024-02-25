@@ -312,7 +312,7 @@ module.exports = (tag,options)=>{
       engine.static.add.js.call(`${get_event_function_id()}(${variableChecked(object.id)},"${tag}",${options.function},${options.functionData},document.getElementById(${variableChecked(object.id)}),"${options.type}")`);
     } else {
       event_function(
-        id,tag,options.function,options.funcData || options.functionData,object,options.type
+        id,tag,options.function,options.funcData || options.functionData,object,options.type,typeof(options.tabIndex) === "string"
       );
     }
   }
@@ -452,7 +452,7 @@ function get_event_function_id(){
   return event_function_id;
 }
 
-function event_function(id,tag,func,funcData,object,type){
+function event_function(id,tag,func,funcData,object,type,tabIndex){
   let default_event = 'click';
   if((tag == 'input' || tag == 'textarea') && type !== 'button'){
     default_event = 'input'
@@ -472,6 +472,21 @@ function event_function(id,tag,func,funcData,object,type){
         func(id,object.checked,funcData,eve);
       } else {
         func(id,object.value,funcData,eve);
+      }
+    });
+  }
+  if(tabIndex && (
+    tag === "div"
+    || tag === "image"
+    || tag === "span"
+    || tag === "button"
+  )){
+    object.addEventListener("keypress",(eve)=>{
+      if(
+        eve.keyCode === 13 ||
+        eve.charCode === 32
+      ){
+        func(id,funcData,eve);
       }
     });
   }
