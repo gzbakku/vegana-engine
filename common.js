@@ -101,6 +101,40 @@ module.exports= {
         remove:remove
     };
 
-  }
+  },
+
+  json_hash:json_hash
 
 };
+
+function json_hash(data){
+  if(data instanceof Array){
+      let hashes = [];
+      for(let item of data){
+          let hash = json_hash(item);
+          hashes.push(hash);
+      }
+      hashes.sort();
+      let hash = engine.md5(hashes);
+      return hash;
+  }
+  if(data instanceof Object){
+      let hashes = [];
+      for(let key in data){
+          let val = data[key];
+          let hash = json_hash(val);
+          hash = json_hash(`${key}:${hash}`);
+          hashes.push(hash);
+      }
+      hashes.sort();
+      let hash = engine.md5(hashes);
+      return hash;
+  }
+  if(typeof(data) === "string"){
+      return engine.md5(data);
+  }
+  if(typeof(data) === "number"){
+      return engine.md5(data);
+  }
+  return engine.md5("undefined");
+}
