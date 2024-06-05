@@ -31,4 +31,18 @@ module.exports = (stylesheet)=>{
         }
     }
 
+    if(stylesheet.custom instanceof Object){
+        for(let name in stylesheet.custom){
+            let value = stylesheet.custom[name];
+            if(value instanceof Object){
+                if(value.css_var_name && value.value){
+                    engine.set.css_var(value.css_var_name,value.value);
+                } else 
+                if(value.css_var_name){
+                    engine.layout.values.add(value_name,`var(${value.css_var_name})`);
+                }
+            }
+        }
+    }
+
 }
