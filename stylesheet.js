@@ -9,6 +9,7 @@ module.exports = (stylesheet)=>{
                     engine.layout.colors.add(color_name,color.value);
                 } else if(color.css_var_name){
                     engine.layout.colors.add(color_name,`var(${color.css_var_name})`);
+                    engine.themes.values[color_name] = `var(${color.css_var_name})`;
                 }
             }
         }
@@ -27,6 +28,7 @@ module.exports = (stylesheet)=>{
             } else
             if(font instanceof Object && font.css_var_name){
                 window.veganaLayoutFonts[font_name] = `var(${font.css_var_name})`;
+                engine.themes.values[font_name] = `var(${font.css_var_name})`;
             }
         }
     }
@@ -37,9 +39,7 @@ module.exports = (stylesheet)=>{
             if(value instanceof Object){
                 if(value.css_var_name && value.value){
                     engine.set.css_var(value.css_var_name,value.value);
-                } else 
-                if(value.css_var_name){
-                    engine.layout.values.add(value_name,`var(${value.css_var_name})`);
+                    engine.themes.values[name] = value.value;
                 }
             }
         }

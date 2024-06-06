@@ -1,7 +1,13 @@
 
 
 module.exports = {
-    load:load
+    load:load,
+    values:{},
+    value:{
+        get:(key)=>{
+            return engine.themes.values[key];
+        }
+    }
 };
 
 async function load(name){
@@ -27,6 +33,7 @@ async function load(name){
                 }
                 if(font.css_var_name){
                     engine.set.css_var(font.css_var_name,font_name);
+                    engine.themes.values[font_name] = `var(${font.css_var_name})`;
                 }
             }
         }
@@ -39,6 +46,7 @@ async function load(name){
                 if(color.css_var_name && color.value){
                     engine.set.css_var(color.css_var_name,color.value);
                     engine.layout.colors.add(color_name,`${color.value}`);
+                    engine.themes.values[color_name] = `var(${color.css_var_name})`;
                 } else 
                 if(color.css_var_name){
                     engine.layout.colors.add(color_name,`var(${color.css_var_name})`);
@@ -54,9 +62,7 @@ async function load(name){
             if(value instanceof Object){
                 if(value.css_var_name && value.value){
                     engine.set.css_var(value.css_var_name,value.value);
-                } else 
-                if(value.css_var_name){
-                    engine.layout.values.add(value_name,`var(${value.css_var_name})`);
+                    engine.themes.values[name] = value.value;
                 }
             }
         }
