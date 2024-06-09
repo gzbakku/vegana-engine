@@ -46,6 +46,7 @@ module.exports = {
   config:require('./config'),
   stylesheet:require('./stylesheet'),
   themes:require('./themes'),
+  size:require('./size'),
   global:{
     function:{},
     comp:new Proxy({},{
