@@ -1,8 +1,23 @@
 
 
+window.onpopstate = function(e){
+  if(pop_counter > 0){
+    pop_counter -= 1;
+    return;
+  }
+  engine.router.back.nav_back(e);
+}
+
+let on_back = [];
+let pop_counter = 0;
+
 module.exports = {
 
   nav_back : function(e){
+
+    if(on_back.length > 0){
+      return on_back.splice(on_back.length-1,1)[0].func();
+    }
 
     let closures = engine.router.closures;
 
@@ -64,15 +79,28 @@ module.exports = {
 
   },
 
-  //TODO
-  close:{
+  new:(id,func)=>{
+    on_back.push({
+      id:id,func:func
+    });
+    engine.make.url.push();
+  },
 
-    new:(func)=>{},
+  pop:(id)=>{
+    if(on_back.length === 0){return;}
+    let index = 0,found = false;
+    for(let item of on_back){
+      if(item.id === id){found = true;break;}
+      index++;
+    }
+    if(!found){return false;}
+    pop_counter += 1;
+    window.history.back();
+    return on_back.splice(index,1)[0];
+  },
 
-    pop:()=>{},
-
-    back:()=>{}
-
+  back:()=>{
+    return engine.router.back.nav_back();
   }
 
 };

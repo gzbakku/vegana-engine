@@ -3,6 +3,9 @@
 function toWorker(mod,type,reset,routerId,data,dont_update_url,push_url,dont_run_trackers){
 
   const log = false;
+  if(push_url != false){
+    push_url = true;
+  }
 
   //------------------------------
   //catalogs
