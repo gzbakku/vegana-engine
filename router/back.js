@@ -10,7 +10,7 @@ window.onpopstate = function(e){
 }
 
 let on_back = [];
-let pop_counter = 0;
+let pop_promise = [];
 
 module.exports = {
 
