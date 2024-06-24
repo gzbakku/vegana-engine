@@ -1,8 +1,9 @@
 
 
 window.onpopstate = function(e){
-  if(pop_counter > 0){
-    pop_counter -= 1;
+  if(pop_promise.length > 0){
+    let hold = pop_promise[pop_promise.length-1];
+    hold();
     return;
   }
   engine.router.back.nav_back(e);
@@ -86,7 +87,7 @@ module.exports = {
     engine.make.url.push();
   },
 
-  pop:(id)=>{
+  pop:async (id)=>{
     if(on_back.length === 0){return;}
     let index = 0,found = false;
     for(let item of on_back){
@@ -94,8 +95,13 @@ module.exports = {
       index++;
     }
     if(!found){return false;}
-    pop_counter += 1;
+    let prom = new Promise(((resolve)=>{
+      pop_promise.push(resolve);
+    }));
+    let url = engine.make.url.build_url_string();
     window.history.back();
+    await prom;
+    engine.make.url.replace(url);
     return on_back.splice(index,1)[0];
   },
 
