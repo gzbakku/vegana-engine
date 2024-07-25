@@ -98,14 +98,29 @@ module.exports = {
     }
     if(options.type == 'local'){
       if(options.location[0] !== '/'){
-        if(!window.hasOwnProperty('is_electron') && !window.hasOwnProperty('is_cordova')){
+        if(!window.is_electron && !window.is_cordova){
           options.location = '/' + options.location;
         }
       }
-      options.src = window.baseHref + options.location;
+      if(!window.is_electron && !window.is_cordova){
+        options.src = window.baseHref + options.location;
+      }
     }
     if(options.type == 'url'){
       options.src = options.location;
+    }
+    if(
+      (
+        window.is_cordova || window.is_electron
+      ) && options.type == 'local'
+    ){
+      let loc = options.location;
+      if(loc[0] === "/"){
+        let len = loc.length;
+        options.src = loc.substring(1, len);
+      } else {
+        options.src = loc;
+      }
     }
     return engine.make.creator('img',options);
   }
