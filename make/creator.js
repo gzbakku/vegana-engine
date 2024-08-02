@@ -504,7 +504,7 @@ const timer_function = (id,object,data,time,func)=>{
     timer_started = true;
     timer_timeout = setTimeout(function(){
       timer_started = false;
-      func(id,data);
+      func(id,data,eve);
     }, time);
   });
   object.addEventListener("mouseout",(eve)=>{
