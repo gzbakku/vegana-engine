@@ -254,7 +254,8 @@ function ensure(text,anchor){
 
 function process_location(location){
   if(window.is_static && location.includes(".js") && !location.includes("js/bundle.js")){
-    require(`../${location}`);
+    // require(`../${location}`);
+    return `../${location}`;
   }
   if(window.is_electron || window.is_cordova || window.is_native){
     return location;
