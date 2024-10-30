@@ -102,13 +102,6 @@ module.exports = {
         return false;
       }
     }
-    if(data === "tablet"){
-      if(w <= 1080 || h <= 1080){
-        return true;
-      } else {
-        return false;
-      }
-    }
     if(data === "pc"){
       if(w > 1080 || h > 1080){
         return true;
@@ -116,12 +109,18 @@ module.exports = {
         return false;
       }
     }
+    if(data === "tablet"){
+      if(w <= 1080 || h <= 1080){
+        return true;
+      } else {
+        return false;
+      }
+    }
 
     if(data == "platform" || data == "device"){
-      // console.log({w:w,h:h});
       if(w <= 500 || h <= 500){ans = "mobile";} else
-      if(w <= 1080 || h <= 1080){ans = "tablet";} else
-      if(w > 1080 || h > 1080){ans = "pc";}
+      if(w > 1080 || h > 1080){ans = "pc";} else
+      if(w <= 1080 || h <= 1080){ans = "tablet";}
     }
 
     if(data === 'size'){
