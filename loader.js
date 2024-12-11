@@ -196,8 +196,8 @@ module.exports = {
       if(!hold){return false;} else {window.veganaLanguagePack = {name:lang,dict:hold};}
     },
 
-    json:(path)=>{
-      return load_json(process_location(path));
+    json:(path,error)=>{
+      return load_json(process_location(path),error);
     },
 
   },
@@ -253,6 +253,9 @@ function ensure(text,anchor){
 }
 
 function process_location(location){
+  if(location.indexOf("URL:") >= 0){
+    return location.replaceAll("URL:","");
+  }
   if(window.is_static && location.includes(".js") && !location.includes("js/bundle.js")){
     // require(`../${location}`);
     return `../${location}`;
@@ -347,8 +350,11 @@ function load_css(location){
   });
 }
 
-async function load_json(location){
+async function load_json(location,error){
   return fetch(location)
   .then((response)=>{return response.json();})
-  .catch(()=>{return false;});
+  .catch((e)=>{
+    if(error){return new engine.common.Error(e);}
+    return false;
+  });
 }

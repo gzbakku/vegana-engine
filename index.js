@@ -124,5 +124,20 @@ module.exports = {
     } catch(_){
       return true;
     }
+  },
+  failed:(result)=>{
+    if(result instanceof engine.common.Error){
+      return true;
+    }
+    if(result === false){
+      return true;
+    }
+    return false;
+  },
+  on_error:(result,error)=>{
+    if(result instanceof engine.common.Error){
+      return result.now(error);
+    }
+    return new engine.common.Error(error);
   }
 };

@@ -1,6 +1,18 @@
 
 class Error{
   constructor(e) {
+    if(
+      e instanceof Error ||
+      e instanceof TypeError
+    ){
+      e = e.toString();
+    }
+    else if(e instanceof Object){
+      try{
+        let o = JSON.stringify(e,null,2);
+        if(typeof(o) === "string"){e = o}
+      }catch(_e){}
+    }
     this.error = e;
     this.chain = [];
   }
@@ -11,12 +23,27 @@ class Error{
   }
   log(trigger){
     if(trigger === false){return;}
-    console.log(this);
+    let e = this.error;
+    this.chain.reverse();
+    for(let ee of this.chain){
+      if(ee.length > 0){
+        e += `\n${ee}`;
+      }
+    }
+    console.error(e);
     return this;
   }
 }
 
+
+
 module.exports= {
+
+  init_window_result:(on_window)=>{
+    window.on_error = engine.on_error;
+    window.failed = engine.failed;
+    engine.Error = engine.common.Error;
+  },
 
   kill : false,
 
