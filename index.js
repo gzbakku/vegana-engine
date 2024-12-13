@@ -129,6 +129,9 @@ module.exports = {
     if(result instanceof engine.common.Error){
       return true;
     }
+    if(result instanceof TypeError){
+      return true;
+    }
     if(result === false){
       return true;
     }
