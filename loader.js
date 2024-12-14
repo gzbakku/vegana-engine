@@ -8,6 +8,12 @@ function hook_error(c,data){
 }
 
 module.exports = {
+  
+  set_url_middleware:(func)=>{
+    engine.VeganaUrlMiddleware = func;
+  },
+
+  url_middleware:url_middleware,
 
   hooked:{
     comps:{},
@@ -265,6 +271,15 @@ function process_location(location){
   } else {
     return location = window.baseHref + '/' + location;
   }
+}
+
+function url_middleware(url){
+  // console.log({url_middleware:url});
+  if(typeof(engine.VeganaUrlMiddleware) === "function"){
+    let vv = engine.VeganaUrlMiddleware(url);
+    if(typeof(vv) === "string"){return vv;}
+  }
+  return url;
 }
 
 function load_js_with_css(jsPath,cssPath,do_load_css){

@@ -103,7 +103,7 @@ module.exports = {
         }
       }
       if(!window.is_electron && !window.is_cordova){
-        options.src = window.baseHref + options.location;
+        options.src = engine.loader.url_middleware(window.baseHref + options.location);
       }
     }
     if(options.type == 'url'){
