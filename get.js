@@ -2,6 +2,23 @@ module.exports = {
 
   url:()=>{return document.URL},
 
+  url_path:(url)=>{
+    if(!url){url = engine.get.url();}
+    function remove(item){
+      if(!item || item.length === 0){return;}
+      while(url.includes(item)){
+            url = url.replace(item,'')
+        }
+    }
+    let location = window.location;
+    remove(location.protocol);
+    remove(location.hostname);
+    remove(location.port);
+    remove("//");
+    remove(":");
+    return url;
+  },
+
   os:()=>{
     let ua = navigator.userAgent.toLowerCase();
     if(!ua){return 'unknown';}

@@ -1,6 +1,7 @@
 
 
 window.onpopstate = function(e){
+  // console.log(e);
   if(pop_promise.length > 0){
     let hold = pop_promise[pop_promise.length-1];
     hold();
@@ -17,7 +18,8 @@ module.exports = {
   nav_back : function(e){
 
     if(on_back.length > 0){
-      return on_back.splice(on_back.length-1,1)[0].func();
+      let ff = on_back.splice(on_back.length-1,1)[0];
+      return ff.func(ff.id);
     }
 
     let closures = engine.router.closures;
@@ -34,6 +36,10 @@ module.exports = {
       closures.splice(closures.length-1,1);
       url_string = closures[closures.length-1];
       url = engine.make.url.parse(url_string);
+    }
+
+    if(!url){
+      return;
     }
 
     let toWorker = engine.router.navigate.toWorker;
@@ -80,11 +86,15 @@ module.exports = {
 
   },
 
-  new:(id,func)=>{
+  new:(id,func,custom_url)=>{
     on_back.push({
       id:id,func:func
     });
-    engine.make.url.push();
+    if(custom_url){
+      engine.make.url.push_to_url(engine.get.url_path());
+    } else {
+      engine.make.url.push();
+    }
   },
 
   pop:async (id)=>{
