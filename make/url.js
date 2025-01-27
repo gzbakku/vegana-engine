@@ -139,6 +139,7 @@ function parse(url){
     let hold = url.split("/");
     let primary = [];
     let secondary = [];
+    let all = [];
     let primary_ended = false;
     for(let item of hold){
         if(item.length > 0){
@@ -151,6 +152,7 @@ function parse(url){
                     primary.push(item);
                 }
             }
+            all.push(item);
         }
     }
 
@@ -168,7 +170,8 @@ function parse(url){
 
     let build = {
         page:page,cont:cont,panel:panel,
-        custom_native:secondary,params:params
+        custom_native:secondary,params:params,
+        path:all
     };
 
     return build;
