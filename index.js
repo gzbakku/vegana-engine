@@ -40,7 +40,7 @@ module.exports = {
   set:require('./set'),
   data:require('./data'),
   time:require('./time'),
-  // params:require('./params'),
+  params:require('./params'),
   layout:require('./layout/index'),
   animate:require('./animate'),
   config:require('./config'),
