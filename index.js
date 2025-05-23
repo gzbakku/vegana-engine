@@ -142,5 +142,10 @@ module.exports = {
       return result.now(error);
     }
     return new engine.common.Error(error);
+  },
+  sanitize:(str)=>{
+    const temp = document.createElement('div');
+    temp.textContent = str;
+    return temp.innerHTML;
   }
 };
