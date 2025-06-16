@@ -1,6 +1,6 @@
 
 
-async function build(type,id,parent,cls){
+async function build(type,id,parent,cls,push_url){
 
   engine.make.div({
     parent:parent,
@@ -18,7 +18,9 @@ async function build(type,id,parent,cls){
     if(mod){
       engine.router.navigate.run_trackers(mod);
     }
-    url.update("page",hold.replace("Page",""));
+    if(push_url !== false){
+      url.update("page",hold.replace("Page",""));
+    }
     router.built[id] = "page-router";
     router.active.page = id;
     router.active.routers["page-router"] = id;
@@ -30,8 +32,8 @@ async function build(type,id,parent,cls){
 
 module.exports = {
 
-  page : function(id,cls){
-    return build('page',id,'page-router',cls);
+  page : function(id,cls,push_url){
+    return build('page',id,'page-router',cls,push_url);
   },
 
   comp : function(id,parent,cls){
